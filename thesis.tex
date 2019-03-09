@@ -38,7 +38,7 @@
 
 %
 % load halaman judul dalam
-\addChapter{HALAMAN JUDUL}
+\addChapter{TITLE PAGE}
 \input{_internals/judul_dalam}
 
 %
@@ -47,15 +47,15 @@
 
 %
 % load halaman pengesahan
-\addChapter{LEMBAR PERSETUJUAN}
+\addChapter{APPROVAL PAGE}
 \input{src/00-front_matter/01-persetujuan}
 %
 % load halaman orisinalitas 
-\addChapter{LEMBAR PERNYATAAN ORISINALITAS}
+\addChapter{STATEMENT OF CONSENT OF THESIS PUBLICATION FOR ACADEMIC INTERESTS}
 \input{src/00-front_matter/02-orisinalitas}
 %
 %
-\addChapter{LEMBAR PENGESAHAN}
+\addChapter{CERTIFICATION OF APPROVAL}
 \input{src/00-front_matter/03-pengesahan_sidang}
 %
 %
@@ -63,15 +63,15 @@
 \input{src/00-front_matter/04-pengantar}
 %
 %
-\addChapter{LEMBAR PERSETUJUAN PUBLIKASI ILMIAH}
+\addChapter{STATEMENT OF CONSENT OF ACADEMIC PUBLICATION}
 \input{src/00-front_matter/05-persetujuan_publikasi}
 %
 % 
-\addChapter{ABSTRAK}
-\input{src/00-front_matter/06-abstrak}
+\addChapter{ABSTRACT}
+\input{src/00-front_matter/06-abstract}
 %
 %
-\input{src/00-front_matter/07-abstract}
+\input{src/00-front_matter/07-abstrak}
 
 %
 % Daftar isi, gambar, dan tabel
@@ -86,6 +86,7 @@
 \listoftables
 \clearpage
 \phantomsection
+\addcontentsline{toc}{chapter}{\uppercase{List of Code Listings}}
 \listoflistings
 \clearpage
 
