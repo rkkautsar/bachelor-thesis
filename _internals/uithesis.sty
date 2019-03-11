@@ -32,6 +32,12 @@
 % 
 \usepackage{tocbibind}
 
+
+% % Daftar pemenggalan suku kata dan istilah dalam LaTeX
+% \input{_internals/hype.indonesia}
+\usepackage[english]{babel}
+
+
 %
 % From [Wikipedia]:
 % The package hyperref provides LaTeX the ability to create hyperlinks within 
@@ -147,10 +153,10 @@
 
 % Code listing
 \usepackage[titles]{tocloft}
-\newlistof{listing}{lol}{List of Code Listings}
+\newlistof{listing}{lol}{List of Listings}
 \usepackage[outputdir=out, newfloat]{minted}
 \usepackage{caption}
-\SetupFloatingEnvironment{listing}{name=\bo{Code}}
+\SetupFloatingEnvironment{listing}{name=\bo{Listing}}
 \setminted{
 	style=pastie,
 	autogobble,
@@ -180,7 +186,7 @@
 \surroundwithmdframed[style=code]{minted}
 
 
-\renewcommand{\cftlistingpresnum}{\bo{Kode}~}
+\renewcommand{\cftlistingpresnum}{\bo{Listing}~}
 \setlength{\cftlistingnumwidth}{1in}
 
 \renewcommand{\cftfigpresnum}{\figurename~}
@@ -315,25 +321,25 @@
 %-----------------------------------------------------------------------------%
 %
 % Beberapa istilah yang tepat untuk digunakan dalam laporan.
-\renewcommand{\bibname}{\uppercase{List of References}}
+\addto\captionsenglish{\def\bibname{\uppercase{List of References}}}
 % 
 % 
-\renewcommand{\contentsname}{\uppercase{Table of Contents}}
+\addto\captionsenglish{\def\contentsname{\uppercase{Table of Contents}}}
 % 
 % 
-\renewcommand{\listfigurename}{\uppercase{List of Figures}}
+\addto\captionsenglish{\def\listfigurename{\uppercase{List of Figures}}}
 % 
 % 
-\renewcommand{\listtablename}{\uppercase{List of Tables}}
+\addto\captionsenglish{\def\listtablename{\uppercase{List of Tables}}}
 % 
 % 
-\renewcommand{\chaptername}{BAB}
+% \renewcommand{\chaptername}{CHAPTER}
 % 
 % 
-\renewcommand{\figurename}{\bo{Figure}}
+% \renewcommand{\figurename}{\bo{Figure}}
 % 
 % 
-\renewcommand{\tablename}{\bo{Table}}
+% \renewcommand{\tablename}{\bo{Table}}
 % 
 % 
 \newcommand{\pic}{Figure}
@@ -343,3 +349,6 @@
 % 
 % 
 \newcommand{\equ}{Equation}
+%
+%
+\newcommand{\lst}{Listing}

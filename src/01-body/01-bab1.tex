@@ -1,60 +1,29 @@
 %-----------------------------------------------------------------------------%
 \chapter{\babSatu}
 %-----------------------------------------------------------------------------%
-\todo{tambahkan kata-kata pengantar bab 1 disini}
 
 
 %-----------------------------------------------------------------------------%
-\section{Latar Belakang}
+\section{Overview}
 %-----------------------------------------------------------------------------%
-\todo{tuliskan latar belakang penelitian disini}
+
+In computational science, it is often preferable to compare new algorithm to previous studies and get various measurements. But unfortunately most of the time it is not easy to reproduce those studies. \cite{collbergRepeatabilityComputerSystems2016} has shown that out of 402 computer science and engineering paper backed by code that they have examined, only 32.3\% can be built in an under 30 minutes attempt to resolve dependencies and environments needed to run the code, and this number only raises to 48.3\% when the attempt time is not limited. Not to mention that it is only 56,22\% out of those 402 paper whose source code is obtainable, even after requesting directly from the authors.
+
+Few attempts has been made to this computational reproducibility problem. Some notable examples are Sacred Infrastructure \citep{greffSacredInfrastructureComputational2017} on reproducible experiment, Reprozip \citep{chirigatiReproZipComputationalReproducibility2016} attempt on packing provenance, and BenchExec \citep{beyerReliableBenchmarkingRequirements2019} attempt on reliable benchmarks. Out of those, only BenchExec tackle the problem of benchmarking, but even so it is too domain-specific on software verification and doesn't support running long-running benchmarks such as those with millions of algorithms/parameters/instance combinations in high performance computing (HPC) clusters.
+
+A new benchmarking tool that is capable of  limiting and measuring resource usage, parallel runs, running on HPC clusters, (partially) re-run the benchmarks with new algorithm version, and producing reproducible result that can be shared with others will surely be a huge contribution to computational science in general. Authors can benchmark their algorithms with various parameters and compare them to previous algorithms. Reviewers can then check the benchmark results claimed, and other researchers can compare their algorithms by extending from this benchmark results in an objective manner.
+
+%-----------------------------------------------------------------------------%
+\section{Contributions}
+%-----------------------------------------------------------------------------%
+
+%-----------------------------------------------------------------------------%
+\section{Research Scope}
+%-----------------------------------------------------------------------------%
 
 
 %-----------------------------------------------------------------------------%
-\section{Permasalahan}
-%-----------------------------------------------------------------------------%
-Pada bagian ini akan dijelaskan mengenai definisi permasalahan 
-yang \saya~hadapi dan ingin diselesaikan serta asumsi dan batasan 
-yang digunakan dalam menyelesaikannya.
-
-
-%-----------------------------------------------------------------------------%
-\subsection{Definisi Permasalahan}
-%-----------------------------------------------------------------------------%
-\todo{Tuliskan permasalahan yang ingin diselesaikan. Bisa juga
-	berbentuk pertanyaan}
-
-
-%-----------------------------------------------------------------------------%
-\subsection{Batasan Permasalahan}
-%-----------------------------------------------------------------------------%
-\todo{Umumnya ada asumsi atau batasan yang digunakan untuk 
-	menjawab pertanyaan-pertanyaan penelitian diatas.}
-
-
-%-----------------------------------------------------------------------------%
-\section{Tujuan}
-%-----------------------------------------------------------------------------%
-\todo{Tuliskan tujuan penelitian.}
-
-
-%-----------------------------------------------------------------------------%
-\section{Posisi Penelitian}
-%-----------------------------------------------------------------------------%
-\todo{Posisi penelitian Anda jika dilihat secara bersamaan dengan 
-	peneliti-peneliti lainnya. Akan lebih baik lagi jika ikut menyertakan 
-	diagram yang menjelaskan hubungan dan keterkaitan antar 
-	penelitian-penelitian sebelumnya}
-
-
-%-----------------------------------------------------------------------------%
-\section{Metodologi Penelitian}
-%-----------------------------------------------------------------------------%
-\todo{Tuliskan metodologi penelitian yang digunakan.}
-
-
-%-----------------------------------------------------------------------------%
-\section{Sistematika Penulisan}
+\section{Outline}
 %-----------------------------------------------------------------------------%
 Sistematika penulisan laporan adalah sebagai berikut:
 \begin{itemize}
@@ -66,6 +35,3 @@ Sistematika penulisan laporan adalah sebagai berikut:
 	\item Bab 6 \babEnam \\
 	\item Bab 7 \kesimpulan \\
 \end{itemize}
-
-\todo{Tambahkan penjelasan singkat mengenai isi masing-masing bab.}
-
