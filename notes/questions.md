@@ -1,0 +1,16 @@
+- besides the client/server, is the whole architecture okay?
+- client/server
+  - should the sqlite be mandatory? or should we support other db?
+- ~~evaluation phase — still no idea; there's papermill for parameterized python notebooks~~
+  - ~~should we just focus on the runs?~~
+- should we use git to track source code? then store the current HEAD to database for each run? — add timestamp too
+- executors / resource limiter: currently only `psmon`
+  - runsolver
+- cross platform? i.e. windows support? currently with `psmon` we can support both linux and mac os — reprozip, for example, supports windows — maybe no
+- task sources: should we add more? — ok for now
+- tool support: currently only simple executable — nice to have
+- what strength should we emphasize for this project?
+  - extensibility?
+  - reproducibility?
+  - sharing?
+

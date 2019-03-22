@@ -1,0 +1,5 @@
+{
+  "latex-workshop.latex.outDir": "./out",
+  "latex-workshop.latex.autoClean.run": "onFailed",
+  "latex-workshop.latex.clean.subfolder.enabled": true
+}
