@@ -1,34 +1,5 @@
-> [**Open in Overleaf**](https://www.overleaf.com/latex/templates/thesis-template-for-universitas-indonesia/brfkhqvmkzhv)
+# Bachelor Thesis
 
-> Forked from [yohanesgultom/ui_style](https://github.com/yohanesgultom/ui_style)
+[![Build Status](https://semaphoreci.com/api/v1/projects/7f32936c-a11e-4b7b-8163-a9df60f21c01/2590405/badge.svg)](https://semaphoreci.com/rkkautsar-75/bachelor-thesis)
 
-# UI Style
-
-LaTeX configuration for report/thesis/dissertation according to [University Indonesia](http://www.ui.ac.id/) standard. Originally made by Andreas Febrian and available for download [here](http://komunitas.ui.ac.id/pg/file/andreas.febrian/read/12945/template-latex-untuk-laporan-skripsithesisdisertasi)
-
-## Original author & contributors
-
-Author: Andreas Febrian
-
-Contributors:
-
-1. Lia Sadita
-2. Andre Tampubolon
-3. Erik Dominikus
-4. Fahrurrozi Rahman
-
-## Updates
-
-- Alternative bibliography management
-- Handling multiline source code
-- Additional math symbols
-
----
-
-## Modifications
-
-- Restructure project
-- Add code listings with [minted](https://github.com/gpoore/minted)
-- Makefile
-- Modify to latest (2017) standard according to _KEPUTUSAN REKTOR UNIVERSITAS INDONESIA NOMOR 2143/SK/R/Ul/2017_.
-- Use eps for UI logo
+> [⬇ Latest PDF](https://www.dropbox.com/s/pv5povbp3iqkhy3/thesis-latest.pdf)
