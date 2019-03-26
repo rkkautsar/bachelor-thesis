@@ -8,6 +8,10 @@
   - comparison
   - competition
 - about the difficulties of benchmarking
+  - distributed benchmarking
+  - tracking changes
+  - sharing benchmark results
+  - reproducibility: re-run and extend existing benchmark
 
 ## Contributions
 
@@ -20,5 +24,8 @@
 
 ## Research Scope
 
-- about limitations & assumptions
+- Limitations:
+  - ...
+- Assumptions:
+  - ...
 
