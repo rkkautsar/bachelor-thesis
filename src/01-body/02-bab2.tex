@@ -1,208 +1,123 @@
-%-----------------------------------------------------------------------------%
 \chapter{\babDua}
-%-----------------------------------------------------------------------------%
-\todo{tambahkan kata-kata pengantar bab 2 disini}
 
-%-----------------------------------------------------------------------------%
-\section{\latex~Secara Singkat}
-%-----------------------------------------------------------------------------%
-Definisi dari LaTeX adalah: \\ 
-\begin{tabular}{| p{13cm} |}
-	\hline 
-	\\
-	LaTeX is a family of programs designed to produce publication-quality 
-	typeset documents. It is particularly strong when working with 
-	mathematical symbols. \\	
-	The history of LaTeX begins with a program called TEX. In 1978, a 
-	computer scientist by the name of Donald Knuth grew frustrated with the 
-	mistakes that his publishers made in typesetting his work. He decided 
-	to create a typesetting program that everyone could easily use to 
-	typeset documents, particularly those that include formulae, and made 
-	it freely available. The result is TEX. \\	
-	Knuth's product is an immensely powerful program, but one that does 
-	focus very much on small details. A mathematician and computer 
-	scientist by the name of Leslie Lamport wrote a variant of TEX called 
-	LaTeX that focuses on document structure rather than such details. \\
-	\\
-	\hline
-\end{tabular}
+This chapter [...]. \hyperref[sec:experimentation]{Section 2.1} discuss [...]
 
-\vspace*{0.8cm}
+\section{Experimentation}
+\label{sec:experimentation}
 
-Contoh sitasi lainnya menggunakan \verb|\citep| adalah saat kita mau mensitasi pekerjaan tentang \textit{machine learning} dan \textit{dynamic programming}. \\
-
-Dokumen \latex~sangat mudah, seperti halnya membuat dokumen teks biasa. Ada 
-beberapa perintah yang diawali dengan tanda '\bslash'. 
-Seperti perintah \bslash\bslash~yang digunakan untuk memberi baris baru. 
-Perintah tersebut juga sama dengan perintah \bslash newline. 
-Pada bagian ini akan sedikit dijelaskan cara manipulasi teks dan 
-perintah-perintah \latex~yang mungkin akan sering digunakan. 
-Jika ingin belajar hal-hal dasar mengenai \latex, silahkan kunjungi: 
-
-\begin{itemize}
-	\item \url{http://frodo.elon.edu/tutorial/tutorial/}, atau
-	\item \url{http://www.maths.tcd.ie/~dwilkins/LaTeXPrimer/}
+Science aims to understand why things happen as they do in the natural world \citep{careyBeginnerGuideScientific2012}
+Investigating these why questions can be achieved by following what is known as the scientific method, or what Karl Popper has defined as the hypothetico-deductive method, a combination of inductive and deductive reasoning \citep{wallimanResearchMethodsBasics2010a}.
+He further defines the scientific method as follows:
+\begin{itemize}[noitemsep]
+	\item identification or clarification of a problem;
+	\item developing a hypothesis (testable theory) inductively from observations;
+	\item charting their implications by deduction;
+	\item practical or theoretical testing of the hypothesis;
+	\item rejecting or refining it in the light of the results.
 \end{itemize}
 
+\citet{careyBeginnerGuideScientific2012} provides a simpler definition for the scientific method as three simple steps: observing, explaining, and testing.
+These definitions suggest that science advances by the means of trial and error.
+The explaining-testing steps are repeated until the result is acceptable.
+When a theory is falsified, another one is proposed and tested, until the most fitting theory is accepted \citep{wallimanResearchMethodsBasics2010a}.
 
-%-----------------------------------------------------------------------------%
-\section{\latex~Kompiler dan IDE}
-%-----------------------------------------------------------------------------%
-Agar dapat menggunakan \latex~(pada konteks hanya sebagai pengguna), Anda 
-tidak perlu banyak tahu mengenai hal-hal didalamnya. 
-Seperti halnya pembuatan dokumen secara visual (contohnya Open Office (OO) 
-Writer), Anda dapat menggunakan \latex~dengan cara yang sama. 
-Orang-orang yang menggunakan \latex~relatif lebih teliti dan terstruktur 
-mengenai cara penulisan yang dia gunakan, \latex~memaksa Anda untuk seperti 
-itu.  
+Experimentation is one way to test these proposed theories or hypotheses.
+Some would argue that as experiments don't proof anything.
+But on the other hand, experiments can falsify a theory and corroborate it, but not actually proofing that the theory is true \citep{tichyShouldComputerScientists1998}.
+Thus, experiments can be seen as just another way of proofing theories by \textit{reductio ad absurdum}, like what proof by contradiction is commonly used in logic and mathematics.
 
-Kembali pada bahasan utama, untuk mencoba \latex~Anda cukup mendownload 
-kompiler dan IDE. Saya menyarankan menggunakan Texlive dan Texmaker. 
-Texlive dapat didownload dari \url{http://www.tug.org/texlive/}. 
-Sedangkan Texmaker dapat didownload dari 
-\url{http://www.xm1math.net/texmaker/}. 
-Untuk pertama kali, coba buka berkas thesis.tex dalam template yang Anda miliki 
-pada Texmaker. 
-Dokumen ini adalah dokumen utama. 
-Tekan F6 (PDFLaTeX) dan Texmaker akan mengkompilasi berkas tersebut menjadi 
-berkas PDF. 
-Jika tidak bisa, pastikan Anda sudah menginstall Texlive. 
-Buka berkas tersebut dengan menekan F7. 
-Hasilnya adalah sebuah dokumen yang sama seperti dokumen yang Anda baca saat 
-ini. 
+Experimentation can also be used for induction, deriving generalized conclusion from repeated observations.
+A rather well-known example in computer science is the case of artificial neural networks.
+Experiments demonstrated that its performance is better than what was predicted after being discarded in theoretical grounds \citep{tichyShouldComputerScientists1998}.
 
+Another example is Boolean Satisfiability (SAT).
+It has been proved to be $\mathcal{NP}$-complete by the Cook-Levin theorem.
+Many would give up after seeing that the problem they are trying to solve is in $\mathcal{NP}$.
+But this is not the case.
+State-of-the-art SAT solvers are good enough in solving real world problems with millions of literals and clauses.
+It is widely used in many fields despite the fact that the problem itself is seen as bad in theory.
 
-%-----------------------------------------------------------------------------%
-\section{Bold, Italic, dan Underline}
-%-----------------------------------------------------------------------------%
-Hal pertama yang mungkin ditanyakan adalah bagaimana membuat huruf tercetak 
-tebal, miring, atau memiliki garis bawah. 
-Pada Texmaker, Anda bisa melakukan hal ini seperti halnya saat mengubah dokumen 
-dengan OO Writer. 
-Namun jika tetap masih tertarik dengan cara lain, ini dia: 
+Not only in computer science, experimentation has been used in practice in many fields.
+In particular fields like physics and chemistry that involves observing and explaining physical objects often use this method.
 
-\begin{itemize}
-	\item \bo{Bold} \\
-		Gunakan perintah \bslash textbf$\lbrace\rbrace$ atau 
-		\bslash bo$\lbrace\rbrace$. 
-	\item \f{Italic} \\
-		Gunakan perintah \bslash textit$\lbrace\rbrace$ atau 
-		\bslash f$\lbrace\rbrace$. 
-	\item \underline{Underline} \\
-		Gunakan perintah \bslash underline$\lbrace\rbrace$.
-	\item $\overline{Overline}$ \\
-		Gunakan perintah \bslash overline. 
-	\item $^{superscript}$ \\
-		Gunakan perintah \bslash $\lbrace\rbrace$. 
-	\item $_{subscript}$ \\
-		Gunakan perintah \bslash \_$\lbrace\rbrace$. 
+An early example would be the famous thought experiment by Galileo Galilei.
+The thought experiment was about tying two bodies of object, one lighter and one heavier and dropping if from top of a tower.
+If, like many believed in that time, heavier object will fall faster as such the case with a heavy metal ball and a feather, the lighter one will pull the heavier one and slow down the fall.
+But these tied objects makes an object of heavier than either and thus should fall faster, this makes it a contradiction \citep{goodmanWhatDoesResearch2016}. This example also points out that external factors which are not taken into account can effect the result of an experiment in a bad way, such as air resistance in this case.
+
+There's also a rather extreme case of measuring the weight of a human soul, conducted by Duncan MacDougall, MD. He suggest that human soul has a measurable mass. To proof this hypothesis, he use six terminal patients and weighed them before, during, and after the process of death \citep{ryanModernExperimentalDesign2007a}.
+
+And last but not least, there's the expensive validation by Isaac Eddington in 1919 to prove Einstein's theory that gravity bends light.
+This important experiment involves expedition to Principe Island, West Africa and pushed the limits of photographic emulsion technology \citep{tichyShouldComputerScientists1998}.
+And now, 100 years after the validation, it was further supported by another great advancement in astronomy.
+In April 10th 2019, the Event Horizon Telescope (EHT) presented to the public the first ever successful image of a black hole, an object predicted by Einstein's general theory of relativity.
+
+Besides for the objectives of validation and induction already mentioned above, there's a lot of reason to run an experiment.
+\citet{montgomeryDesignAnalysisExperiments2013} mentioned some of the reasons as follows:
+\begin {itemize}
+	\item \textbf{Factor screening or characterization}. This is often the case when working with new systems or technologies to minimize wasted resource usage.
+	\item \textbf{Optimization}. Finding the desirable settings of factors that result in desirable response.
+	\item \textbf{Confirmation}. This is more or less the same as the validation objective already mentioned.
+	\item \textbf{Discovery}. This is more or less the same as the induction objective already mentioned.
+	\item \textbf{Robustness}. Finding the condition on which the response variables will degrade.
 \end{itemize}
 
-Perintah \bslash f dan \bslash bo hanya dapat digunakan jika package 
-uithesis digunakan. 
+\citet{montgomeryDesignAnalysisExperiments2013} also defines a guideline in designing an experiment that maps nicely to the scientific method:
 
+\begin{enumerate}[noitemsep]
+	\item Recognition of and statement of the problem
+	\item Selection of the response variable
+	\item Choice of factors, levels, and ranges
+	\item Choice of experimental design
+	\item Performing the experiment
+	\item Statistical analysis of the data
+	\item Conclusions and recommendations
+\end{enumerate}
 
-%-----------------------------------------------------------------------------%
-\section{Memasukan Gambar}
-%-----------------------------------------------------------------------------%
-Setiap gambar dapat diberikan caption dan diberikan label. Label dapat 
-digunakan untuk menunjuk gambar tertentu. 
-Jika posisi gambar berubah, maka nomor gambar juga akan diubah secara 
-otomatis. 
-Begitu juga dengan seluruh referensi yang menunjuk pada gambar tersebut. 
-Contoh sederhana adalah \pic~\ref{fig:testGambar}. 
-Silahkan lihat code \latex~dengan nama bab2.tex untuk melihat kode lengkapnya. 
-Harap diingat bahwa caption untuk gambar selalu terletak dibawah gambar. 
+Step 1-3 can be considered as the pre-experimental planning steps.
+He also noted that steps 2 and 3 is interchangeable in practice.
+Furthermore, the experiment should also be done in an iterative way.
 
-\begin{figure}
-	\centering
-	\includegraphics[width=0.50\textwidth]
-		{assets/pics/creative_common.png}
-	\caption{\license.}
-	\label{fig:testGambar}
-\end{figure}
+\section{Reproducible Benchmarks}
 
+The term reproducibility is often intertwined with the term replicability.
+\citet{drummondReplicabilityNotReproducibility2009} argues that replicability is the impoverished version of reproducibility which albeit the great effort to achieve it, its purpose is only for preventing fraud.
 
-%-----------------------------------------------------------------------------%
-\section{Membuat Tabel}
-%-----------------------------------------------------------------------------%
-Seperti pada gambar, tabel juga dapat diberi label dan caption. 
-Caption pada tabel terletak pada bagian atas tabel. 
-Contoh tabel sederhana dapat dilihat pada \tab~\ref{tab:tab1}.
+\citet{goodmanWhatDoesResearch2016} suggests to define new terminologies for reproducibility to avoid the inconsistencies between replicability and reproducibility:
+\begin{itemize}
+	\item \textbf{Methods reproducibility}. Ability to implement, as exactly as possible, the experimental and computational procedures, with the same data and tools, to obtain the same results.
 
-\begin{table}
-	\centering
-	\caption{Contoh Tabel}
-	\label{tab:tab1}
-	\begin{tabular}{| l | c r |}
-		\hline
-		& kol 1 & kol 2 \\ 
-		\hline
-		baris 1 & 1 & 2 \\
-		baris 2 & 3 & 4 \\
-		baris 3 & 5 & 6 \\
-		jumlah  & 9 & 12 \\
-		\hline
-	\end{tabular}
-\end{table}
+	\item \textbf{Results reproducibility}. The production of corroborating results in a new study, having followed the same experimental methods.
 
-Ada jenis tabel lain yang dapat dibuat dengan \latex~berikut 
-beberapa diantaranya. 
-Contoh-contoh ini bersumber dari 
-\url{http://en.wikibooks.org/wiki/LaTeX/Tables}
+	\item \textbf{Inferential reproducibility}. The making of knowledge claims of similar strength from a study replication or reanalysis.
+\end{itemize}
 
-\begin{table}
-	\centering
-	\caption{An Example of Rows Spanning Multiple Columns}
-	\label{row.spanning}
-	\begin{tabular}{|l|l|*{6}{c|}}
-  		\hline % create horizontal line
-  		No & Name & \multicolumn{3}{|c|}{Week 1} & \multicolumn{3}{|c|}{Week 2} \\
-  		\cline{3-8} % create line from 3rd column till 8th column
-  		& & A & B & C & A & B & C\\
-  		\hline
-  		1 & Lala & 1 & 2 & 3 & 4 & 5 & 6\\
-  		2 & Lili & 1 & 2 & 3 & 4 & 5 & 6\\
-  		3 & Lulu & 1 & 2 & 3 & 4 & 5 & 6\\
-  		\hline
-	\end{tabular}
-\end{table}
+\citet{gundersenStateArtReproducibility2018} remarks that methods reproducibility is what Drummond states by replicability, and the combination of both results and inferential reproducibility is what Drummond states by reproducibility.
+They also suggest three degrees of reproducibility, specific to the Artificial Intelligence (AI) field.
+While these are defined as specific in the AI field, it can be applied to computational science in general with a slight modification:
+\begin{itemize}
+	\item \textbf{R1: Experiment Reproducible}. The results of an experiment are experiment reproducible when the execution of the same implementation produces the same results when executed on the same data.
+	\item \textbf{R2: Data Reproducible}. The results of an experiment are data reproducible when an experiment is conducted that executes an alternative implementation that produces the same results when executed on the same data.
+	\item \textbf{R3: Method Reproducible}. The results of an experiment are method reproducible when the execution of an alternative implementation produces the same results when executed on different data.
+\end{itemize}
 
-\begin{table}
-	\centering
-	\caption{An Example of Columns Spanning Multiple Rows}
-	\label{column.spanning}
-	\begin{tabular}{|l|c|l|}
-		\hline
-		Percobaan & Iterasi & Waktu \\
-		\hline
-		Pertama & 1 & 0.1 sec \\ \hline
-		\multirow{2}{*}{Kedua} & 1 & 0.1 sec \\
- 		& 3 & 0.15 sec \\ 
- 		\hline
-		\multirow{3}{*}{Ketiga} & 1 & 0.09 sec \\
- 		& 2 & 0.16 sec \\
- 		& 3 & 0.21 sec \\ 
- 		\hline
-	\end{tabular}
-\end{table}
+In short, R1 is the highest degree of reproducibility.
+R3 only requires documented method of the experiment, while R2 additionally requires documented data used in the experiment, and finally R1 also requires documented experiment implementation.
 
-\begin{table}
-	\centering
-	\caption{An Example of Spanning in Both Directions Simultaneously}
-	\label{mix.spanning}
-	\begin{tabular}{cc|c|c|c|c|}
-		\cline{3-6}
-		& & \multicolumn{4}{|c|}{Title} \\ \cline{3-6}
-		& & A & B & C & D \\ \hline
-		\multicolumn{1}{|c|}{\multirow{2}{*}{Type}} &
-		\multicolumn{1}{|c|}{X} & 1 & 2 & 3 & 4\\ \cline{2-6}
-		\multicolumn{1}{|c|}{}                        &
-		\multicolumn{1}{|c|}{Y} & 0.5 & 1.0 & 1.5 & 2.0\\ \cline{1-6}
-		\multicolumn{1}{|c|}{\multirow{2}{*}{Resource}} &
-		\multicolumn{1}{|c|}{I} & 10 & 20 & 30 & 40\\ \cline{2-6}
-		\multicolumn{1}{|c|}{}                        &
-		\multicolumn{1}{|c|}{J} & 5 & 10 & 15 & 20\\ \cline{1-6}
-	\end{tabular}
-\end{table}
+They also reported that no papers are fully reproducible by any degree defined above.
+The degree of reproducibility of each paper (measured by the number of required variables documented) is only in the 24-26\% range.
+\citet{collbergRepeatabilityComputerSystems2016} results further support this issue.
+The degree of reproduciblity in computer science is only up to 54\% even after considerable effort in contacting the authors.
+They mention some of the reasons as licensing issues, no version tracking, the code is not ready for public, no backup, obsolete dependencies, and so on.
+
+\citet{beyerReliableBenchmarkingRequirements2019} defines benchmarking as a performance evaluation method that is used for comparing different tools of the same domain, evaluating and comparing different features or configurations of a tool, or finding out the performance of a tool under different inputs.
+This suggests that benchmarking is a good option for experiments where the design chosen is comparative or variance analysis.
+
+Simplified process of benchmarking maps closely to designing an experiment, except in computational science the perform and collection phase can (and should) be automated:
+\begin{enumerate}[noitemsep]
+	\item Planning
+	\item Performing benchmarks \& collecting results
+	\item Analysis
+	\item Conclusion (i.e. presentation)
+\end{enumerate}
 

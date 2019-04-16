@@ -6,33 +6,49 @@
    3. Methods?
    4. Research Scope
    5. Outline
-2. Requirements
-   1. ...
+
+2. Experimental work in algorithmics
+
+   1. Why experiments
+   2. Experiment methods
+   3. Requirements
+
 3. Existing works and why they don't fulfill the requirements
+
+   - groups & matrix
+
    1. benchmark-tool
    2. benchexec
-   3. compbench
-   4. optil?
-   5. starexec?
-   6. ...
-   7. various other non-benchmarking tool (computational experiment helper)
-4. Methods for limiting resource usage
+   3. benchkit
+   4. compbench
+   5. jube
+   6. optil?
+   7. starexec?
+   8. ...
+   9. various other non-benchmarking tool (computational experiment helper)
+
+4. Methods for measuring & limiting resource usage
    1. Runsolver (rlimit + linux specific /proc/stat polling and prctl subreaper)
    2. Runexec (cgroup + container)
    3. psmon (unix-compatible process stat polling)
-5. Packing tools dependencies
+
+5. Packing tools dependencies [?]
    1. Reprozip
    2. Docker
+
 6. Implementation of the new benchmarking tool
    1. Tool description
       1. Architecture
       2. System requirements
-   2. Benchmarking process
+   2. Benchmarking process w/ example
       1. Configuration
          - pcs files: http://aclib.net/SMAC/papers/10-TR-SMAC.pdf
       2. Orchestrating and executing runs
       3. Evaluating results
       4. Sharing benchmarks
    3. How it fulfills the requirements above
+   4. Takeaways
+      1. Performance overhead? latency etc.
+
 7. Conclusion & future works
 

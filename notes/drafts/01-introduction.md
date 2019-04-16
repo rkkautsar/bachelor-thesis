@@ -2,6 +2,9 @@
 
 ## Overview
 
+- many experiments are not reproducibile
+- many people are starting from scratch
+
 - about benchmarking
   - measurement
   - analysis
