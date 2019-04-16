@@ -103,4 +103,4 @@ should be about 4-6 pages?
      - Properly documented
      - Minimum effort to setup
      - Accurate and reliable measures
-     - Easy to share
+     - Reproducible
