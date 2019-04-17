@@ -104,3 +104,4 @@ should be about 4-6 pages?
      - Minimum effort to setup
      - Accurate and reliable measures
      - Reproducible
+     - Parallel runs?
