@@ -27,16 +27,7 @@
    8. ...
    9. various other non-benchmarking tool (computational experiment helper)
 
-4. Methods for measuring & limiting resource usage
-   1. Runsolver (rlimit + linux specific /proc/stat polling and prctl subreaper)
-   2. Runexec (cgroup + container)
-   3. psmon (unix-compatible process stat polling)
-
-5. Packing tools dependencies [?]
-   1. Reprozip
-   2. Docker
-
-6. Implementation of the new benchmarking tool
+4. Implementation of the new benchmarking tool
    1. Tool description
       1. Architecture
       2. System requirements
@@ -49,6 +40,17 @@
    3. How it fulfills the requirements above
    4. Takeaways
       1. Performance overhead? latency etc.
+
+5. Measuring & limiting resource usage
+
+   1. Runsolver (rlimit + linux specific /proc/stat polling and prctl subreaper)
+   2. Runexec (cgroup + container)
+   3. psmon (unix-compatible process stat polling)
+
+6. Packing tools dependencies [?]
+
+   1. Reprozip
+   2. Docker
 
 7. Conclusion & future works
 
