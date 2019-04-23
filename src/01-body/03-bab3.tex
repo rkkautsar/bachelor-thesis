@@ -8,8 +8,7 @@ Repellendus officiis cumque incidunt vel placeat tempora totam. Provident impedi
 
 There are six benchmarking tool that \first~evaluate.
 This is by no means an exhaustive collection but it should represent the current state of existing benchmarking tools.
-Two of them, \textsc{Optil.io} and \textsc{StarExec}, took a web-based approach, where the user submit the configuration and the run happened in the host system.
-\textsc{Optil.io} is a bit different since it specializes in competition-style benchmarking.
+\textsc{StarExec} particularly took a web-based approach, where the user submit the configuration and the run happened in the host system.
 The rest of them, \textsc{benchmark-tool}, \textsc{BenchExec}, \textsc{BenchKit}, and \textsc{JuBE}, approaches benchmarking as task to be run in the local machine or submitted to a cluster system.
 
 
@@ -130,7 +129,7 @@ Furthermore, as an overall measure, \first~also denote $M_\sigma$ as the overall
 		\midrule
 		\textsc{benchmark-tool} & .60 & .80 & .20 & .50 & .17 & .40 & .43 \\
 		\textsc{BenchExec} & .40 & .60 & .60 & .50 & 1.00 & .80 & .66 \\
-		\textsc{Benchkit} & .20 & .40 & .00 & .25 & .50 & .40 & .30 \\
+		\textsc{Benchkit} & .40 & .40 & .60 & .25 & .50 & .40 & .43 \\
 		\textsc{JuBE} & .60 & 1.00 & 1.00 & 1.00 & & .40 & .79 \\
 		\textsc{Optil.io} & .40 & .80 & .60 & 1.00 & & .40 & .62 \\
 		\textsc{StarExec} & .60 & .60 & .80 & 1.00 & 1.00 & 1.00 & .83 \\
@@ -151,7 +150,7 @@ Further description and evaluation of each benchmarking tools is given below.
 It has been forked and used by some researchers in the computational logic field, such as its use in Technicsche Universität Dresden and Technicsche Universität Wien.
 
 The general workflow is like this:
-(a) create a \code{runscript}, defining the benchmark run configuration;
+(a) create a \textit{runscript}, defining the benchmark run configuration;
 (b) generate the file necessary for the benchmark by running the \code{bgen} script;
 (c) run the benchmark by running the script generated in the output dir;
 (d) evaluate the benchmark by running the \code{beval} script, outputting an xml file;
@@ -181,7 +180,7 @@ This is because to create the ideal tool, we need significant architecture overh
 
 \textsc{BenchExec} \citep{philipp_wendler_2019_2561835} is developed by the Software and Computational Systems Lab of Ludwig-Maximilians-Universität München (LMU Munich)\footnote{\href{https://www.sosy-lab.org/}{https://www.sosy-lab.org/}} with the main goal of reliable measurement and limitation of resource usage.
 It has been used successfully and proven its reliability and usefulness in the International Competition on Software Verification (SV-COMP) \citep{beyerReliableBenchmarkingRequirements2019}.
-It is licensed under the Apache License 2.0.
+It is actively developed with the last release in 11th of February 2019 and licensed under the Apache License 2.0.
 
 To achieve accuracy and reliability, they developed a new resource usage measurement and limiting tool, \textsc{RunExec}.
 This tool uses linux-specific features, Linux Control Groups (CGroup) and Linux Containers optionally.
@@ -192,7 +191,7 @@ Setting up CGroups in particular requires superuser access which often is not di
 The general workflow for benchmarking with this tool is as follows:
 (a) defining an xml configuration file for the benchmark;
 (b) defining a tasks set to be run (optionally in a yaml definition);
-(c) reusing or defining a new tool-info module for the tool to benchmark;
+(c) reusing or defining a new \textit{tool-info module} for the tool to benchmark;
 (d) running the \code{benchexec} program with the xml configuration;
 (e) generating interactive table and plots with the \code{table-generator} program.
 
@@ -201,8 +200,8 @@ There is no tutorial or guides for getting started on benchmarking, instead the 
 This makes following the documentation a bit difficult because the information is scattered across files.
 
 The modular structure of this framework makes it extensible.
-Tools are defined in self-contained tool-info module and can be reused.
-They encourage user to submit a pull request for their tool-info module to the main repository so other user can reuse it, albeit this does not mean that the tool itself has to be made available to achieve $\bm{R_1}$.
+Tools are defined in self-contained \textit{tool-info modules} and can be reused.
+They encourage user to submit a pull request for their \textit{tool-info modules} to the main repository so other user can reuse it, albeit this does not mean that the tool itself is made available to achieve $\bm{R_1}$.
 There is also an executor module that can be written to enable running the benchmark in arbitrary execution environment, such as in cluster system.
 
 \begin{listing}
@@ -215,15 +214,35 @@ There is also an executor module that can be written to enable running the bench
 	\label{lst:benchexec.property}
 \end{listing}
 
-The downside of this framework is the evaluation is tightly coupled to the convention used in SV-COMP. They use a property file like the one listed in Listing \ref{lst:benchexec.property}, specific to the competition. Combined with the lack of documentation, this makes it impossible, for now, to evaluate a benchmark outside the scope of software verification with \textsc{BenchExec}.
+The downside of this framework is the evaluation is tightly coupled to the convention used in SV-COMP.
+They use a property file like the one listed in Listing \ref{lst:benchexec.property}, specific to the competition.
+Combined with the lack of documentation, this makes it impossible, for now, to evaluate and analyze a benchmark outside the scope of software verification with \textsc{BenchExec}.
 
 
 \subsection{\textsc{Benchkit}}
 
-\textsc{Benchkit} is made
+\textsc{Benchkit} \citep{benchkit:2013} is a benchmarking tool actively used in the Model Checking Contest (MCC)\footnote{\href{https://mcc.lip6.fr/}{https://mcc.lip6.fr/}}.
+The competition participants submit a virtual machine consisting of the (minimal) operating system (OS) to run the program, dependencies, and a small \textsc{BenchKit} head to interface with the \textsc{BenchKit} kernel.
+
+The documentation for this tool\footnote{\href{http://cosyverif.org/wp-content/benchmarks/BenchKit.pdf}{http://cosyverif.org/wp-content/benchmarks/BenchKit.pdf}} has not been updated since version $\beta1$, released in February, 2013.
+This documentation is plentiful and guides the user through the general workflow, but the workflow itself is confusing to follow.
+
+This tool allows the user to run the benchmark across remote nodes, which in turn execute the run inside multiple virtual machines\footnote{This is not yet the case in the $\beta1$ version of the software described in the documentation}.
+The result is then compiled manually or sent automatically through e-mails from the remote nodes and then manually analyzed from the generated csv files.
+It also forces certain requirements before running the benchmarks, such as the need for a specific folder structure, and the deployment of virtual machine images to the remote nodes in advance.
+
+It uses \textsc{SysStat}\footnote{\href{https://github.com/sysstat/sysstat}{https://github.com/sysstat/sysstat}}, which measures the whole virtual machine resource usage.
+This means that the resource usage measured also includes the OS.
+Accordingly, \cite{beyerReliableBenchmarkingRequirements2019} assess this measurement tool as not accurate nor reliable.
+
+\citet{kordonBenchKitToolMassive2014} reported a boot-up overhead of 40 seconds per run in their experiment.
+\cite{beyerReliableBenchmarkingRequirements2019} remarks that this 40 seconds overhead would have taken an additional 190 CPU days if used in their competition, definitely a prohibitive overhead.
+
 
 \subsection{\textsc{JuBE}}
 
-\subsection{\textsc{Optil.io}}
+\textsc{JuBE} \citep{frings2010flexible} is a benchmarking environment developed by Jülich Supercomputing Centre (JSC) of Forschungszentrum Jülich.
+It is actively developed, although with no public version control repository, with the last release in 4th of February 2019.
+It is licensed under the GNU General Public License version 3.
 
 \subsection{\textsc{StarExec}}
