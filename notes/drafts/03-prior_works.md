@@ -19,6 +19,7 @@
   - Configurability
     - Multiple runs
     - Multiple tool configurations
+    - Parameter space
     - Benchmark instance selection
     - Set resource limit
   - Documentation

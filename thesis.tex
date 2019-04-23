@@ -1,17 +1,17 @@
 %
-% Template Laporan Skripsi/Thesis 
+% Template Laporan Skripsi/Thesis
 %
-% @author  Andreas Febrian, Lia Sadita 
+% @author  Andreas Febrian, Lia Sadita
 % @version 1.03
 %
-% Dokumen ini dibuat berdasarkan standar IEEE dalam membuat class untuk 
-% LaTeX dan konfigurasi LaTeX yang digunakan Fahrurrozi Rahman ketika 
-% membuat laporan skripsi. Konfigurasi yang lama telah disesuaikan dengan 
+% Dokumen ini dibuat berdasarkan standar IEEE dalam membuat class untuk
+% LaTeX dan konfigurasi LaTeX yang digunakan Fahrurrozi Rahman ketika
+% membuat laporan skripsi. Konfigurasi yang lama telah disesuaikan dengan
 % aturan penulisan thesis yang dikeluarkan UI pada tahun 2008.
 %
 
 %
-% Tipe dokumen adalah report dengan satu kolom. 
+% Tipe dokumen adalah report dengan satu kolom.
 %
 \documentclass[12pt, a4paper, onecolumn, oneside, final]{report}
 
@@ -21,8 +21,13 @@
 \usepackage{bm}
 \usepackage{multirow}
 \usepackage{longtable}
-\usepackage{booktabs}
+\usepackage{booktabs,array,dcolumn}
 \usepackage{threeparttablex}
+\usepackage[natbibapa]{apacite}
+\usepackage{doi}
+
+\newcolumntype{d}{D{.}{.}{2.3}}
+\newcolumntype{C}{>{\centering}p}
 
 \newcommand{\footlabel}[2]{%
     \addtocounter{footnote}{1}%
@@ -41,7 +46,7 @@
 
 % Load konfigurasi khusus untuk laporan yang sedang dibuat
 \input{settings}
-% Daftar istilah yang mungkin perlu ditandai 
+% Daftar istilah yang mungkin perlu ditandai
 \input{istilah}
 
 % Awal bagian penulisan laporan
@@ -68,7 +73,7 @@
 \addChapter{APPROVAL PAGE}
 \input{src/00-front_matter/01-persetujuan}
 %
-% load halaman orisinalitas 
+% load halaman orisinalitas
 \addChapter{STATEMENT OF ORIGINALITY}
 \input{src/00-front_matter/02-orisinalitas}
 %
@@ -85,7 +90,7 @@
 \addChapter{STATEMENT OF CONSENT OF ACADEMIC PUBLICATION}
 \input{src/00-front_matter/05-persetujuan_publikasi}
 %
-% 
+%
 \addChapter{ABSTRACT}
 \input{src/00-front_matter/06-abstract}
 %
@@ -129,11 +134,11 @@
 %\input{pustaka}
 
 % Alternatif manajemen daftar pustaka dengan \bibliography
-\bibliographystyle{apalike}
+\bibliographystyle{apacite}
 \bibliography{pustaka}
 
 %
-% Lampiran 
+% Lampiran
 %
 % \begin{appendix}
 % 	\input{_internals/markLampiran}

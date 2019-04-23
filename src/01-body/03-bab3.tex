@@ -1,21 +1,22 @@
 \chapter{\babTiga}
 \label{ch:priorWorks}
 
-% intro
+Repellendus officiis cumque incidunt vel placeat tempora totam. Provident impedit sint qui facilis omnis. Doloremque autem nam consequatur hic repellat aut reiciendis. Perferendis nisi quisquam est quas nulla.
+
 
 \section{Overview}
 
 There are six benchmarking tool that \first~evaluate.
 This is by no means an exhaustive collection but it should represent the current state of existing benchmarking tools.
-Two of them---\textsc{Optil.io} and \textsc{StarExec}---took a web-based approach, where the user submit the configuration and the run happened in the host system.
+Two of them, \textsc{Optil.io} and \textsc{StarExec}, took a web-based approach, where the user submit the configuration and the run happened in the host system.
 \textsc{Optil.io} is a bit different since it specializes in competition-style benchmarking.
-The rest of them---\textsc{benchmark-tool}, \textsc{BenchExec}, \textsc{BenchKit}, and \textsc{JuBE}---approaches benchmarking as task to be run in the local machine or submitted to a cluster system.
+The rest of them, \textsc{benchmark-tool}, \textsc{BenchExec}, \textsc{BenchKit}, and \textsc{JuBE}, approaches benchmarking as task to be run in the local machine or submitted to a cluster system.
 
 
 \section{Evaluation method}
 
-The requirements from \hyperref[sec:idealBenchmarkingTool]{Section 2.3} are broken down to a few key factors.
-These key factors, stated as questions, are used to measure how much of the requirements are fulfilled.
+The requirements from Section \ref{sec:idealBenchmarkingTool} are broken down to a few key factors.
+These key factors are used to measure how much of the requirements are fulfilled.
 
 \newcounter{reqCount}
 \newcounter{reqFactorCount}[reqCount]
@@ -96,7 +97,6 @@ These key factors, stated as questions, are used to measure how much of the requ
 			& \reqFactor{Sharable configuration} \\*
 			& \reqFactor{Encourage sharable data\tnote{$\alpha$}} \\*
 			& \reqFactor{Encourage sharable implementation\tnote{$\alpha$}} \\*
-		\bottomrule
 	\end{longtable}
 \end{ThreePartTable}
 
@@ -112,19 +112,118 @@ That is, if $M_i$ is the scored degree of fulfillment of the $i$-th requirement,
 		0 & \text{otherwise}
 	\end{cases}
 \]
-then
+then the degree of fulfillment is the average of $\mu_i$:
 \[
 	M_i = \frac{\sum\mu_{i}}{|\mu_i|}
 \]
 
-Furthermore, as an overall measure, \first~also denote $M$ as the weighted sum of all $M_i$:
-\[
-	M = \sum{\frac{M_i |\mu_i|}{|\mu_i|}}
-\]
+Furthermore, as an overall measure, \first~also denote $M_\sigma$ as the overall overage of all $\mu_{i}$ regardless of its requirement category.
+
+
+\begin{ThreePartTable}
+	\begin{TableNotes}
+		\footnotesize
+		\item[*] Values are emptied if it's not applicable. The complete evaluation is given in the appendix.
+	\end{TableNotes}
+	\begin{longtable}{lddddddd}
+		& \multicolumn{1}{c}{$M_1$} & \multicolumn{1}{c}{$M_2$} & \multicolumn{1}{c}{$M_3$} & \multicolumn{1}{c}{$M_4$} & \multicolumn{1}{c}{$M_5$} & \multicolumn{1}{c}{$M_6$} & \multicolumn{1}{c}{$M_\sigma$}\\
+		\midrule
+		\textsc{benchmark-tool} & .60 & .80 & .20 & .50 & .17 & .40 & .43 \\
+		\textsc{BenchExec} & .40 & .60 & .60 & .50 & 1.00 & .80 & .66 \\
+		\textsc{Benchkit} & .20 & .40 & .00 & .25 & .50 & .40 & .30 \\
+		\textsc{JuBE} & .60 & 1.00 & 1.00 & 1.00 & & .40 & .79 \\
+		\textsc{Optil.io} & .40 & .80 & .60 & 1.00 & & .40 & .62 \\
+		\textsc{StarExec} & .60 & .60 & .80 & 1.00 & 1.00 & 1.00 & .83 \\
+		\bottomrule
+		\insertTableNotes\\
+		\caption{Requirements score for various existing benchmarking tools}
+		\label{tab:reqscoresummary}
+	\end{longtable}
+\end{ThreePartTable}
+
+Table \ref{tab:reqscoresummary} shows that none of the considered benchmarking tools fulfilled the requirements given.
+The closest is \textsc{StarExec}, it even arguably achieves $\bm{R_1}$ by default.
+But most of the features available in \textsc{StarExec}, such as managing post-processors and plots, are restricted to the community leaders, while the normal user is forced to use what was available in the community space.
+Further description and evaluation of each benchmarking tools is given below.
 
 \subsection{\textsc{benchmark-tool}}
+\textsc{benchmark-tool}\footnote{\href{https://github.com/potassco/benchmark-tool}{https://github.com/potassco/benchmark-tool}} is originally a part of Potassco\footnote{\href{https://potassco.org/}{https://potassco.org/}}, the Postdam Answer Set Solving Collection, developed at the University of Potsdam.
+It has been forked and used by some researchers in the computational logic field, such as its use in Technicsche Universität Dresden and Technicsche Universität Wien.
+
+The general workflow is like this:
+(a) create a \code{runscript}, defining the benchmark run configuration;
+(b) generate the file necessary for the benchmark by running the \code{bgen} script;
+(c) run the benchmark by running the script generated in the output dir;
+(d) evaluate the benchmark by running the \code{beval} script, outputting an xml file;
+(e) generate a csv or OpenOffice spreadsheet from the evaluated result by running the \code{bconv} script.
+
+This benchmarking tool is not designed to be reusable.
+Instead, the user has to clone the source code, then add their benchmarking config on top of the cloned code.
+This makes it possible to achieve some degree of extensibility.
+For example, it can be extended to submit the benchmarking job to any cluster job scheduler, like Slurm or HTCondor by writing a specific script generation used in the step (b).
+On the other hand, this also makes it hard to share the configuration without actually sharing the whole cloned source code.
+Some user even uses a centralized git repository and manages different benchmarks with git branches.
+
+This tool is also lacking in documentation and accuracy.
+The only documentation available is minimal and not has not been updated since 9 years ago.
+Additionally, it uses \textsc{runsolver} to measure and limit the resources.
+According to \citet{beyerReliableBenchmarkingRequirements2019}, \textsc{runsolver} is not accurate and reliable.
+
+% Also remarks that setup-ing the benchmark is a shitty process:
+% undocumented python2/3, requirements,
+% setting up "programs"
+% setting up (copy-paste-ing) resultparser, etc.
+
+\First~tried to refactor this tool to some degree\footnote{\href{https://github.com/daajoe/benchmark-tool/tree/refactor}{https://github.com/daajoe/benchmark-tool/tree/refactor}}, but decided to create a new tool instead in the middle of refactoring.
+This is because to create the ideal tool, we need significant architecture overhaul and decided it's better to start anew.
+
 \subsection{\textsc{BenchExec}}
+
+\textsc{BenchExec} \citep{philipp_wendler_2019_2561835} is developed by the Software and Computational Systems Lab of Ludwig-Maximilians-Universität München (LMU Munich)\footnote{\href{https://www.sosy-lab.org/}{https://www.sosy-lab.org/}} with the main goal of reliable measurement and limitation of resource usage.
+It has been used successfully and proven its reliability and usefulness in the International Competition on Software Verification (SV-COMP) \citep{beyerReliableBenchmarkingRequirements2019}.
+It is licensed under the Apache License 2.0.
+
+To achieve accuracy and reliability, they developed a new resource usage measurement and limiting tool, \textsc{RunExec}.
+This tool uses linux-specific features, Linux Control Groups (CGroup) and Linux Containers optionally.
+This allows the tool to contain the underlying process and its descendants reliably to then measure their accumulated resource usage accurately.
+But in turn this also makes the installation a bit difficult and requires a minimum requirement for the kernel (full support for these features is available in Linux kernel 3.18 onwards).
+Setting up CGroups in particular requires superuser access which often is not directly available in shared cluster systems.
+
+The general workflow for benchmarking with this tool is as follows:
+(a) defining an xml configuration file for the benchmark;
+(b) defining a tasks set to be run (optionally in a yaml definition);
+(c) reusing or defining a new tool-info module for the tool to benchmark;
+(d) running the \code{benchexec} program with the xml configuration;
+(e) generating interactive table and plots with the \code{table-generator} program.
+
+The documentation for this benchmarking framework, although somewhat sufficient, is not comprehensive and feels incomplete.
+There is no tutorial or guides for getting started on benchmarking, instead the documentation revolves around the usage of each tools.
+This makes following the documentation a bit difficult because the information is scattered across files.
+
+The modular structure of this framework makes it extensible.
+Tools are defined in self-contained tool-info module and can be reused.
+They encourage user to submit a pull request for their tool-info module to the main repository so other user can reuse it, albeit this does not mean that the tool itself has to be made available to achieve $\bm{R_1}$.
+There is also an executor module that can be written to enable running the benchmark in arbitrary execution environment, such as in cluster system.
+
+\begin{listing}
+	\begin{minted}{text}
+		CHECK( init(main()), LTL(G valid-free) )
+		CHECK( init(main()), LTL(G valid-deref) )
+		CHECK( init(main()), LTL(G valid-memtrack) )
+	\end{minted}
+	\caption{An example property definition for \textsc{BenchExec}}
+	\label{lst:benchexec.property}
+\end{listing}
+
+The downside of this framework is the evaluation is tightly coupled to the convention used in SV-COMP. They use a property file like the one listed in Listing \ref{lst:benchexec.property}, specific to the competition. Combined with the lack of documentation, this makes it impossible, for now, to evaluate a benchmark outside the scope of software verification with \textsc{BenchExec}.
+
+
 \subsection{\textsc{Benchkit}}
+
+\textsc{Benchkit} is made
+
 \subsection{\textsc{JuBE}}
+
 \subsection{\textsc{Optil.io}}
+
 \subsection{\textsc{StarExec}}
