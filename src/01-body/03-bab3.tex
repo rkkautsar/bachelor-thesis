@@ -1,18 +1,23 @@
 \chapter{\babTiga}
 \label{ch:priorWorks}
 
-Repellendus officiis cumque incidunt vel placeat tempora totam. Provident impedit sint qui facilis omnis. Doloremque autem nam consequatur hic repellat aut reiciendis. Perferendis nisi quisquam est quas nulla.
+This chapter discusses and evaluates the existing benchmarking tools with a set of defined key factors, derived from the requirements.
+Section \ref{sec:prior_works.overview} gives an overview of the benchmarking tool considered to be evaluated.
+Then in Section \ref{sec:prior_works.method} \first~define the key factors used to evaluate each tools.
+Finally, Section \ref{sec:prior_works.evaluation} presents the summary and details of the evaluation of each benchmarking tools.
 
 
 \section{Overview}
+\label{sec:prior_works.overview}
 
-There are five benchmarking tool that \first~evaluate.
+There are five benchmarking tool that \first~selected for evaluation.
 This is by no means an exhaustive collection but it should represent the current state of existing benchmarking tools.
 \textsc{StarExec} particularly took a web-based approach, where the user submit the configuration and the run happened in the host system.
 The rest of them, \textsc{benchmark-tool}, \textsc{BenchExec}, \textsc{BenchKit}, and \textsc{JuBE}, approaches benchmarking as task to be run in the local machine or submitted to a cluster system.
 
 
 \section{Evaluation method}
+\label{sec:prior_works.method}
 
 The requirements from Section \ref{sec:idealBenchmarkingTool} are broken down to a few key factors.
 These key factors are used to measure how much of the requirements are fulfilled.
@@ -99,9 +104,6 @@ These key factors are used to measure how much of the requirements are fulfilled
 	\end{longtable}
 \end{ThreePartTable}
 
-
-\section{Evaluation}
-
 Each of the evaluated tools are scored according to the degree of fulfillment for each requirements.
 That is, if $M_i$ is the scored degree of fulfillment of the $i$-th requirement, and $\mu_{i}$ is a vector of size $n$ such that
 \[
@@ -118,6 +120,9 @@ then the degree of fulfillment is the average of $\mu_i$:
 
 Furthermore, as an overall measure, \first~also denote $M_\sigma$ as the overall overage of all $\mu_{i}$ regardless of its requirement category.
 
+
+\section{Evaluation}
+\label{sec:prior_works.evaluation}
 
 \begin{ThreePartTable}
 	\begin{TableNotes}
@@ -143,9 +148,8 @@ Furthermore, as an overall measure, \first~also denote $M_\sigma$ as the overall
 Table \ref{tab:reqscoresummary} shows that none of the considered benchmarking tools fulfilled the requirements given.
 The closest is \textsc{StarExec} and \textsc{JuBE}.
 \textsc{StarExec} can even---arguably---achieves $\bm{R_1}$ by default.
-
 But most of the features available in \textsc{StarExec}, such as managing post-processors and plots, are restricted to the community leaders.
-The normal user is forced to use what was available in the community space.
+The normal user is forced to use what was already available in the community space.
 On the other hand, \textsc{JuBE} is too generic and provides little support for reproducibility.
 
 Further descriptions and evaluations of each benchmarking tools are given below.
@@ -232,7 +236,7 @@ The competition participants submit a virtual machine consisting of the (minimal
 The documentation for this tool\footnote{\href{http://cosyverif.org/wp-content/benchmarks/BenchKit.pdf}{http://cosyverif.org/wp-content/benchmarks/BenchKit.pdf}} has not been updated since version $\beta1$, released in February, 2013.
 This documentation is plentiful and guides the user through the general workflow, but the workflow itself is confusing to follow.
 
-This tool allows the user to run the benchmark across remote nodes, which in turn execute the run inside multiple virtual machines\footnote{This is not yet the case in the $\beta1$ version of the software described in the documentation}.
+This tool allows the user to run the benchmark across remote nodes, which in turn execute the run inside multiple virtual machines (this is not yet the case in the $\beta1$ version of the software described in the documentation).
 The result is then compiled manually or sent automatically through e-mails from the remote nodes and then manually analyzed from the generated CSV files.
 It also forces certain requirements before running the benchmarks, such as the need for a specific folder structure, and the deployment of virtual machine images to the remote nodes in advance.
 
@@ -276,3 +280,30 @@ It is up to the user how to make their benchmarking reproducible since shell com
 
 \subsection{\textsc{StarExec}}
 
+\textsc{StarExec} is a web-based service for evaluating logic solvers on user-supplied benchmarks input \citep{stumpStarExecCrossCommunityInfrastructure2014}.
+It is officially hosted at \href{https://www.starexec.org/}{\code{https://www.starexec.org/}}.
+The source code is publicly available\footnote{\href{https://github.com/StarExec/StarExec}{https://github.com/StarExec/StarExec}} and is actively developed under the MIT license.
+\First~will consider the hosted version of this tool for the evaluation.
+
+The service is built around the ideas of \emph{spaces} and \emph{primitives}.
+A space is a collection of solvers, benchmarks, jobs, and users, collectively defined as \emph{primitives}.
+Spaces have a hierarchical structure.
+The topmost spaces are called the \emph{community spaces}, while the descendants are called \emph{subspaces} \citep{stumpStarExecCrossCommunityInfrastructure2014}.
+
+The documentation for this service is by no mean complete, but it is detailed enough for a normal user.
+Measurement and limitation of resource usage currently can be handled by either \textsc{runsolver} or \textsc{RunExec} from \textsc{BenchExec}.
+There is also an active effort to apply containerization feature of \textsc{RunExec}.
+
+To register, a user has to apply to be approved---or in other words, endorsed---by a community leader, the person managing a community space.
+Then after accepted, the user can log in and view the public spaces in their community or create new subspaces.
+Users can submit their own solvers and benchmarks to a space, which can also be copied across spaces.
+A benchmarking job can then be submitted with the existing solver configurations, benchmarks, and predetermined post-processors.
+These community-specific post-processors can only be configured by a community leader.
+
+The service encourage shared solvers and benchmarks in the community to reduce duplication of effort.
+This also helps the community practice $\bm{R_1}$ reproducibility.
+Other users can re-run another user's job to confirm the results in a fully reproducible way since the execution environment is the same.
+
+The limitation that only the community leaders can approve members and configure things like pre- and post-processors is limiting the capability of this service.
+Sure, for a specific community the measured metrics is more or less the same, but this also prevent other metrics to be evaluated freely.
+This decision might be necessary to prevent abuse as this involves sharing a large computing power.
