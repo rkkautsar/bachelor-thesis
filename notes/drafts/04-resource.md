@@ -42,15 +42,34 @@
 
 ### Approaches
 
-- Juve et al describes 3 approaches of resource monitoring:
+- Juve et al describes 3 approaches for resource monitoring:
+
 - query
-  - least intrusive
-  - not accurate
-  - immediately expire
+
+  - least intrusive, not accurate, immediately expire
+  - procfs
+  - stat
+  - getrusage
+  - psutil: abstraction for various query
+  - gpu
+
 - notifications
-  - more reliable than query
-  - immediately expire
+
+  - more reliable than query, immediately expire
+  - wait4: getrusage
+  - inotify
+  - ptrace: process creation and exit
+  - taskstats
+
 - interposition
-  - most intrusive
-  - most accurate
+
+  - most intrusive, most accurate
+
+  - ptrace syscall: strace dtrace
+
+  - seccomp/BPF + ptrace: less overhead (Kim and Zeldovich)
+
+  - this might be considered if the process measured do most of the computation in the user space compared to syscalls.
+
+    
 

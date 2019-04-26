@@ -58,8 +58,8 @@
 
 1. Introduction
 2. Experimentation & Benchmarking
-3. Existing Works
-4. Resource monitoring
+3. Resource monitoring
+4. Existing Benchmarking Tools
 5. Implementation
 6. Evaluation
 7. Conclusion & Future works
