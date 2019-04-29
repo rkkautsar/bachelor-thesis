@@ -66,13 +66,25 @@
 
   - most intrusive, most accurate
 
+  - LD_PRELOAD
+
   - ptrace syscall: strace dtrace
 
   - seccomp/BPF + ptrace: less overhead (Kim and Zeldovich)
 
-  - LD_PRELOAD
-
   - this might be considered if the process measured do most of the computation in the user space compared to syscalls.
+
+  - on a side note, this can be used to achieve some degree of security.
+
+    
+
+    ### Reliability
+
+    - virtualization
+    - containerization
+      - chroot: not safe, can *break the chroot jail*
+      - docker: need superuser, although there's an ongoing effort to create a rootless container
+      - linux container: user-space, a bit limited but can be sufficient
 
     
 
