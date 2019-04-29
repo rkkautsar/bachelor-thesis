@@ -58,6 +58,7 @@
   - more reliable than query, immediately expire
   - wait4: getrusage
   - inotify
+  - forkstat
   - ptrace: process creation and exit
   - taskstats
 
@@ -68,6 +69,8 @@
   - ptrace syscall: strace dtrace
 
   - seccomp/BPF + ptrace: less overhead (Kim and Zeldovich)
+
+  - LD_PRELOAD
 
   - this might be considered if the process measured do most of the computation in the user space compared to syscalls.
 

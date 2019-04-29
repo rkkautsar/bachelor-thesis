@@ -1,16 +1,6 @@
 \chapter{\babEmpat}
 
 \section{Overview}
-% - Measuring resource is often the entire point of benchmarking.
-%   - Beyer et al. even designed almost the whole accurate and reliable benchmarking method around its measurement and limiting method (runexec).
-% - Objective measurement gives birth to objective comparison.
-% - And resource consumption is one obvious measurement for computational tasks.
-% - These can include processes, threads, computation, memory, input/output, and files information. (Juve et al, 2015)
-% - It is often also necessary to limit the resource consumption to some reasonable unit.
-%   - Selecting data
-%   - Job scheduling submission
-%   - Competition
-%   - Iterative optimization algorithm
 
 To objectively compare two or more programs, an objective measurement is needed.
 Resource consumption like CPU time elapsed, CPU instruction used, or peak memory usage is often considered as the go-to measurement for benchmarking in computational science.
@@ -25,17 +15,75 @@ selecting dataset for a competition,
 and getting best-enough result from an iterative optimization algorithm after some desired time.
 Because of this wide area of usage, there are many attempts to implement these measurement to achieve the best result.
 
+\section{Monitoring Mechanism}
 
-\section{Approaches}
-
-\citet{juvePracticalResourceMonitoring2015} distinguish resource monitoring to three different approaches:
+\citet{juvePracticalResourceMonitoring2015} distinguish resource monitoring into three different mechanism.
+There are tradeoffs between these mechanisms and so it's often preferred to use a combination of more than one mechanism to achieve better results.
 
 \subsection{Query}
+
+The query approach works by querying resource usage information directly from the operating system.
+To monitor the resource usage over time, this means the query is executed at some interval, effectively doing a polling mechanism.
+More frequent polling will result in a more timely information but the overhead also increases.
+Querying is often the easiest resource monitoring mechanism in term of implementation \citep{juvePracticalResourceMonitoring2015}.
+
+It is the least intrusive mechanism, albeit the information received from this mechanism also immediately expires.
+A resource usage surge could happen in between the queries, so this mechanism is not accurate.
+In short, the query mechanism provides an easy to implement but inaccurate measurement of the resource monitored.
+
+\code{getrusage()}\footnote{see \href{https://linux.die.net/man/2/getrusage}{\code{man getrusage}}} is a POSIX standard system call.
+Unfortunately, this standard only specifies \code{ru\_utime} and \code{ru\_stime}, the user mode time spent and kernel mode time spent, respectively.
+In practice, \code{getrusage()} includes more information, for example the \code{ru\_maxrss}, indicating the maximum resident set size.
+
+A Linux specific feature that is often used for querying resource usage is the procfs\footnote{see \href{https://linux.die.net/man/5/proc}{\code{man 5 proc}}} pseudo-file system.
+The information provided includes user time, system time, resident set size, number of threads, and many more.
+On a side note, since the operating system always account these informations for all running processes, the clock resolution used is not too accurate.
+The user time and system time in \code{/proc/[pid]/stat} is measured in system ticks, which turns out to be 10 milliseconds in a typical Linux system.
+
+A more universal query mechanism is using performance counters.
+Most system nowadays---disregarding its operating system---has a hardware clock that has an incredibly accurate clock resolution, some even achieving nanoseconds resolution.
+Querying this clock at the start and end of a program could measure what is called the wall clock time.
+This measurement is less informative than CPU times measured by user time and system time, but still useful in spite of that.
+
+The library \code{psutil}\footnote{\href{https://github.com/giampaolo/psutil}{https://github.com/giampaolo/psutil}} provides an abstraction for various resource queries that works in many operating systems.
+This allows a cross-platform resource monitoring tool based on query mechanism to be developed.
+As of now however, \first~can't find the relevant resource monitoring tool making use of this abstraction.
+
+It is also need to be noted that this query mechanism cannot work with process tree reliably.
+Because of the nature of polling, short living processes can be missed and not accounted to the final result.
+This is a strong restriction because most of the computation in HTC or computational science in general often make use of parallelism or concurrency.
+
+
 \subsection{Notification}
+
+A more reliable mechanism to query a resource usage is to ask the system itself to report the usage on specific events.
+This also produces less overhead compared to the query mechanism, although the information queried also immediately expires \citep{juvePracticalResourceMonitoring2015}.
+
+\code{wait4()}\footnote{see \href{https://linux.die.net/man/2/wait4}{\code{man wait4}}} is a system call available in most UNIX that waits for a child process (and blocks the process calling this system call), then returns its \code{getrusage()} information when the process exits.
+This one example of the notification mechanism in practice.
+
+Another example is the \code{inotify}\footnote{see \href{https://linux.die.net/man/7/inotify}{\code{man inotify}}} application programming interface (API) in Linux.
+This API allows one to listen for file system events, such as new file or directory created, existing files edited, a file is accessed, or a file is deleted.
+Most operating system also have APIs similar to this, such as \code{fsevents} in OS X. Watchman\footnote{\href{https://facebook.github.io/watchman/}{https://facebook.github.io/watchman/}} is an open source tool by Facebook that abstracts these file system notification APIs.
+
+Another useful notification is \code{forkstat}\footnote{\href{http://manpages.ubuntu.com/manpages/cosmic/en/man8/forkstat.8.html}{http://manpages.ubuntu.com/manpages/cosmic/en/man8/forkstat.8.html}}.
+This tool notify system-wide \code{fork()}, \code{exec()}, and \code{exit()} system call activities.
+Unfortunately, this tool needs superuser privilege because uses Linux netlink connector, a special socket for communication between kernel and user space.
+
+A more powerful albeit intrusive notification can be achieved by using the UNIX \code{ptrace()}\footnote{see \href{https://linux.die.net/man/2/ptrace}{\code{man ptrace}}} system call.
+\code{ptrace()}, often use for debugging, allows a process to intercept and modify system calls.
+When a system call occurs, the kernel will check if the process is being traced, and if so, will notify the tracer.
+With this system call one can observe, for example, the \code{fork()}, \code{exec()}, and \code{exit()} system call to track process trees.
+
+Combining this notifications with the earlier query mechanism can result in a more powerful resource monitoring method.
+For example, one can watch for filesystem events on a specific part of the filesystem, such as the \code{/tmp}, \code{/var}, or a specific work directory of the running application. Then when an event occurs, a procfs query is executed to catch the short-living process causing the event is executed.
+This effectively allows the procfs query method to work more reliably compared to blindly polling the pseudo-file system.
+
 \subsection{Interposition}
 
 
-\section{More reliable measurement}
+
+\section{More Reliable Measurement}
 
 \subsection{Virtualization}
 
