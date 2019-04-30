@@ -66,7 +66,7 @@
 
   - most intrusive, most accurate
 
-  - LD_PRELOAD
+  - LD_PRELOAD or DYLD_INSERT_LIBRARIES
 
   - ptrace syscall: strace dtrace
 

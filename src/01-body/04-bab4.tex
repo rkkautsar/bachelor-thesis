@@ -81,7 +81,28 @@ This effectively allows the procfs query method to work more reliably compared t
 
 \subsection{Interposition}
 
+\citet{juvePracticalResourceMonitoring2015} defines this group of mechanism as the ones in which the monitor intercepts actions performed by the process.
+This mechanism is highly intrusive because it actively changes the way the program runs.
+\code{ptrace()} mentioned earlier also belongs to this group since the kernel stops the system call and forward an event to the monitor (in this case the tracer).
+In general this method introduces huge overhead compared to the other mechanism.
+In \code{ptrace()} for example, there need to be at least two context switches for every system call intercepted.
 
+A less intrusive method compared to the one \code{ptrace()} used is function interposition.
+In this mechanism, the monitor replace some original function by a wrapper that also record parameters and results of the original function \citep{juvePracticalResourceMonitoring2015}.
+The environment variable \code{LD\_PRELOAD} in Linux and \code{DYLD\_INSERT\_LIBRARIES} in OS X provides an easy way to load arbitrary library before running a dynamically-linked program.
+This way, one can write a wrapper function that will be called instead of the original function.
+
+On the other hand, \code{ptrace()} is less practical because it interrupts each system call made by the program, but it is more robust and can be used in statically-linked programs.
+\citet{kimPracticalEffectiveSandboxing2013} has shown that using the recent \code{seccomp/BPF}\footnote{see \href{http://man7.org/linux/man-pages/man2/seccomp.2.html}{\code{man seccomp}}} feature to filter out what system call is going to be intercepted results in an efficient system call interposition technique.
+
+\code{seccomp} is a security feature in Linux (since 2.6.23) to allow only some set of system calls for a program.
+Furthermore, Berkeley Packet Filter (\code{BPF}) is also supported since Linux 3.5 as a mean to configure the way \code{seccomp} filters the system call.
+With the combination of \code{seccomp} and \code{BPF}, they can configure only some set of the system call to send a \code{ptrace()} event while the rest just continue normally, effectively reducing the overhead of system call interposition.
+This feature---usually combined with Linux namespaces---can also be used to provide simple yet secure isolation for the program, as used by \textsc{nsjail}\footnote{see Section \ref{sec:resource.impl.nsjail}} and \textsc{firejail}\footnote{\href{https://github.com/netblue30/firejail/}{https://github.com/netblue30/firejail/}}.
+
+With this interposition mechanism, one can reliably use the query mechanism.
+For example, before the \code{exit()} system call actually happen, the \code{procfs} can be queried because the program itself can be stopped before the entry is removed from the pseudo-file system.
+While this is the most accurate method compared to the others, this is also highly intrusive so caution must be exercised when using this method.
 
 \section{More Reliable Measurement}
 
@@ -95,9 +116,16 @@ This effectively allows the procfs query method to work more reliably compared t
 We consider some existing implementation and discuss their method of measuring and limiting resource.
 
 \subsection{\textsc{runsolver}}
+
 \subsection{\textsc{runexec}}
+
 \subsection{\textsc{kickstart}}
+
 \subsection{\textsc{timeout}}
+
 \subsection{\textsc{nsjail}}
+\label{sec:resource.impl.nsjail}
+
 \subsection{\textsc{isolate}}
+
 \subsection{\textsc{psmon}}
