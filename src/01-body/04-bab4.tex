@@ -149,7 +149,26 @@ We consider some existing implementation and discuss their method of measuring a
 
 \subsection{\textsc{runsolver}}
 
+\textsc{runsolver}\footnote{available at \href{https://www.cril.univ-artois.fr/~roussel/runsolver/}{https://www.cril.univ-artois.fr/~roussel/runsolver/}} \citep{rousselControllingSolverExecution2011} is a resource monitoring and limiting tool for computational task solvers.
+The development is driven by competitions such as pseudo-boolean competitions and CSP/MaxCSP competitions.
+It is quite popular in the computational science field as it is fairly easy to use and requires no superuser privileges.
+
+The accompanying paper describes the implementation over time.
+The first version is just an integration of existing tools like \code{ulimit()}, \code{time}, and \code{ps}.
+This version can neither handle multi-process nor sending SIGTERM in the case of out of memory.
+The second version uses \code{ptrace()} for interposing system calls, giving it precise control of the processes and memory management system calls.
+They report an increase of 60\% to 160\% in CPU time for this second version.
+Finally, the third and current version of \textsc{runsolver} polls (at 1 Hz frequency) the list of processes in order to determine the solver's process tree.
+The resources is polled from the \code{procfs} and accumulated.
+
+It is not clear whether this tool is still being maintained, but the latest release was on November of 2017.
+
+
 \subsection{\textsc{runexec}}
+
+\citet{beyerReliableBenchmarkingRequirements2019} provides \textsc{runexec} along with their \textsc{BenchExec} tool as a solution for a reliable benchmarking.
+
+Additionally, they also provide a non-root, optional containerization support through Linux user namespaces and overlay filesystem provided in Linux 3.8 onwards.
 
 \subsection{\textsc{kickstart}}
 
