@@ -62,5 +62,10 @@
 4. Existing Benchmarking Tools
 5. Implementation
 6. Evaluation
+   1. case studies
+   2. requirements evaluation
+   3. performance analysis
+      1. performance breakdown
+      2. microbenchmarks for overhead
 7. Conclusion & Future works
 
