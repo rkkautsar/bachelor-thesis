@@ -10,7 +10,7 @@ The measurement of these resource consumption is not only used in benchmarking.
 Some of its usage includes but not limited to:
 its daily usage in user program such as \textit{Task Manager} in Windows or \code{top} in Linux,
 judging whether a program passes some threshold marks in education or competition field,
-measuring the efficiency of a job scheduling system in High Throughput Computing (HTC) field [need citation],
+measuring the efficiency of a job scheduling system in High Throughput Computing (HTC) field,
 selecting dataset for a competition,
 and getting best-enough result from an iterative optimization algorithm after some desired time.
 Because of this wide area of usage, there are many attempts to implement these measurement to achieve the best result.
@@ -75,6 +75,7 @@ A more powerful albeit intrusive notification can be achieved by using the UNIX 
 \code{ptrace()}, often use for debugging, allows a process to intercept and modify system calls.
 When a system call occurs, the kernel will check if the process is being traced, and if so, will notify the tracer.
 With this system call one can observe, for example, the \code{fork()}, \code{exec()}, and \code{exit()} system call to track process trees.
+In Linux, it is also possible to only stop the process when specific, pre-defined system calls occur, these include the three system calls above.
 
 Combining this notifications with the earlier query mechanism can result in a more powerful resource monitoring method.
 For example, one can watch for filesystem events on a specific part of the filesystem, such as the \code{/tmp}, \code{/var}, or a specific work directory of the running application. Then when an event occurs, a procfs query is executed to catch the short-living process causing the event is executed.
@@ -167,15 +168,48 @@ It is not clear whether this tool is still being maintained, but the latest rele
 \subsection{\textsc{runexec}}
 
 \citet{beyerReliableBenchmarkingRequirements2019} provides \textsc{runexec} along with their \textsc{BenchExec} tool as a solution for a reliable benchmarking.
+The development was driven by repeated organization of the International Competition on Software Verification (SV-COMP).
+It is still being actively developed along with the \textsc{BenchExec} benchmarking framework\footnote{see Section \ref{sec:benchmarking.impl.benchexec}}.
 
-Additionally, they also provide a non-root, optional containerization support through Linux user namespaces and overlay filesystem provided in Linux 3.8 onwards.
+The implementation uses Linux-specific feature CGroups with its various controllers.
+The \code{cpuacct} controller is used to measure the CPU time usage.
+A separate thread checks the time on predicted time and terminates the process group on timeout.
+\code{cpuset} controller is used to attach process groups to specified CPU cores.
+\code{freezer} controller is used to freeze and unfreeze the process group when terminating them.
+This is to prevent the processes from spawning new processes.
+They also used \code{memory} and \code{memsw} controllers to account and limit memory and swap resources.
+
+Additionally, they also provide a non-root, optional container-based execution environment, \textsc{containerexecutor}.
+It works by combining Linux user namespaces and overlay filesystem features available since Linux 3.8.
+
 
 \subsection{\textsc{kickstart}}
 
+\citet{juvePracticalResourceMonitoring2015} presents \textsc{kickstart}\footnote{available as part of Pegasus: \href{https://github.com/pegasus-isi/pegasus}{https://github.com/pegasus-isi/pegasus}} as one of the tools developed to address monitoring resource usage of HTC tasks.
+It is still in active development along with the Pegasus Workflow Management System.
+
+The implementation is UNIX compatible but the feature leveraging \code{ptrace()} is only available in Linux.
+The implementation allow several detail of monitoring.
+On the lowest detail, it uses \code{wait4()} for the main process.
+Then, if specified, it can also use \code{ptrace()} combined with \code{procfs} to catch process-related events to allow more reliable measurement.
+Finally, it can also operate full interposition with \code{ptrace()} to capture I/O related information.
+
+Currently, it has no feature for limiting resource usages like CPU time or memory usage.
+It is only possible to limit run time (with \code{SIGTERM} and eventually \code{SIGKILL}) by the process wall clock time elapsed.
+
+
 \subsection{\textsc{timeout}}
+
+\textsc{timeout}\footnote{\href{https://github.com/pshved/timeout}{https://github.com/pshved/timeout}}---not to be confused with a tool with the same name in GNU coreutils with lesser capabilities---is a simple perl script for monitoring and limiting time and memory consumption of a process.
+It uses \code{ps}\footnote{see \href{https://linux.die.net/man/1/ps}{\code{man ps}}} to scan for related processes and queries from \code{procfs}.
+
+It has not been updated since April 2016.
+The author also recommends to use CGroups feature instead of using this tool, suggesting it is a much better method and not limited with some issues occuring with the method used in \textsc{timeout}.
 
 \subsection{\textsc{nsjail}}
 \label{sec:resource.impl.nsjail}
+
+
 
 \subsection{\textsc{isolate}}
 
