@@ -8,14 +8,15 @@ Three different mechanisms for monitoring resource and its examples are describe
 \First~also give a brief description of virtualization as one way to produce more reliable resource measurement in Section \ref{sec:resource.virtualization}.
 Finally, we discusses various implementation of resource monitoring tool and each of its mechanism in Section \ref{sec:resource.impl}.
 
-\section{Overview}
+\section{The Task of Resource Monitoring}
 \label{sec:resource.overview}
 
 To objectively compare two or more programs, an objective measurement is needed.
 Resource consumption like CPU time elapsed, CPU instruction used, or peak memory usage is often considered as the go-to measurement for benchmarking in computational science.
 The resources measured might include information regarding processes, threads, computation, memory, input/output, and files of a program \citep{juvePracticalResourceMonitoring2015}.
+The task of measuring and limiting these resources can also be described as resource monitoring.
 
-The measurement of these resource consumption is not only used in benchmarking.
+Measurement of these resource consumption is not only used in benchmarking.
 Some of its usage includes but not limited to:
 its daily usage in user program such as \textit{Task Manager} in Windows or \code{top} in Linux,
 judging whether a program passes some threshold marks in education or competition field,
@@ -235,9 +236,12 @@ They suggests it is a much better method and not limited with some issues occurr
 It uses several Linux kernel features such as Linux namespaces, CGroups, and \code{seccomp/BPF}.
 It is actively being developed by Google security team, although it's not an official Google product.
 
-This is by no means a tool specific for resource monitoring, but it can be used as one to some degree.
-The tool allows limiting various resources through CGroup controllers as well as limiting the process system call to a specified subset.
+\textsc{NsJail} is more of a security tool instead of a resource monitoring tool, but it can be used as one to some degree.
+The tool allows limiting various resources through CGroup controllers.
 Currently there is no report of the actual resource usage, but it can be extended to do so\footnote{see \href{https://github.com/google/nsjail/issues/105}{https://github.com/google/nsjail/issues/105}} by just querying relevant information from the CGroups pseudo-file system.
+
+Utilizing \code{seccomp/BPF} through their separate \textsc{Kafel}\footnote{\href{https://github.com/google/kafel}{https://github.com/google/kafel}} language for configuration, it is possible to specify various system call filtering policies.
+For example, one can decide to kill a process when it tries to use \code{execve}, or just log each attempt.
 
 
 \subsection{\textsc{isolate}}
