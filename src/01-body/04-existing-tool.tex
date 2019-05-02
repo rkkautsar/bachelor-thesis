@@ -1,11 +1,9 @@
-\chapter{\babTiga}
-\label{ch:priorWorks}
+\chapter{\chExisting}
+\label{ch:existing}
 
-This chapter discusses and evaluates the existing benchmarking tools with a set of defined key factors, derived from the requirements.
-Section \ref{sec:prior_works.overview} gives an overview of the benchmarking tool considered to be evaluated.
-Then in Section \ref{sec:prior_works.method} \first~define the key factors used to evaluate each tools.
-Finally, Section \ref{sec:prior_works.evaluation} presents the summary and details of the evaluation of each benchmarking tools.
-
+This chapter discusses the existing benchmarking tools developed by the community.
+Section \ref{sec:prior_works.overview} gives an overview of the benchmarking tool considered.
+Then the following sections describes each of the considered benchmarking tools.
 
 \section{Overview}
 \label{sec:prior_works.overview}
@@ -15,146 +13,7 @@ This is by no means an exhaustive collection but it should represent the current
 \textsc{StarExec} particularly took a web-based approach, where the user submit the configuration and the run happened in the host system.
 The rest of them, \textsc{benchmark-tool}, \textsc{BenchExec}, \textsc{BenchKit}, and \textsc{JuBE}, approaches benchmarking as task to be run in the local machine or submitted to a cluster system.
 
-
-\section{Evaluation method}
-\label{sec:prior_works.method}
-
-The requirements from Section \ref{sec:idealBenchmarkingTool} are broken down to a few key factors.
-These key factors are used to measure how much of the requirements are fulfilled.
-
-\newcounter{reqCount}
-\newcounter{reqFactorCount}[reqCount]
-\newcommand{\reqLabel}[1]{
-	\setcounter{reqFactorCount}{0}
-	\addtocounter{reqCount}{1}
-	\arabic{reqCount}.
-	#1
-}
-\newcommand{\reqFactor}[1]{
-	\addtocounter{reqFactorCount}{1}
-	(\alph{reqFactorCount}) #1
-}
-
-\begin{ThreePartTable}
-	\begin{TableNotes}
-		\footnotesize
-		\item[$\alpha$] Subjective evaluation
-	\end{TableNotes}
-	\begin{longtable}{ll}
-
-		\textbf{Requirements} & \textbf{Factors} \\
-		\toprule
-		\endhead
-
-		% \cmidrule{2-2}
-		\multicolumn{2}{r}{\textit{continued}}
-		\endfoot
-
-		\bottomrule
-		\insertTableNotes\\
-		\caption{Metrics for evaluating existing benchmarking tools}
-		\endlastfoot
-
-		\multirow{5}{*}{\reqLabel{Extensibility}}
-			& \reqFactor{Flexible evaluation step} \\*
-			& \reqFactor{Flexible analysis step} \\*
-			& \reqFactor{Flexible benchmark instance source} \\*
-			& \reqFactor{Does not enforce implementation type} \\*
-			& \reqFactor{Can support arbitrary task scheduler} \\*
-		\midrule
-
-		\multirow{5}{*}{\reqLabel{Configurability}}
-			& \reqFactor{Multiple runs} \\*
-			& \reqFactor{Multiple tool configurations} \\*
-			& \reqFactor{Support parameter space} \\*
-			& \reqFactor{Benchmark instance selection} \\*
-			& \reqFactor{Set resource limit} \\*
-		\midrule
-
-		\multirow{5}{*}{\reqLabel{Documentation}}
-			& \reqFactor{Self-documenting configuration} \\*
-			& \reqFactor{Installation guide} \\*
-			& \reqFactor{Configuration guide} \\*
-			& \reqFactor{Main workflow guide} \\*
-			& \reqFactor{Comprehensive documentation\tnote{$\alpha$}} \\*
-		\midrule
-
-		\multirow{4}{*}{\reqLabel{Setup Effort}}
-			& \reqFactor{No superuser privilege} \\*
-			& \reqFactor{Installation guide} \\*
-			& \reqFactor{Documented requirements} \\*
-			& \reqFactor{No cumbersome dependencies\tnote{$\alpha$}} \\*
-		\midrule
-
-		\multirow{6}{*}{\reqLabel{Accuracy \& Reliability}}
-			& \reqFactor{Measure and Limit Resources Accurately} \\*
-			& \reqFactor{Terminate Processes Reliably} \\*
-			& \reqFactor{Assign Cores Deliberately} \\*
-			& \reqFactor{Respect Nonuniform Memory Access} \\*
-			& \reqFactor{Avoid Swapping} \\*
-			& \reqFactor{Isolate Individual Runs} \\*
-		\midrule
-
-		\multirow{5}{*}{\reqLabel{Reproducibility}}
-			& \reqFactor{Stored system information} \\*
-			& \reqFactor{Sharable results} \\*
-			& \reqFactor{Sharable configuration} \\*
-			& \reqFactor{Encourage sharable data\tnote{$\alpha$}} \\*
-			& \reqFactor{Encourage sharable implementation\tnote{$\alpha$}} \\*
-	\end{longtable}
-\end{ThreePartTable}
-
-Each of the evaluated tools are scored according to the degree of fulfillment for each requirements.
-That is, if $M_i$ is the scored degree of fulfillment of the $i$-th requirement, and $\mu_{i}$ is a vector of size $n$ such that
-\[
-	\mu_{ij} =
-	\begin{cases}
-		1 & \text{if the $j$-th key factor of $i$-th requirement is fulfilled}\\
-		0 & \text{otherwise}
-	\end{cases}
-\]
-then the degree of fulfillment is the average of $\mu_i$:
-\[
-	M_i = \frac{\sum\mu_{i}}{|\mu_i|}
-\]
-
-Furthermore, as an overall measure, \first~also denote $M_\sigma$ as the overall overage of all $\mu_{i}$ regardless of its requirement category.
-
-
-\section{Evaluation}
-\label{sec:prior_works.evaluation}
-
-\begin{ThreePartTable}
-	\begin{TableNotes}
-		\footnotesize
-		\item[*] Values are emptied if it's not applicable. The complete evaluation is given in the appendix.
-	\end{TableNotes}
-	\begin{longtable}{lddddddd}
-		& \multicolumn{1}{c}{$M_1$} & \multicolumn{1}{c}{$M_2$} & \multicolumn{1}{c}{$M_3$} & \multicolumn{1}{c}{$M_4$} & \multicolumn{1}{c}{$M_5$} & \multicolumn{1}{c}{$M_6$} & \multicolumn{1}{c}{$M_\sigma$}\\
-		\midrule
-		\textsc{benchmark-tool} & .60 & .80 & .20 & .50 & .17 & .40 & .43 \\
-		\textsc{BenchExec} & .40 & .60 & .60 & .50 & 1.00 & .80 & .66 \\
-		\textsc{Benchkit} & .40 & .40 & .60 & .25 & .50 & .40 & .43 \\
-		\textsc{JuBE} & .80 & 1.00 & 1.00 & 1.00 & & .40 & .83 \\
-		% \textsc{Optil.io} & .40 & .80 & .60 & 1.00 & & .40 & .62 \\
-		\textsc{StarExec} & .60 & .60 & .80 & 1.00 & 1.00 & 1.00 & .83 \\
-		\bottomrule
-		\insertTableNotes\\
-		\caption{Requirements score for various existing benchmarking tools}
-		\label{tab:reqscoresummary}
-	\end{longtable}
-\end{ThreePartTable}
-
-Table \ref{tab:reqscoresummary} shows that none of the considered benchmarking tools fulfilled the requirements given.
-The closest is \textsc{StarExec} and \textsc{JuBE}.
-\textsc{StarExec} can even---arguably---achieves $\bm{R_1}$ by default.
-But most of the features available in \textsc{StarExec}, such as managing post-processors and plots, are restricted to the community leaders.
-The normal user is forced to use what was already available in the community space.
-On the other hand, \textsc{JuBE} is too generic and provides little support for reproducibility.
-
-Further descriptions and evaluations of each benchmarking tools are given below.
-
-\subsection{\textsc{benchmark-tool}}
+\section{\textsc{benchmark-tool}}
 \textsc{benchmark-tool}\footnote{\href{https://github.com/potassco/benchmark-tool}{https://github.com/potassco/benchmark-tool}} is originally a part of Potassco\footnote{\href{https://potassco.org/}{https://potassco.org/}}, the Postdam Answer Set Solving Collection, developed at the University of Potsdam.
 It has been forked and used by some researchers in the computational logic field, such as its use in Technicsche Universität Dresden and Technicsche Universität Wien.
 
@@ -185,7 +44,7 @@ Furthermore, writing the \textit{result parser} often involves a lot of copying 
 \First~tried to refactor this tool to some degree\footnote{\href{https://github.com/daajoe/benchmark-tool/tree/refactor}{https://github.com/daajoe/benchmark-tool/tree/refactor}}, but decided to create a new tool instead in the middle of refactoring.
 This is because to create the ideal tool, we need significant architecture overhaul and decided it's better to start anew.
 
-\subsection{\textsc{BenchExec}}
+\section{\textsc{BenchExec}}
 \label{sec:benchmarking.impl.benchexec}
 
 \textsc{BenchExec} \citep{philipp_wendler_2019_2561835} is developed by the Software and Computational Systems Lab of Ludwig-Maximilians-Universität München (LMU Munich)\footnote{\href{https://www.sosy-lab.org/}{https://www.sosy-lab.org/}} with the main goal of reliable measurement and limitation of resource usage.
@@ -229,7 +88,7 @@ They use a property file like the one listed in Listing \ref{lst:benchexec.prope
 Combined with the lack of documentation, this makes it impossible, for now, to evaluate and analyze a benchmark outside the scope of software verification with \textsc{BenchExec}.
 
 
-\subsection{\textsc{Benchkit}}
+\section{\textsc{Benchkit}}
 
 \textsc{Benchkit} \citep{benchkit:2013} is a benchmarking tool actively used in the Model Checking Contest (MCC)\footnote{\href{https://mcc.lip6.fr/}{https://mcc.lip6.fr/}}.
 The competition participants submit a virtual machine consisting of the (minimal) operating system (OS) to run the program, dependencies, and a small \textsc{BenchKit} head to interface with the \textsc{BenchKit} kernel.
@@ -249,7 +108,7 @@ Although the necessity of providing virtual machine makes sure the program is $\
 \cite{beyerReliableBenchmarkingRequirements2019} remarks that this 40 seconds overhead would have taken an additional 190 CPU days if used in their competition, definitely a prohibitive overhead.
 
 
-\subsection{\textsc{JuBE}}
+\section{\textsc{JuBE}}
 
 \textsc{JuBE} \citep{frings2010flexible} is a benchmarking environment developed by Jülich Supercomputing Centre (JSC) of Forschungszentrum Jülich, Germany.
 It is actively developed, albeit with no public version control repository, with the last release (as of 24th April 2019) in 4th February 2019.
@@ -279,7 +138,7 @@ Additionally, the tool itself does not provide much in terms of reproducibility.
 It is up to the user how to make their benchmarking reproducible since shell commands is often not reproducible by itself.
 
 
-\subsection{\textsc{StarExec}}
+\section{\textsc{StarExec}}
 
 \textsc{StarExec} is a web-based service for evaluating logic solvers on user-supplied benchmarks input \citep{stumpStarExecCrossCommunityInfrastructure2014}.
 It is officially hosted at \href{https://www.starexec.org/}{\code{https://www.starexec.org/}}.

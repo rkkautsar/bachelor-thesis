@@ -1,0 +1,142 @@
+\chapter{\chEvaluation}
+\label{ch:evaluation}
+
+Section \ref{sec:prior_works.method} \first~define the key factors used to evaluate each tools.
+Finally, Section \ref{sec:prior_works.evaluation} presents the summary and details of the evaluation of each benchmarking tools.
+
+
+\section{Evaluation method}
+\label{sec:prior_works.method}
+
+The requirements from Section \ref{sec:idealBenchmarkingTool} are broken down to a few key factors.
+These key factors are used to measure how much of the requirements are fulfilled.
+
+\newcounter{reqCount}
+\newcounter{reqFactorCount}[reqCount]
+\newcommand{\reqLabel}[1]{
+	\setcounter{reqFactorCount}{0}
+	\addtocounter{reqCount}{1}
+	\arabic{reqCount}.
+	#1
+}
+\newcommand{\reqFactor}[1]{
+	\addtocounter{reqFactorCount}{1}
+	(\alph{reqFactorCount}) #1
+}
+
+\begin{ThreePartTable}
+	\begin{TableNotes}
+		\footnotesize
+		\item[$\alpha$] Subjective evaluation
+	\end{TableNotes}
+	\begin{longtable}{ll}
+
+		\textbf{Requirements} & \textbf{Factors} \\
+		\toprule
+		\endhead
+
+		% \cmidrule{2-2}
+		\multicolumn{2}{r}{\textit{continued}}
+		\endfoot
+
+		\bottomrule
+		\insertTableNotes\\
+		\caption{Metrics for evaluating existing benchmarking tools}
+		\endlastfoot
+
+		\multirow{5}{*}{\reqLabel{Extensibility}}
+			& \reqFactor{Flexible evaluation step} \\*
+			& \reqFactor{Flexible analysis step} \\*
+			& \reqFactor{Flexible benchmark instance source} \\*
+			& \reqFactor{Does not enforce implementation type} \\*
+			& \reqFactor{Can support arbitrary task scheduler} \\*
+		\midrule
+
+		\multirow{5}{*}{\reqLabel{Configurability}}
+			& \reqFactor{Multiple runs} \\*
+			& \reqFactor{Multiple tool configurations} \\*
+			& \reqFactor{Support parameter space} \\*
+			& \reqFactor{Benchmark instance selection} \\*
+			& \reqFactor{Set resource limit} \\*
+		\midrule
+
+		\multirow{5}{*}{\reqLabel{Documentation}}
+			& \reqFactor{Self-documenting configuration} \\*
+			& \reqFactor{Installation guide} \\*
+			& \reqFactor{Configuration guide} \\*
+			& \reqFactor{Main workflow guide} \\*
+			& \reqFactor{Comprehensive documentation\tnote{$\alpha$}} \\*
+		\midrule
+
+		\multirow{4}{*}{\reqLabel{Setup Effort}}
+			& \reqFactor{No superuser privilege} \\*
+			& \reqFactor{Installation guide} \\*
+			& \reqFactor{Documented requirements} \\*
+			& \reqFactor{No cumbersome dependencies\tnote{$\alpha$}} \\*
+		\midrule
+
+		\multirow{6}{*}{\reqLabel{Accuracy \& Reliability}}
+			& \reqFactor{Measure and Limit Resources Accurately} \\*
+			& \reqFactor{Terminate Processes Reliably} \\*
+			& \reqFactor{Assign Cores Deliberately} \\*
+			& \reqFactor{Respect Nonuniform Memory Access} \\*
+			& \reqFactor{Avoid Swapping} \\*
+			& \reqFactor{Isolate Individual Runs} \\*
+		\midrule
+
+		\multirow{5}{*}{\reqLabel{Reproducibility}}
+			& \reqFactor{Stored system information} \\*
+			& \reqFactor{Sharable results} \\*
+			& \reqFactor{Sharable configuration} \\*
+			& \reqFactor{Encourage sharable data\tnote{$\alpha$}} \\*
+			& \reqFactor{Encourage sharable implementation\tnote{$\alpha$}} \\*
+	\end{longtable}
+\end{ThreePartTable}
+
+Each of the evaluated tools are scored according to the degree of fulfillment for each requirements.
+That is, if $M_i$ is the scored degree of fulfillment of the $i$-th requirement, and $\mu_{i}$ is a vector of size $n$ such that
+\[
+	\mu_{ij} =
+	\begin{cases}
+		1 & \text{if the $j$-th key factor of $i$-th requirement is fulfilled}\\
+		0 & \text{otherwise}
+	\end{cases}
+\]
+then the degree of fulfillment is the average of $\mu_i$:
+\[
+	M_i = \frac{\sum\mu_{i}}{|\mu_i|}
+\]
+
+Furthermore, as an overall measure, \first~also denote $M_\sigma$ as the overall overage of all $\mu_{i}$ regardless of its requirement category.
+
+
+\section{Evaluation}
+\label{sec:prior_works.evaluation}
+
+\begin{ThreePartTable}
+	\begin{TableNotes}
+		\footnotesize
+		\item[*] Values are emptied if it's not applicable. The complete evaluation is given in the appendix.
+	\end{TableNotes}
+	\begin{longtable}{lddddddd}
+		& \multicolumn{1}{c}{$M_1$} & \multicolumn{1}{c}{$M_2$} & \multicolumn{1}{c}{$M_3$} & \multicolumn{1}{c}{$M_4$} & \multicolumn{1}{c}{$M_5$} & \multicolumn{1}{c}{$M_6$} & \multicolumn{1}{c}{$M_\sigma$}\\
+		\midrule
+		\textsc{benchmark-tool} & .60 & .80 & .20 & .50 & .17 & .40 & .43 \\
+		\textsc{BenchExec} & .40 & .60 & .60 & .50 & 1.00 & .80 & .66 \\
+		\textsc{Benchkit} & .40 & .40 & .60 & .25 & .50 & .40 & .43 \\
+		\textsc{JuBE} & .80 & 1.00 & 1.00 & 1.00 & & .40 & .83 \\
+		% \textsc{Optil.io} & .40 & .80 & .60 & 1.00 & & .40 & .62 \\
+		\textsc{StarExec} & .60 & .60 & .80 & 1.00 & 1.00 & 1.00 & .83 \\
+		\bottomrule
+		\insertTableNotes\\
+		\caption{Requirements score for various existing benchmarking tools}
+		\label{tab:reqscoresummary}
+	\end{longtable}
+\end{ThreePartTable}
+
+Table \ref{tab:reqscoresummary} shows that none of the considered benchmarking tools fulfilled the requirements given.
+The closest is \textsc{StarExec} and \textsc{JuBE}.
+\textsc{StarExec} can even---arguably---achieves $\bm{R_1}$ by default.
+But most of the features available in \textsc{StarExec}, such as managing post-processors and plots, are restricted to the community leaders.
+The normal user is forced to use what was already available in the community space.
+On the other hand, \textsc{JuBE} is too generic and provides little support for reproducibility.
