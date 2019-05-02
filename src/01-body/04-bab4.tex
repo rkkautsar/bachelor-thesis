@@ -1,6 +1,14 @@
 \chapter{\babEmpat}
 
+This chapter discusses the task of monitoring and limiting resource usage.
+This task is necessary for the benchmarking process as resource is one of the measurement often selected for comparison.
+Section \ref{sec:resource.overview} gives an overview of the task of resource monitoring and its importance.
+Three different mechanisms for monitoring resource and its examples are described in Section \ref{sec:resource.mechanism}.
+\First~also give a brief description of virtualization as one way to produce more reliable resource measurement in Section \ref{sec:resource.virtualization}.
+Finally, we discusses various implementation of resource monitoring tool and each of its mechanism in Section \ref{sec:resource.impl}.
+
 \section{Overview}
+\label{sec:resource.overview}
 
 To objectively compare two or more programs, an objective measurement is needed.
 Resource consumption like CPU time elapsed, CPU instruction used, or peak memory usage is often considered as the go-to measurement for benchmarking in computational science.
@@ -16,6 +24,7 @@ and getting best-enough result from an iterative optimization algorithm after so
 Because of this wide area of usage, there are many attempts to implement these measurement to achieve the best result.
 
 \section{Monitoring Mechanism}
+\label{sec:resource.mechanism}
 
 \citet{juvePracticalResourceMonitoring2015} distinguish resource monitoring into three different mechanism.
 There are tradeoffs between these mechanisms and so it's often preferred to use a combination of more than one mechanism to achieve better results.
@@ -46,7 +55,7 @@ Most system nowadays---disregarding its operating system---has a hardware clock 
 Querying this clock at the start and end of a program could measure what is called the wall clock time.
 This measurement is less informative than CPU times measured by user time and system time, but still useful in spite of that.
 
-The library \code{psutil}\footnote{\href{https://github.com/giampaolo/psutil}{https://github.com/giampaolo/psutil}} provides an abstraction for various resource queries that works in many operating systems.
+The library \textsc{psutil}\footnote{\href{https://github.com/giampaolo/psutil}{https://github.com/giampaolo/psutil}} provides an abstraction for various resource queries that works in many operating systems.
 This allows a cross-platform resource monitoring tool based on query mechanism to be developed.
 As of now however, \first~can't find the relevant resource monitoring tool making use of this abstraction.
 
@@ -107,6 +116,7 @@ For example, before the \code{exit()} system call actually happen, the \code{pro
 While this is the most accurate method compared to the others, this is also highly intrusive so caution must be exercised when using this method.
 
 \section{Virtualization: More Reliable Measurements}
+\label{sec:resource.virtualization}
 
 To strengthen the need to produce more reliable resource usage measurement, \citet{beyerReliableBenchmarkingRequirements2019} states isolation of runs as one of the requirements for an accurate and reliable benchmarking.
 Specifically, they used Linux containers to provide a lightweight isolation.
@@ -144,11 +154,18 @@ Booting a VM when there are about 250 other idle VMs takes more than 1000 second
 This is also true for the amount of memory consumed in idle state.
 A VM takes 0.23 GB compared to 0.03 GB of memory of Docker container in their experiment.
 
+A more lightweight containerization or sandboxing technique is using Linux namespaces.
+This relatively new feature in the Linux kernel allows isolation of process with practically no overhead.
+Both \citet{beyerReliableBenchmarkingRequirements2019} and \citet{marevs2012new} report no overhead from their experiments compared to bare process execution.
+This feature allow a few levels of isolation by mix-and-matching various namespaces, namely CGroup, IPC, Network, Mount, PID, User, and UTS\footnote{see \href{http://man7.org/linux/man-pages/man7/namespaces.7.html}{\code{man 7 namespaces}}}.
+
 \section{Implementations}
+\label{sec:resource.impl}
 
 We consider some existing implementation and discuss their method of measuring and limiting resource.
 
 \subsection{\textsc{runsolver}}
+\label{sec:resource.impl.runsolver}
 
 \textsc{runsolver}\footnote{available at \href{https://www.cril.univ-artois.fr/~roussel/runsolver/}{https://www.cril.univ-artois.fr/~roussel/runsolver/}} \citep{rousselControllingSolverExecution2011} is a resource monitoring and limiting tool for computational task solvers.
 The development is driven by competitions such as pseudo-boolean competitions and CSP/MaxCSP competitions.
@@ -179,8 +196,11 @@ A separate thread checks the time on predicted time and terminates the process g
 This is to prevent the processes from spawning new processes.
 They also used \code{memory} and \code{memsw} controllers to account and limit memory and swap resources.
 
-Additionally, they also provide a non-root, optional container-based execution environment, \textsc{containerexecutor}.
-It works by combining Linux user namespaces and overlay filesystem features available since Linux 3.8.
+Additionally, they also provide a non-privileged, optional container-based execution environment, \textsc{containerexecutor}.
+It works by combining Linux user namespaces and overlay filesystem features available in Linux kernel 3.8 onwards.
+This allows the execution to be isolated from other processes.
+The isolation is mainly to address for the frequent interference between program executions caused by using the same directory for storing intermediate files in \code{/tmp} for example.
+The PID namespace also allows for a reliable cleanup since other processes will be killed when the \code{init} process is killed inside the namespace.
 
 
 \subsection{\textsc{kickstart}}
@@ -200,17 +220,52 @@ It is only possible to limit run time (with \code{SIGTERM} and eventually \code{
 
 \subsection{\textsc{timeout}}
 
-\textsc{timeout}\footnote{\href{https://github.com/pshved/timeout}{https://github.com/pshved/timeout}}---not to be confused with a tool with the same name in GNU coreutils with lesser capabilities---is a simple perl script for monitoring and limiting time and memory consumption of a process.
-It uses \code{ps}\footnote{see \href{https://linux.die.net/man/1/ps}{\code{man ps}}} to scan for related processes and queries from \code{procfs}.
+\textsc{timeout}\footnote{\href{https://github.com/pshved/timeout}{https://github.com/pshved/timeout}}---not to be confused with a tool with the same name in GNU coreutils with lesser capabilities---is a Perl script for monitoring and limiting time and memory consumption of a process.
+It uses \code{ps}\footnote{see \href{https://linux.die.net/man/1/ps}{\code{man ps}}} to scan for related processes and queries from \code{procfs} with a configurable frequency.
 
 It has not been updated since April 2016.
-The author also recommends to use CGroups feature instead of using this tool, suggesting it is a much better method and not limited with some issues occuring with the method used in \textsc{timeout}.
+The author also recommends to use CGroups feature instead of using this tool.
+They suggests it is a much better method and not limited with some issues occurring with the method used in \textsc{timeout}.
 
-\subsection{\textsc{nsjail}}
+\subsection{\textsc{NsJail}}
 \label{sec:resource.impl.nsjail}
 
+\textsc{NsJail}\footnote{\href{https://github.com/google/nsjail}{https://github.com/google/nsjail}}, as described in its project home, is a lightweight process isolation tool for Linux.
+It uses several Linux kernel features such as Linux namespaces, CGroups, and \code{seccomp/BPF}.
+It is actively being developed by Google security team, although it's not an official Google product.
+
+This is by no means a tool specific for resource monitoring, but it can be used as one to some degree.
+The tool allows limiting various resources through CGroup controllers as well as limiting the process system call to a specified subset.
+Currently there is no report of the actual resource usage, but it can be extended to do so\footnote{see \href{https://github.com/google/nsjail/issues/105}{https://github.com/google/nsjail/issues/105}} by just querying relevant information from the CGroups pseudo-file system.
 
 
 \subsection{\textsc{isolate}}
 
+\textsc{isolate}\footnote{\href{https://github.com/ioi/isolate}{https://github.com/ioi/isolate}} is developed under the requirements of competitive programming competition \citep{marevs2012new}.
+It is used in the International Olympiad in Informatics (IOI).
+The development for this project is still active under the open-source license of GNU General Public License version 2.
+
+It needs superuser capabilities to use privileged Linux namespaces and so it is designed to be run under \code{setuid}.
+This means that the binary will always run under superuser privilege, with or without \code{sudo}.
+It also uses CGroup (when specified) for reliable accounting and limiting of process group's resource usage.
+
+In general, it runs three processes: one keeper process, one proxy process, and the child process and potentially its subprocesses.
+The keeper process monitors the child process and terminates it if the resource usage exceed its limit.
+The proxy process becomes the parent of the child process and reports the exit status to the keeper process.
+Finally, the child process runs inside its own namespace and CGroups and closely being monitored.
+The resource usage is queried from the CGroup pseudo-filesystem if possible, then \code{wait4()}-reported resource usage if available, or from \code{procfs}.
+
+
 \subsection{\textsc{psmon}}
+
+From the several available resource monitoring above, there is just a small set that works under OS X specifically, and none of them support monitoring multiple processes.
+Motivated by that and the fact that some researchers also used OS X on daily use, \first~developed a simple query-based resource monitoring tool.
+The code is open source and licensed under the MIT license\footnote{available at \href{https://github.com/rkkautsar/psmon}{https://github.com/rkkautsar/psmon}}.
+
+The basic mechanism is similar to those used in \textsc{runsolver} (see Section \ref{sec:resource.impl.runsolver}).
+Since \code{procfs} is only available in Linux, we utilizes \textsc{psutil} to implement cross-platform process tree scanning and resource usage query.
+The polling frequency is configurable, and the resource monitor is also extensible.
+To handle short-living process, the notification mechanism \code{wait4()} is used.
+
+This is just a basic implementation and by no means reliable by the requirements defined by \citet{beyerReliableBenchmarkingRequirements2019}.
+But \first~hope this can be a stepping stone for the development of other tool to also targets non-Linux operating systems.
