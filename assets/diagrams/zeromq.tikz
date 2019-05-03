@@ -1,0 +1,68 @@
+\usetikzlibrary{shapes,arrows,positioning,fit,backgrounds}
+
+\tikzstyle{bidirectional} = [draw, latex'-latex', line width=1.15pt]
+
+\tikzset{
+    pics/zmq2/.style n args = {3}{
+        code = {
+        \node[fill=white, minimum height=3em, align=center, text width=9em] (-A) at (0,0) {#1};
+        \node[fill=black!5, anchor=north east, text width=4em, align=center] (-B) at (-A.south) {\textsc{#2}};
+        \node[fill=black!5, anchor=north west, text width=4em, align=center] (-C) at (-A.south) {\textsc{#3}};
+        \node[inner sep=0pt,draw,rounded corners,fit=(-A)(-B)(-C)] {};
+        \draw (-B.north west) -- (-C.north east)
+              (-B.north east) -- (-C.south west);
+        }
+    },
+    pics/zmq1/.style n args = {2}{
+        code = {
+        \node[fill=white, minimum height=3em, align=center, text width=5em] (-A) at (0,0) {#1};
+        \node[fill=black!5, anchor=north, text width=5em, align=center] (-B) at (-A.south) {\textsc{#2}};
+        \draw (-B.north west) -- (-B.north east);
+        \node[inner sep=0pt,draw,rounded corners,fit=(-A)(-B)] {};
+        }
+    },
+}
+
+
+\resizebox{\textwidth}{!}{%
+    \begin{tikzpicture}
+        \node (workerdots) {\huge\vdots};
+        \pic [above=of workerdots, local bounding box=worker2] (w2) {zmq1={Worker 2}{dealer}};
+        \pic [above=2cm of worker2, local bounding box=worker1] (w1) {zmq1={Worker 1}{dealer}};
+        \pic [below=of workerdots, local bounding box=workern] (wn) {zmq1={Worker $n$}{dealer}};
+
+        \pic [right=3cm of workerdots, local bounding box=server] (s) {zmq2={Gateway}{router}{pub}};
+
+        \node [right=3cm of server] (observerdots) {\huge\vdots};
+        \pic [above=of observerdots, local bounding box=observer2] (o2) {zmq1={Observer 2}{sub}};
+        \pic [above=of observer2, local bounding box=observer1] (o1) {zmq1={Observer 1}{sub}};
+        \pic [below=of observerdots, local bounding box=observern] (on) {zmq1={Observer $n$}{sub}};
+
+        \draw [bidirectional] (w1-B.east) -- (s-B.west);
+        \draw [bidirectional] (w2-B.east) -- (s-B.west);
+        \draw [bidirectional] (wn-B.east) -- (s-B.west);
+
+        \draw [bidirectional] (s-C.east) -- (o1-B.west);
+        \draw [bidirectional] (s-C.east) -- (o2-B.west);
+        \draw [bidirectional] (s-C.east) -- (on-B.west);
+
+        \node [inner sep=.5cm, text=red!60!black, above, rotate=90, text width=4em] (w1label) at (worker1.west) {\sffamily\textsc{worker process}};
+        \node [inner sep=.5cm, text=red!60!black, above, rotate=90, text width=4em] (w2label) at (worker2.west) {\sffamily\textsc{worker process}};
+        \node [inner sep=.5cm, text=red!60!black, above, rotate=90, text width=4em] (wnlabel) at (workern.west) {\sffamily\textsc{worker process}};
+
+
+        \begin{scope}[on background layer]
+            \node[fit=(worker1)(worker2)(workerdots)(workern)] (workers) {};
+            \node[fit=(observer1)(observer2)(observerdots)(observern)] (observers) {};
+
+            \node[fill=red!5, rounded corners, fit=(worker1)(w1label)] {};
+            \node[fill=red!5, rounded corners, fit=(worker2)(w2label)] {};
+            \node[fill=red!5, rounded corners, fit=(workern)(wnlabel)] {};
+            \node[fill=blue!5, rounded corners, fit=(server)(observers)] (serverenv) {};
+        \end{scope}
+
+        \node [inner sep=.5cm, text=blue!60!black, below right] at (serverenv.north west) {\sffamily\textsc{server process}};
+
+
+    \end{tikzpicture}
+}
