@@ -54,6 +54,17 @@ This is to encourage code reuse and minimize the effort of doing the common anal
     \label{fig:zmq}
 \end{figure}
 
+Figure \ref{fig:zmq} gives an overview of the network architecture and its method of communication.
+Data is transported through TCP for inter-process communication, and through local in-process (inter-thread) transportation for intra-process communication.
+Communication follows some basic communication patterns used by the \O{}MQ framework, namely \textsc{router-dealer} and \textsc{pub-sub}.
+
+The \textsc{router-dealer} patterns allows two-way communication between the party \citep{hintjens2013zeromq}.
+This is used in the communication between the worker and the server gateway.
+The patterns allows many workers to send events to the server and optionally request for a reply from the server.
+The message sent to a \textsc{router} socket is enveloped by a unique identifier, allowing the \textsc{router} to reply to the correct \textsc{dealer}.
+This powerful pattern allows reliable many to one communication between the workers and the server gateway.
+
+
 
 \subsection{Benchmarking Workflow}
 \subsection{Design Rationale}
