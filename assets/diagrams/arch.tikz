@@ -7,6 +7,7 @@
             \draw (-\database@radius,-0.5*\database@segmentheight) arc [start angle=180,end angle=360,x radius=\database@radius, y radius=\database@aspectratio*\database@radius];
             \draw (-\database@radius,1.5*\database@segmentheight) -- ++(0,-3*\database@segmentheight) arc [start angle=180,end angle=360,x radius=\database@radius, y radius=\database@aspectratio*\database@radius] -- ++(0,3*\database@segmentheight);
         },
+        fill=white,
         minimum width=2*\database@radius + \pgflinewidth,
         minimum height=3*\database@segmentheight + 2*\database@aspectratio*\database@radius + \pgflinewidth,
     },
@@ -29,20 +30,21 @@
 
     \node [block, right=3cm of bootstrapper] (server) {Server};
     \node[database,database radius=0.5cm,database segment height=0.3cm, below=of server] (database) {};
-    \node [right=0.1cm of database] {\rotatebox{90}{\textsc{SQLite}}};
+    \node [right=0.1cm of database] {\rotatebox{-90}{Database}};
     \node [block, below=of database] (analyzer) {Analyzer};
     \draw (server) -- (database);
     \draw (database) -- (analyzer);
 
     \draw [-latex'] (bootstrapper) -- (server) node [midway, fill=white] {$R \in C \times I$};
-    \path [-latex'] (server) edge [bend right=5] node [sloped, above, pos=0.33] {$(c,i) \in R$} (worker);
-    \path [-latex'] (worker) edge [bend right=5] node [sloped, below, pos=0.33] {reports to} (server);
+    \path [-latex', transform canvas={xshift=-0.2cm}] (server) edge node [sloped, above, pos=0.33] {$(c,i) \in R$} (worker);
+    \path [-latex', transform canvas={xshift=0.2cm}] (worker) edge node [sloped, below, pos=0.33] {reports to} (server);
 
     \begin{scope}[on background layer]
-        \node[fill=red!5, label=above:\sffamily\textsc{client},  rounded corners, fit=(bootstrapper)(manager)(worker)] (clientenv) {};
-        \node[fill=blue!5, label=above:\sffamily\textsc{server},  rounded corners, fit=(server)(database)(analyzer)] (serverenv) {};
+        \node[fill=red!5, label=above:\sffamily\textsc{client-side},  rounded corners, fit=(bootstrapper)(manager)(worker)] (clientenv) {};
+        \node[fill=blue!5, label=above:\sffamily\textsc{server-side},  rounded corners, fit=(server)(database)(analyzer)] (serverenv) {};
         \node [block, above left=0.2cm of worker, anchor=north west, opacity=0.3] (workerbg2) {Worker};
         \node [block, above left=0.1cm of worker, anchor=north west, opacity=0.5] (workerbg1) {Worker};
+        \path [draw=black!30, dashed, ] ([xshift=1.5cm] clientenv.north east) edge node [sloped, near end, fill=white, text=black!60] {TCP} ([xshift=1.5cm] clientenv.south east);
     \end{scope}
 
 \end{tikzpicture}

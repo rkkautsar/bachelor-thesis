@@ -37,6 +37,17 @@
 
 ### Implementation
 
-
+- config schema
+- plugin
+- tool
+- task instances
+- worker
+- server
+- pcs parameter space
+- sysinfo?
+- 
 
 ### Usage scenario
+
+- configuring
+- start server

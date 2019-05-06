@@ -1,32 +1,64 @@
 \chapter{\chImplementation}
 \label{ch:implementation}
 
-\section{Design}
+\section{System Design}
 
-\subsection{System Architecture}
+\subsection{Architecture}
 
 \begin{figure}
     \centering
     \input{assets/diagrams/arch.tikz}
-    \caption{Overall architecture}
+    \caption{Architecture of \OurBenchmarkingTool}
     \label{fig:architecture}
 \end{figure}
 
-Figure \ref{fig:architecture} shows the architecture of the new benchmarking tool.
-The architecture follows the client-server design pattern.
-The client, typically a HPC cluster system, manages computations.
-Meanwhile, the server manages the data reported by client.
+Figure \ref{fig:architecture} shows the architecture of \OurBenchmarkingTool, our attempt on a new benchmarking tool fulfilling most of the defined requirements.
+The architecture follows the client-server design pattern, communicating through Transmission Control Protocol (TCP).
+The client manages the heavy computation while the server manages the data.
+Typically, the client will be in a high performance computing (HPC) cluster system while the server in a separate system---e.g. a virtual private server (VPS)---to avoid long running jobs.
 
-\subsection{Benchmarking Workflow}
-\subsection{System Requirements}
-\subsection{Design Rationale}
+\emph{Server} manages the data in the database.
+It receives events through a TCP socket and optionally send replies.
+To achieve extensibility, the server maintains a specified set of \emph{observers}, each listening for related events.
+The events are distributed through a publisher-subscriber design pattern.
+The observer will then executes its jobs, such as inserting data to the database.
+
+\emph{Bootstrapper} is a component that will read the configuration file from the user, prepare the computing environment, and then tell the server $R \in C \times I$, the set of benchmark runs that will be executed.
+Among the things prepared are the tools, benchmark instances, and database schema.
+Preparing the specified tools and instances may additionally include downloading and running related setting up steps.
+
+\emph{Manager} manages the benchmark workers.
+This component acts as an interface to the underlying job submitting system, or even implements its own job queue as in the case of the \emph{local} manager.
+The manager is responsible for deploying, assigning tasks, and stopping the benchmark workers, making sure they finishes the assigned job.
+
+\emph{Workers} do the heavy computing steps, typically in parallel.
+Because the benchmark run is embarrassingly parallel\footnote{in other words, there is no dependencies between the tasks}, each worker can be run as its own process without interacting with other workers.
+Submitted to a HPC cluster, this allows the computation to be executed as fast as possible.
+A worker is assigned a run $r = (c, i) \in R$ and executes the needed steps for the benchmark run after asking the context from the server.
+The run step is executed in sequence.
+In most cases, one of these steps, called the \emph{executor}, acts as a resource monitor and executes the tool configuration $c$ with the instance $i$.
+The executor then measures and limits the execution of the tool.
+Finally, each step can report its result to the server.
+
+\emph{Analyzer} aggregates the data from the database and analyze it, outputting a presentable result.
+This component is usually used after the benchmarking is finished, but it can also be used to serve a live analysis of a benchmarking in process.
+Analyzer is implemented as a module that can be reused by others.
+This is to encourage code reuse and minimize the effort of doing the common analysis of research results.
 
 
+\subsection{Network architecture}
 
 \begin{figure}
     \input{assets/diagrams/zeromq.tikz}
     \caption{Network architecture}
+    \label{fig:zmq}
 \end{figure}
+
+
+\subsection{Benchmarking Workflow}
+\subsection{Design Rationale}
+
+
 
 \begin{figure}
     \centering
