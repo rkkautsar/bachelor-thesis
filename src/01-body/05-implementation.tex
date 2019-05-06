@@ -1,14 +1,38 @@
 \chapter{\chImplementation}
 \label{ch:implementation}
 
+\section{Design}
+
+\subsection{System Architecture}
+
 \begin{figure}
     \centering
     \input{assets/diagrams/arch.tikz}
     \caption{Overall architecture}
+    \label{fig:architecture}
 \end{figure}
+
+Figure \ref{fig:architecture} shows the architecture of the new benchmarking tool.
+The architecture follows the client-server design pattern.
+The client, typically a HPC cluster system, manages computations.
+Meanwhile, the server manages the data reported by client.
+
+\subsection{Benchmarking Workflow}
+\subsection{System Requirements}
+\subsection{Design Rationale}
+
+
 
 \begin{figure}
     \input{assets/diagrams/zeromq.tikz}
     \caption{Network architecture}
 \end{figure}
 
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{assets/pics/workflow-swimlane.png}
+    \caption{Benchmarking workflow}
+\end{figure}
+
+\section{Implementation}
+\section{Usage Scenario}
