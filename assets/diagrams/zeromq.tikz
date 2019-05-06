@@ -1,5 +1,3 @@
-\usetikzlibrary{shapes,arrows,positioning,fit,backgrounds}
-
 \tikzstyle{bidirectional} = [draw, latex'-latex', line width=1.15pt]
 
 \tikzset{
@@ -29,7 +27,7 @@
         \node (workerdots) {\huge\vdots};
         \pic [above=of workerdots, local bounding box=worker2] (w2) {zmq1={Worker 2}{dealer}};
         \pic [above=2cm of worker2, local bounding box=worker1] (w1) {zmq1={Worker 1}{dealer}};
-        \pic [below=of workerdots, local bounding box=workern] (wn) {zmq1={Worker $n$}{dealer}};
+        \pic [below=of workerdots, local bounding box=workern] (wn) {zmq1={Worker $m$}{dealer}};
 
         \pic [right=3cm of workerdots, local bounding box=server] (s) {zmq2={Gateway}{router}{pub}};
 
