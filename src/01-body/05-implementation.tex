@@ -135,6 +135,11 @@ This allows the flexibility of doing either on-demand analysis or live analysis.
     \label{fig:erd}
 \end{figure}
 
+The benchmarking process is modeled as in the entity-relationship diagram (ERD) shown in Figure \ref{fig:erd}.
+The database stores every configuration defined to support reproducibility.
+Among the core entities are \textsc{run}, \textsc{tool}, \textsc{parameter}, \textsc{limit}, \textsc{step}, \textsc{observer}, and \textsc{task}.
+Some entities like \textsc{parameter} and \textsc{task} are grouped to another intermediate many-to-many entity, that is \textsc{parameterGroup} and \textsc{taskGroup}.
+Other modules, like the ones used as steps, can then register its own model to store its data, such as \textsc{runstatistic} (by the executor module) or \textsc{runnode} (by the system information collector module).
 
 \subsection{Design Rationale}
 
