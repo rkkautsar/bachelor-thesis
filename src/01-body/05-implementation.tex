@@ -101,8 +101,22 @@ This can be corrected with proper synchronization using other messaging pattern 
 
 Figure \ref{fig:swimlane} presents the steps and interactions taken by each actors, namely the Client, Workers, and Server.
 Aside from the already defined Workers and Server in Section \ref{sec:impl.architecture} above, Client represents the actual user interfacing with \OurBenchmarkingTool.
+Note that the figure assumes the server is already started.
 
-% ...
+First, the client uses the bootstrapper to read the configuration and then send a bootstrap event to the server.
+This event includes the needed information for the server to also set up the database schema.
+Then the server replies its readiness to the client.
+After that, the client uses the manager to spawn workers.
+This is the end of the interaction needed by the user.
+
+Then, after being scheduled by the job scheduling system used by the manager, each worker request the context for its assigned run identifier to the server.
+The server replies with the context.
+This includes things such as the tool and its configuration, the input instance, resource limits, etc.
+
+Then come the main computation represented as run steps.
+Each steps is executed sequentially.
+After execution of the step, typically the worker will report the result to the server which in turn publish that event to observers.
+Any observers listening to the event will execute its work, often time this means inserting data to the database. After there is no more run step to execute, the worker sends a finish event to the server and terminates.
 
 As soon as soon as the bootstrapping is done, analysis can be executed from the available data in database.
 This allows the flexibility of doing either on-demand analysis or live analysis.
@@ -110,7 +124,16 @@ This allows the flexibility of doing either on-demand analysis or live analysis.
 
 \subsection{Benchmarking Model}
 
-% TODO: ER Diagram
+\begin{figure}
+    \centering
+    \ifdraft{
+        \dummyfig{TODO: ER Diagram}
+    }{
+        % \includegraphics[width=\textwidth]{assets/pics/workflow-swimlane.png}
+    }
+    \caption{Entity-relationship diagram used by \OurBenchmarkingTool}
+    \label{fig:erd}
+\end{figure}
 
 
 \subsection{Design Rationale}
