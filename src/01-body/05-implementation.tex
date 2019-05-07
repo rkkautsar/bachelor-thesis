@@ -10,8 +10,11 @@ This section discusses the design of \OurBenchmarkingTool~and the rationale behi
 
 \begin{figure}
     \centering
-    % \input{assets/diagrams/arch.tikz}
-    \dummyfig{assets/diagrams/arch.tikz}
+    \ifdraft{
+        \dummyfig{assets/diagrams/arch.tikz}
+    }{
+        \input{assets/diagrams/arch.tikz}
+    }
     \caption{Architecture of \OurBenchmarkingTool}
     \label{fig:architecture}
 \end{figure}
@@ -54,8 +57,11 @@ This is to encourage code reuse and minimize the effort of doing the common anal
 \subsection{Messaging}
 
 \begin{figure}
-    % \input{assets/diagrams/zeromq.tikz}
-    \dummyfig{assets/diagrams/zeromq.tikz}
+    \ifdraft{
+        \dummyfig{assets/diagrams/zeromq.tikz}
+    }{
+        \input{assets/diagrams/zeromq.tikz}
+    }
     \caption{Messaging architecture of \OurBenchmarkingTool}
     \label{fig:zmq}
 \end{figure}
@@ -84,8 +90,11 @@ This can be corrected with proper synchronization using other messaging pattern 
 \subsection{Benchmarking Workflow}
 \begin{figure}
     \centering
-    % \includegraphics[width=\textwidth]{assets/pics/workflow-swimlane.png}
-    \dummyfig{assets/pics/workflow-swimlane.png}
+    \ifdraft{
+        \dummyfig{assets/pics/workflow-swimlane.png}
+    }{
+        \includegraphics[width=\textwidth]{assets/pics/workflow-swimlane.png}
+    }
     \caption{Benchmarking workflow}
     \label{fig:swimlane}
 \end{figure}

@@ -27,6 +27,16 @@
 \usepackage[natbibapa]{apacite}
 \usepackage{doi}
 
+\newcommand{\dummyfig}[1]{
+  \centering
+  \fbox{
+    \begin{minipage}[c][0.33\textheight][c]{0.5\textwidth}
+      \centering{#1}
+    \end{minipage}
+  }
+}
+\usepackage{ifdraft}
+
 \newcolumntype{d}{D{.}{.}{2.3}}
 \newcolumntype{C}{>{\centering}p}
 
