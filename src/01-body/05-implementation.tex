@@ -3,11 +3,15 @@
 
 \section{System Design}
 
+This section discusses the design of \OurBenchmarkingTool~and the rationale behind the design decisions.
+
 \subsection{Architecture}
+\label{sec:impl.architecture}
 
 \begin{figure}
     \centering
-    \input{assets/diagrams/arch.tikz}
+    % \input{assets/diagrams/arch.tikz}
+    \dummyfig{assets/diagrams/arch.tikz}
     \caption{Architecture of \OurBenchmarkingTool}
     \label{fig:architecture}
 \end{figure}
@@ -35,6 +39,7 @@ The manager is responsible for deploying, assigning tasks, and stopping the benc
 Because the benchmark run is embarrassingly parallel\footnote{there is no effort needed to parallelize the problem since there is no dependencies between tasks}, each worker can be run as its own process without interacting with other workers.
 Submitted to a HPC cluster, this allows the computation to be executed as fast as possible.
 A worker is assigned a run identifier and executes the needed steps for the benchmark run after asking the context (i.e. $r = (c, i) \in R$) from the server.
+A worker consists of smaller building blocks called \emph{run steps}.
 The run step is executed in sequence.
 In most cases, one of these steps, called the \emph{executor}, acts as a resource monitor and executes the tool configuration $c$ with the instance $i$.
 The executor then measures and limits the execution of the tool.
@@ -49,7 +54,8 @@ This is to encourage code reuse and minimize the effort of doing the common anal
 \subsection{Messaging}
 
 \begin{figure}
-    \input{assets/diagrams/zeromq.tikz}
+    % \input{assets/diagrams/zeromq.tikz}
+    \dummyfig{assets/diagrams/zeromq.tikz}
     \caption{Messaging architecture of \OurBenchmarkingTool}
     \label{fig:zmq}
 \end{figure}
@@ -78,9 +84,24 @@ This can be corrected with proper synchronization using other messaging pattern 
 \subsection{Benchmarking Workflow}
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{assets/pics/workflow-swimlane.png}
+    % \includegraphics[width=\textwidth]{assets/pics/workflow-swimlane.png}
+    \dummyfig{assets/pics/workflow-swimlane.png}
     \caption{Benchmarking workflow}
+    \label{fig:swimlane}
 \end{figure}
+
+Figure \ref{fig:swimlane} presents the steps and interactions taken by each actors, namely the Client, Workers, and Server.
+Aside from the already defined Workers and Server in Section \ref{sec:impl.architecture} above, Client represents the actual user interfacing with \OurBenchmarkingTool.
+
+% ...
+
+As soon as soon as the bootstrapping is done, analysis can be executed from the available data in database.
+This allows the flexibility of doing either on-demand analysis or live analysis.
+
+
+\subsection{Benchmarking Model}
+
+% TODO: ER Diagram
 
 
 \subsection{Design Rationale}
