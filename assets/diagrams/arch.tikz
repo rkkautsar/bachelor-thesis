@@ -7,7 +7,6 @@
             \draw (-\database@radius,-0.5*\database@segmentheight) arc [start angle=180,end angle=360,x radius=\database@radius, y radius=\database@aspectratio*\database@radius];
             \draw (-\database@radius,1.5*\database@segmentheight) -- ++(0,-3*\database@segmentheight) arc [start angle=180,end angle=360,x radius=\database@radius, y radius=\database@aspectratio*\database@radius] -- ++(0,3*\database@segmentheight);
         },
-        fill=white,
         minimum width=2*\database@radius + \pgflinewidth,
         minimum height=3*\database@segmentheight + 2*\database@aspectratio*\database@radius + \pgflinewidth,
     },
@@ -20,31 +19,49 @@
 }
 \makeatother
 
-\tikzstyle {block} = [draw, fill=white, rectangle, text width=4cm, minimum height=1cm, align=center]
+\tikzstyle {block} = [draw, text width=4cm, minimum height=1cm, align=center]
+\tikzstyle {miniblock} = [draw=gray, dashed, text width=3cm, inner sep=1ex]
 
 \begin{tikzpicture}
     \node [block] (bootstrapper) {Bootstrapper};
     \node [block, below=of bootstrapper] (manager) {Manager};
-    \node [block, below=1.5cm of manager] (worker) {Workers};
-    \draw [-latex'] (manager) -- (worker) node [midway, fill=red!5] {manages};
+    \node [block, below=1.5cm of manager, inner sep=0pt] (worker) {
+        \begin{tikzpicture}
+            \matrix [row sep=1em] {
+                \node {Worker}; \\
+                \node [miniblock] {\footnotesize Collect System Info}; \\
+                \node [miniblock] {\footnotesize Execute run}; \\
+                \node [miniblock] {\footnotesize Validate result}; \\
+                \node {\dots}; \\
+            };
+        \end{tikzpicture}
+    };
+    \draw [-latex'] (manager) -- (worker) node [midway, fill=white] {manages};
 
     \node [block, right=3cm of bootstrapper] (server) {Server};
     \node[database,database radius=0.5cm,database segment height=0.3cm, below=of server] (database) {};
     \node [right=0.1cm of database] {\rotatebox{-90}{Database}};
-    \node [block, below=of database] (analyzer) {Analyzer};
+    \node [block, below=of database, inner sep=0pt] (analyzer) {
+        \begin{tikzpicture}
+            \matrix [row sep=1em] {
+                \node {Analyzer}; \\
+                \node [miniblock] {\footnotesize Summarize runtime}; \\
+                \node [miniblock] {\footnotesize Cactus plot}; \\
+                \node {\dots}; \\
+            };
+        \end{tikzpicture}
+    };
     \draw (server) -- (database);
     \draw (database) -- (analyzer);
 
     \draw [-latex'] (bootstrapper) -- (server) node [midway, fill=white] {$R \in C \times I$};
-    \path [-latex', transform canvas={xshift=-0.2cm}] (server) edge node [sloped, above, pos=0.33] {$(c,i) \in R$} (worker);
-    \path [-latex', transform canvas={xshift=0.2cm}] (worker) edge node [sloped, below, pos=0.33] {reports to} (server);
+    \path [-latex', transform canvas={xshift=-0.1cm}] (server) edge node [sloped, above, pos=0.33, fill=white] {$(c,i) \in R$} (worker);
+    \path [-latex', transform canvas={xshift=0.1cm}] (worker) edge node [sloped, below, pos=0.33, fill=white] {reports to} (server);
 
     \begin{scope}[on background layer]
-        \node[fill=red!5, label=above:\sffamily\textsc{client-side},  rounded corners, fit=(bootstrapper)(manager)(worker)] (clientenv) {};
-        \node[fill=blue!5, label=above:\sffamily\textsc{server-side},  rounded corners, fit=(server)(database)(analyzer)] (serverenv) {};
-        \node [block, above left=0.2cm of worker, anchor=north west, opacity=0.3] (workerbg2) {Worker};
-        \node [block, above left=0.1cm of worker, anchor=north west, opacity=0.5] (workerbg1) {Worker};
-        \path [draw=black!30, dashed, ] ([xshift=1.5cm] clientenv.north east) edge node [sloped, near end, fill=white, text=black!60] {TCP} ([xshift=1.5cm] clientenv.south east);
+        \node[draw=red!50, dashed, inner sep=1ex, label=above:\sffamily\textsc{client-side},  rounded corners, fit=(bootstrapper)(manager)(worker)] (clientenv) {};
+        \node[draw=blue!50, dashed, inner sep=1ex, label=above:\sffamily\textsc{server-side},  rounded corners, fit=(server)(database)(analyzer)] (serverenv) {};
+        \path [draw=black!30, dashed] ([xshift=1.5cm] clientenv.north east) edge node [sloped, near end, text=black!60, fill=white] {TCP} ([xshift=1.5cm] clientenv.south east);
     \end{scope}
 
 \end{tikzpicture}

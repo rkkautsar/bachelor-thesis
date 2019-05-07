@@ -32,9 +32,9 @@ This component acts as an interface to the underlying job submitting system, or 
 The manager is responsible for deploying, assigning tasks, and stopping the benchmark workers, making sure they finishes the assigned job.
 
 \emph{Workers} do the heavy computing steps, typically in parallel.
-Because the benchmark run is embarrassingly parallel\footnote{in other words, there is no dependencies between the tasks}, each worker can be run as its own process without interacting with other workers.
+Because the benchmark run is embarrassingly parallel\footnote{there is no effort needed to parallelize the problem since there is no dependencies between tasks}, each worker can be run as its own process without interacting with other workers.
 Submitted to a HPC cluster, this allows the computation to be executed as fast as possible.
-A worker is assigned a run $r = (c, i) \in R$ and executes the needed steps for the benchmark run after asking the context from the server.
+A worker is assigned a run identifier and executes the needed steps for the benchmark run after asking the context (i.e. $r = (c, i) \in R$) from the server.
 The run step is executed in sequence.
 In most cases, one of these steps, called the \emph{executor}, acts as a resource monitor and executes the tool configuration $c$ with the instance $i$.
 The executor then measures and limits the execution of the tool.
@@ -42,21 +42,23 @@ Finally, each step can report its result to the server.
 
 \emph{Analyzer} aggregates the data from the database and analyze it, outputting a presentable result.
 This component is usually used after the benchmarking is finished, but it can also be used to serve a live analysis of a benchmarking in process.
-Analyzer is implemented as a module that can be reused by others.
+Analyzer also consists of steps that is implemented as a modular, reusable module.
 This is to encourage code reuse and minimize the effort of doing the common analysis of research results.
 
 
-\subsection{Network architecture}
+\subsection{Messaging}
 
 \begin{figure}
     \input{assets/diagrams/zeromq.tikz}
-    \caption{Network architecture}
+    \caption{Messaging architecture of \OurBenchmarkingTool}
     \label{fig:zmq}
 \end{figure}
 
-Figure \ref{fig:zmq} gives an overview of the network architecture and its method of communication.
+Figure \ref{fig:zmq} gives an overview of the messaging architecture and the overall network of \OurBenchmarkingTool.
+Each process is independent to each other and can be separated across virtual nodes.
+This means it can be implemented in a single node, in a cluster system, or even across clusters.
 Data is transported through TCP for inter-process communication, and through local in-process (inter-thread) transportation for intra-process communication.
-Communication follows some basic communication patterns used by the \O{}MQ framework, namely \textsc{router-dealer} and \textsc{pub-sub}.
+Communication follows some basic messaging patterns used by the \O{}MQ (ZeroMQ) messaging framework, namely \textsc{router-dealer} and \textsc{pub-sub}.
 
 The \textsc{router-dealer} patterns allows two-way communication between the party \citep{hintjens2013zeromq}.
 This is used in the communication between the worker and the server gateway.
@@ -64,18 +66,25 @@ The patterns allows many workers to send events to the server and optionally req
 The message sent to a \textsc{router} socket is enveloped by a unique identifier, allowing the \textsc{router} to reply to the correct \textsc{dealer}.
 This powerful pattern allows reliable many to one communication between the workers and the server gateway.
 
+On the other hand, \textsc{pub-sub} patterns follows the publisher-subscriber pattern as its name suggests \citep{hintjens2013zeromq}.
+This is a fan-out pattern, on which the publisher just publish the message without caring if the message is received.
+Both the publisher and subscriber does not know each other.
+The \textsc{pub} socket just publish the message to the socket, and the \textsc{sub} sockets listen to one or more `topic'.
+This allows fast distribution of event message received by the server gateway to the possibly many observers.
+The downside is the distribution is not reliable since the message is just thrown without confirmation if the other party is ready.
+This can be corrected with proper synchronization using other messaging pattern if needed.
 
 
 \subsection{Benchmarking Workflow}
-\subsection{Design Rationale}
-
-
-
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{assets/pics/workflow-swimlane.png}
     \caption{Benchmarking workflow}
 \end{figure}
+
+
+\subsection{Design Rationale}
+
 
 \section{Implementation}
 \section{Usage Scenario}

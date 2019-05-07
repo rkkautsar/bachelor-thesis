@@ -1,9 +1,9 @@
-\tikzstyle{bidirectional} = [draw, latex'-latex', line width=1.15pt]
+\tikzstyle{bidirectional} = [draw, latex'-latex']
 
 \tikzset{
     pics/zmq2/.style n args = {3}{
         code = {
-        \node[fill=white, minimum height=3em, align=center, text width=9em] (-A) at (0,0) {#1};
+        \node[minimum height=3em, align=center] (-A) at (0,0) {#1};
         \node[fill=black!5, anchor=north east, text width=4em, align=center] (-B) at (-A.south) {\textsc{#2}};
         \node[fill=black!5, anchor=north west, text width=4em, align=center] (-C) at (-A.south) {\textsc{#3}};
         \node[inner sep=0pt,draw,rounded corners,fit=(-A)(-B)(-C)] {};
@@ -13,7 +13,7 @@
     },
     pics/zmq1/.style n args = {2}{
         code = {
-        \node[fill=white, minimum height=3em, align=center, text width=5em] (-A) at (0,0) {#1};
+        \node[minimum height=3em, align=center, text width=5em] (-A) at (0,0) {#1};
         \node[fill=black!5, anchor=north, text width=5em, align=center] (-B) at (-A.south) {\textsc{#2}};
         \draw (-B.north west) -- (-B.north east);
         \node[inner sep=0pt,draw,rounded corners,fit=(-A)(-B)] {};
@@ -36,13 +36,13 @@
         \pic [above=of observer2, local bounding box=observer1] (o1) {zmq1={Observer 1}{sub}};
         \pic [below=of observerdots, local bounding box=observern] (on) {zmq1={Observer $n$}{sub}};
 
-        \draw [bidirectional] (w1-B.east) -- (s-B.west);
-        \draw [bidirectional] (w2-B.east) -- (s-B.west);
-        \draw [bidirectional] (wn-B.east) -- (s-B.west);
+        \path [bidirectional] (w1-B.east) -- (s-B.west);
+        \path [bidirectional] (w2-B.east) -- (s-B.west);
+        \path [bidirectional] (wn-B.east) -- (s-B.west);
 
-        \draw [bidirectional] (s-C.east) -- (o1-B.west);
-        \draw [bidirectional] (s-C.east) -- (o2-B.west);
-        \draw [bidirectional] (s-C.east) -- (on-B.west);
+        \path [bidirectional] (s-C.east) -- (o1-B.west);
+        \path [bidirectional] (s-C.east) -- (o2-B.west);
+        \path [bidirectional] (s-C.east) -- (on-B.west);
 
         \node [inner sep=.5cm, text=red!60!black, above, rotate=90, text width=4em] (w1label) at (worker1.west) {\sffamily\textsc{worker process}};
         \node [inner sep=.5cm, text=red!60!black, above, rotate=90, text width=4em] (w2label) at (worker2.west) {\sffamily\textsc{worker process}};
@@ -53,10 +53,10 @@
             \node[fit=(worker1)(worker2)(workerdots)(workern)] (workers) {};
             \node[fit=(observer1)(observer2)(observerdots)(observern)] (observers) {};
 
-            \node[fill=red!5, rounded corners, fit=(worker1)(w1label)] {};
-            \node[fill=red!5, rounded corners, fit=(worker2)(w2label)] {};
-            \node[fill=red!5, rounded corners, fit=(workern)(wnlabel)] {};
-            \node[fill=blue!5, rounded corners, fit=(server)(observers)] (serverenv) {};
+            \node[draw=red!50, inner sep=1ex, dashed, rounded corners, fit=(worker1)(w1label)] {};
+            \node[draw=red!50, inner sep=1ex, dashed, rounded corners, fit=(worker2)(w2label)] {};
+            \node[draw=red!50, inner sep=1ex, dashed, rounded corners, fit=(workern)(wnlabel)] {};
+            \node[draw=blue!50, inner sep=2ex, dashed, rounded corners, fit=(server)(observers)] (serverenv) {};
         \end{scope}
 
         \node [inner sep=.5cm, text=blue!60!black, below right] at (serverenv.north west) {\sffamily\textsc{server process}};
