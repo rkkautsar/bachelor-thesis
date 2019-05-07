@@ -3,7 +3,7 @@
 
 \section{System Design}
 
-This section discusses the design of \OurBenchmarkingTool~and the rationale behind the design decisions.
+This section discusses the design of \OurBenchmarkingTool~and its rationale.
 
 \subsection{Architecture}
 \label{sec:impl.architecture}
@@ -22,7 +22,14 @@ This section discusses the design of \OurBenchmarkingTool~and the rationale behi
 Figure \ref{fig:architecture} shows the architecture of \OurBenchmarkingTool, our attempt on a new benchmarking tool fulfilling most of the defined requirements.
 The architecture follows the client-server design pattern, communicating through Transmission Control Protocol (TCP).
 The client manages the heavy computation while the server manages the data.
-Typically, the client will be in a high performance computing (HPC) cluster system while the server in a separate system---e.g. a virtual private server (VPS)---to avoid long running jobs.
+Typically, the client will be in a high performance computing (HPC) cluster system while the server in a separate system, e.g. a virtual private server (VPS).
+
+This decision to use client-server architecture is made to handle concurrent writes to the database, which is difficult to achieve in some database engines.
+With a single server process to manage the database, the writes can be queued in the application level.
+This provides a clean separation of computation and data.
+
+Furthermore, the server can be separated to another system outside of the cluster system, allowing avoidance of filesystem-related issues such as locking issues on NFS (Network File System).
+Long running job is arguably an anti-pattern in job scheduling, because not only it will take a long time before it's scheduled, it will also prevent other jobs from being scheduled.
 
 \emph{Server} manages the data in the database.
 It receives events through a TCP socket and optionally send replies.
@@ -33,20 +40,27 @@ The observer will then executes its jobs, such as inserting data to the database
 \emph{Bootstrapper} is a component that will read the configuration file from the user, prepare the computing environment, and then tell the server $R \in C \times I$, the set of benchmark runs that will be executed.
 Among the things prepared are the tools, benchmark instances, and database schema.
 Preparing the specified tools and instances may additionally include downloading and running related setting up steps.
+In short, the bootstrapping is also separated to the computation-related and data-related between the client-side and server-side.
 
 \emph{Manager} manages the benchmark workers.
 This component acts as an interface to the underlying job submitting system, or even implements its own job queue as in the case of the \emph{local} manager.
 The manager is responsible for deploying, assigning tasks, and stopping the benchmark workers, making sure they finishes the assigned job.
+This allows the benchmarking tool to be agnostic about the execution environment and can be extended in many ways.
 
 \emph{Workers} do the heavy computing steps, typically in parallel.
 Because the benchmark run is embarrassingly parallel\footnote{there is no effort needed to parallelize the problem since there is no dependencies between tasks}, each worker can be run as its own process without interacting with other workers.
 Submitted to a HPC cluster, this allows the computation to be executed as fast as possible.
 A worker is assigned a run identifier and executes the needed steps for the benchmark run after asking the context (i.e. $r = (c, i) \in R$) from the server.
+
 A worker consists of smaller building blocks called \emph{run steps}.
 The run step is executed in sequence.
 In most cases, one of these steps, called the \emph{executor}, acts as a resource monitor and executes the tool configuration $c$ with the instance $i$.
 The executor then measures and limits the execution of the tool.
 Finally, each step can report its result to the server.
+
+The worker only executes one specific benchmark run as opposed to requesting many jobs as its available.
+This is also to prevent worker to be a long-running job.
+A worker maps nicely to a job in the HPC cluster system.
 
 \emph{Analyzer} aggregates the data from the database and analyze it, outputting a presentable result.
 This component is usually used after the benchmarking is finished, but it can also be used to serve a live analysis of a benchmarking in process.
@@ -70,7 +84,11 @@ Figure \ref{fig:zmq} gives an overview of the messaging architecture and the ove
 Each process is independent to each other and can be separated across virtual nodes.
 This means it can be implemented in a single node, in a cluster system, or even across clusters.
 Data is transported through TCP for inter-process communication, and through local in-process (inter-thread) transportation for intra-process communication.
-Communication follows some basic messaging patterns used by the \O{}MQ (ZeroMQ) messaging framework, namely \textsc{router-dealer} and \textsc{pub-sub}.
+Communication follows some basic messaging patterns used by the \O MQ (ZeroMQ)\footnote{\href{http://zeromq.org/}{http://zeromq.org/}} messaging framework, namely \textsc{router-dealer} and \textsc{pub-sub}.
+
+\First~decided to use \O MQ to avoid reinventing the wheel and just focus the core functionalities.
+\O MQ provides many messaging patterns for many use cases.
+It is also lightweight and easily available in most platform with a lot of supported languages.
 
 The \textsc{router-dealer} patterns allows two-way communication between the party \citep{hintjens2013zeromq}.
 This is used in the communication between the worker and the server gateway.
@@ -124,6 +142,10 @@ This allows the flexibility of doing either on-demand analysis or live analysis.
 
 \subsection{Benchmarking Model}
 
+\First~decided to define the data as relational model of SQL, as opposed to nonrelational model of NoSQL.
+The reason is because SQL provides an easy and fast interface for querying and aggregating data, tasks that occur often when analyzing benchmark results.
+The benchmarking process itself can be defined nicely into structured relations, centering on benchmark runs.
+
 \begin{figure}
     \centering
     \ifdraft{
@@ -139,10 +161,17 @@ The benchmarking process is modeled as in the entity-relationship diagram (ERD) 
 The database stores every configuration defined to support reproducibility.
 Among the core entities are \textsc{run}, \textsc{tool}, \textsc{parameter}, \textsc{limit}, \textsc{step}, \textsc{observer}, and \textsc{task}.
 Some entities like \textsc{parameter} and \textsc{task} are grouped to another intermediate many-to-many entity, that is \textsc{parameterGroup} and \textsc{taskGroup}.
+It can be seen that the relationship centers around the \textsc{run} entity.
+
 Other modules, like the ones used as steps, can then register its own model to store its data, such as \textsc{runstatistic} (by the executor module) or \textsc{runnode} (by the system information collector module).
+This supports separation of concern and encapsulation of the module.
+User can use community-created module without having to consider its data model.
 
-\subsection{Design Rationale}
-
+In fact, it is also possible to move all the data that is normally stored in the filesystem into the SQL table.
+Many SQL database engine provides a BLOB data type to store binary data.
+For example, \textsc{SQLite} even has an archiving tool called \code{sqlar}\footnote{\href{https://www.sqlite.org/sqlar}{https://www.sqlite.org/sqlar}} that use the database as storage just like a ZIP archive.
+This allow the database to store everything needed to reproduce the benchmark.
+But \first~decided not to do it to make debugging runs easier, a task which also occur surprisingly often alongside benchmarking.
 
 \section{Implementation}
 \section{Usage Scenario}
