@@ -179,6 +179,16 @@ This section presents the implementation of \OurBenchmarkingTool.
 
 \subsection{Development Environment}
 
+\First~choose Python\footnote{specifically Python 3. Python 2 will not be maintained after 2020.} as the main programming language.
+It is a widely available language with huge community.
+Python also has good interopability with C and C++, it's relatively easy to write wrappers of C libraries to Python.
+That said, there is a huge collection of publicly available python packages in the Python Package Index (pypi)\footnote{\href{https://pypi.org/}{https://pypi.org/}}.
+This allows for rapid development.
+
+Being an interpreter and not a compiled language, Python is relatively slow.
+For this project, speed can be sacrificed in place of developer experience.
+Most of the CPU usage will be used by the benchmarked program anyway, so the development speed is arguably more important.
+
 \subsection{Configuration}
 
 \subsection{Module}
