@@ -176,6 +176,8 @@ But \first~decided not to do it to make debugging runs easier, a task which also
 \section{Implementation}
 
 This section presents details regarding the implementation of \OurBenchmarkingTool.
+The implementation is attached in the appendix.
+It is also available as Git repository: \href{https://github.com/rkkautsar/reprobench}{\code{https://github.com/rkkautsar/reprobench}} and pypi package: \href{https://pypi.org/project/reprobench/}{\code{https://pypi.org/project/reprobench/}}.
 
 \subsection{Development Environment}
 
@@ -196,8 +198,8 @@ This allow reproducible development environment across machines without influenc
 Additionally, testing if the software works under specific version of Python is a trivial task.
 \textsc{poetry} on the other hand, manages the dependencies in a virtual environment with version locking.
 This allows separate, reproducible dependencies across projects.
-\textsc{poetry} also provide simple API to package and publish the project to pypi\footnote{\OurBenchmarkingTool~is published in pypi under \href{https://pypi.org/project/reprobench/}{\code{reprobench}} name}.
-Under UNIX, setting up both tools is easy and works without superuser privilege, as seen in \lst~\ref{lst:impl.setup.pyenv.poetry}.
+\textsc{poetry} also provide simple API to package and publish the project to pypi.
+Under a UNIX system, setting up both tools is easy and works without superuser privilege, as seen in \lst~\ref{lst:impl.setup.pyenv.poetry}.
 
 \begin{listing}
     \begin{minted}{bash}
@@ -210,9 +212,71 @@ $ pip install poetry
     \label{lst:impl.setup.pyenv.poetry}
 \end{listing}
 
+The source code is organized by the Git version control and made publicly available in GitHub.
+This allows others to freely contribute to the project and also encourage them to also make their modules open-source.
+Additionally, the source code is licensed under the MIT License to allow permissive usage.
+
+\subsection{Project Structure}
+
+The source code organization and their brief descriptions is listed below:
+\begin{itemize}
+    \item \emph{examples/}\\
+    This directory provides a collection of working usage examples demonstrating various features of the benchmarking tool.
+
+    \item \emph{pyproject.toml}\\
+    Configuration file describing the various dependencies used and the packaging options used for publishing purposes.
+
+    \item \emph{reprobench/console/}\\
+    This directory consists of the implementations of the command line interface (CLI), including the \code{reprobench} root command and related setup for the subcommands.
+
+    \item \emph{reprobench/core/}\\
+    The core implementation of \OurBenchmarkingTool~is organized in this directory.
+    This includes generic classes, database models, and implementation for the worker, server, bootstrapper, and analyzer components.
+
+    \item \emph{reprobench/executors/}\\
+    Implementations of the special run step doing the actual execution and monitoring of the tools and its input.
+    This includes the accompanying observer, its database model and related events.
+
+    \item \emph{reprobench/managers/}\\
+    Implementations of the manager component and its CLI subcommands under the \code{reprobench manage} subcommand, e.g. \code{reprobench manage local} or \code{reprobench manage slurm}.
+    In the future, it is preferable for each manager to be separated into its own package.
+
+    \item \emph{reprobench/statistics/}\\
+    This directory consists of reference implementations of the analysis step modules.
+    It is encouraged to implement analysis steps as separate packages and only put the most general ones in the main project.
+
+    \item \emph{reprobench/task\_sources/}\\
+    This directory consists of various implementation for extracting tasks from the configuration.
+    Currently, this includes local filesystem sourced tasks, URL-based remote sourced tasks, and Digital Object Identifier (DOI) sourced tasks.
+
+    \item \emph{reprobench/tools/}\\
+    This directory implements some base classes to be extended for writing tool interfaces.
+    It is also possible in the future to allow tools to be defined only from the configuration, further lowering the barrier for using this benchmarking tool.
+    Writing tool interface is discussed in Section \ref{sec:impl.tools}.
+
+
+\end{itemize}
+
 
 \subsection{Configuration}
 
+\begin{listing}
+    \inputminted{yaml}{assets/listings/reprobench/examples/sat/benchmark.yml}
+    \caption{Example of \OurBenchmarkingTool~configuration file}
+    \label{lst:impl.config.example}
+\end{listing}
+
+Configuration for a benchmark is done using a YAML file, provided to the bootstrapper.
+An example configuration file is shown in \lst~\ref{lst:impl.config.example}.
+\First~choose YAML file over other format because of it is readable and easy to edit by hand.
+It is also widely adopted and implemented in various programming languages.
+\First~also considered to use XML or JSON but find both to be harder to edit by hand.
+
+``YAML Ain’t Markup Language'', recursively abbreviated to YAML, is a data serialization language designed to be human-friendly, portable between programming languages, and easy to use for every tasks \citep{ben2005yaml}.
+While it's easy to understand at a glance, it has an arguably complex specification allowing for various use cases.
+Avoiding its complexity, \first~choose to use \textsc{StrictYAML}\footnote{\href{https://github.com/crdoconnor/strictyaml}{https://github.com/crdoconnor/strictyaml}}, a relatively simple implementation of a small subset of the YAML specification.
+\textsc{StrictYAML} also allows definition of a schema to provide type-safe parsing.
+The schema for \OurBenchmarkingTool~configuration file is defined in \emph{reprobench/core/schema.py}.
 
 
 \subsection{Module}
@@ -229,5 +293,21 @@ $ pip install poetry
 
 \subsection{Steps}
 
+\subsection{Tools}
+\label{sec:impl.tools}
+
+\subsection{Task Sources}
+
+\subsection{Command Line Interface}
+
 
 \section{Usage Scenario}
+
+\subsection{Installation}
+
+\subsection{Benchmark Setup}
+
+\subsection{Running Benchmark}
+
+\subsection{Analysis}
+
