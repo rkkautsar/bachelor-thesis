@@ -153,7 +153,7 @@ The benchmarking process itself can be defined nicely into structured relations,
     }{
         \includegraphics[width=\textwidth]{assets/pics/erd.png}
     }
-    \caption{Entity-relationship diagram used by \OurBenchmarkingTool}
+    \caption{Entity-relationship diagram of \OurBenchmarkingTool's model}
     \label{fig:erd}
 \end{figure}
 
@@ -175,11 +175,12 @@ But \first~decided not to do it to make debugging runs easier, a task which also
 
 \section{Implementation}
 
-This section presents the implementation of \OurBenchmarkingTool.
+This section presents details regarding the implementation of \OurBenchmarkingTool.
 
 \subsection{Development Environment}
 
-\First~choose Python\footnote{specifically Python 3. Python 2 will not be maintained after 2020.} as the main programming language.
+\First~choose Python as the main programming language.
+Specifically, Python 3 is used as its predecessor Python 2 will meet its end of the line and not be supported anymore in 2020.
 It is a widely available language with huge community.
 Python also has good interopability with C and C++, it's relatively easy to write wrappers of C libraries to Python.
 That said, there is a huge collection of publicly available python packages in the Python Package Index (pypi)\footnote{\href{https://pypi.org/}{https://pypi.org/}}.
@@ -189,7 +190,30 @@ Being an interpreter and not a compiled language, Python is relatively slow.
 For this project, speed can be sacrificed in place of developer experience.
 Most of the CPU usage will be used by the benchmarked program anyway, so the development speed is arguably more important.
 
+\First~use a combination of \textsc{pyenv}\footnote{\href{https://github.com/pyenv/pyenv}{https://github.com/pyenv/pyenv}} and \textsc{poetry}\footnote{\href{https://github.com/sdispater/poetry}{https://github.com/sdispater/poetry}} to manage dependencies and package publishing.
+With \textsc{pyenv}, it is easy to switch between specific versions of Python and also pin a project to use specific version of Python.
+This allow reproducible development environment across machines without influence from other projects using different Python version.
+Additionally, testing if the software works under specific version of Python is a trivial task.
+\textsc{poetry} on the other hand, manages the dependencies in a virtual environment with version locking.
+This allows separate, reproducible dependencies across projects.
+\textsc{poetry} also provide simple API to package and publish the project to pypi\footnote{\OurBenchmarkingTool~is published in pypi under \href{https://pypi.org/project/reprobench/}{\code{reprobench}} name}.
+Under UNIX, setting up both tools is easy and works without superuser privilege, as seen in \lst~\ref{lst:impl.setup.pyenv.poetry}.
+
+\begin{listing}
+    \begin{minted}{bash}
+$ curl https://pyenv.run | bash
+$ pyenv install "3.7.2"
+$ pyenv global "3.7.2"
+$ pip install poetry
+    \end{minted}
+    \caption{Setting up \textsc{pyenv} and \textsc{poetry}}
+    \label{lst:impl.setup.pyenv.poetry}
+\end{listing}
+
+
 \subsection{Configuration}
+
+
 
 \subsection{Module}
 

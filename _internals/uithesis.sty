@@ -23,6 +23,10 @@
 % Package
 %-----------------------------------------------------------------------------%
 
+
+\usepackage[bottom]{footmisc}
+
+
 %
 % From The tocbibind package [author: Peter Wilson, Herries Press]:
 % The tocbibind package can be used to add document elements like a
@@ -160,7 +164,8 @@
 \usepackage{caption}
 \SetupFloatingEnvironment{listing}{name=\bo{Listing}}
 \setminted{
-	style=pastie,
+	% style=pastie,
+	% style=emacs,
 	autogobble,
 	% linenos,
 	fontsize=\footnotesize,
@@ -181,8 +186,8 @@
 \usepackage[framemethod=TikZ]{mdframed}
 \definecolor{code_bg}{rgb}{0.99,0.99,0.99}
 \mdfdefinestyle{code}{
-	backgroundcolor=code_bg,
-	roundcorner=2pt,
+	% backgroundcolor=code_bg,
+	% roundcorner=2pt,
 	linewidth=0pt
 }
 \surroundwithmdframed[style=code]{minted}
@@ -354,3 +359,5 @@
 %
 %
 \newcommand{\lst}{Listing}
+
+
