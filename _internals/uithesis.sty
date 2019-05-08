@@ -161,7 +161,7 @@
 \usepackage[titles]{tocloft}
 \newlistof{listing}{lol}{List of Listings}
 \usepackage[outputdir=out, cache=false, newfloat]{minted}
-\usepackage{caption}
+% \usepackage{caption}
 \SetupFloatingEnvironment{listing}{name=\bo{Listing}}
 \setminted{
 	style=friendly,
@@ -188,7 +188,7 @@
 \mdfdefinestyle{code}{
 	% backgroundcolor=code_bg,
 	% roundcorner=2pt,
-	linewidth=0pt
+	linewidth=0pt,
 }
 \surroundwithmdframed[style=code]{minted}
 
