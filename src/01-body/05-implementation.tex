@@ -70,6 +70,7 @@ This is to encourage code reuse and minimize the effort of doing the common anal
 
 
 \subsection{Messaging}
+\label{sec:impl.messaging}
 
 \begin{figure}
     \ifdraft{
@@ -85,9 +86,9 @@ Figure \ref{fig:zmq} gives an overview of the messaging architecture and the ove
 Each process is independent to each other and can be separated across virtual nodes.
 This means it can be implemented in a single node, in a cluster system, or even across clusters.
 Data is transported through TCP for inter-process communication, and through local in-process (inter-thread) transportation for intra-process communication.
-Communication follows some basic messaging patterns used by the \O MQ (ZeroMQ)\footnote{\href{http://zeromq.org/}{http://zeromq.org/}} messaging framework, namely \textsc{router-dealer} and \textsc{pub-sub}.
+Communication follows some basic messaging patterns used by the \O MQ (ZeroMQ)\footlink{http://zeromq.org/} messaging framework, namely \textsc{router-dealer} and \textsc{pub-sub}.
 
-\First~decided to use \O MQ to avoid reinventing the wheel and just focus the core functionalities.
+\First~decided to use \O MQ to avoid reinventing the wheel and just focus on the core functionalities.
 \O MQ provides many messaging patterns for many use cases.
 It is also lightweight and easily available in most platform with a lot of supported languages.
 
@@ -100,7 +101,7 @@ This powerful pattern allows reliable many to one communication between the work
 On the other hand, \textsc{pub-sub} patterns follows the publisher-subscriber pattern as its name suggests \citep{hintjens2013zeromq}.
 This is a fan-out pattern, on which the publisher just publish the message without caring if the message is received.
 Both the publisher and subscriber does not know each other.
-The \textsc{pub} socket just publish the message to the socket, and the \textsc{sub} sockets listen to one or more `topic'.
+The \textsc{pub} socket just publish the message to the socket, and the \textsc{sub} sockets listen to one or more `topics'.
 This allows fast distribution of event message received by the server gateway to the possibly many observers.
 The downside is the distribution is not reliable since the message is just thrown without confirmation if the other party is ready.
 This can be corrected with proper synchronization using other messaging pattern if needed.
@@ -170,7 +171,7 @@ User can use community-created module without having to consider its data model.
 
 In fact, it is also possible to move all the data that is normally stored in the filesystem into the SQL table.
 Many SQL database engine provides a BLOB data type to store binary data.
-For example, \textsc{SQLite} even has an archiving tool called \code{sqlar}\footnote{\href{https://www.sqlite.org/sqlar}{https://www.sqlite.org/sqlar}} that use the database as storage just like a ZIP archive.
+For example, \textsc{SQLite} even has an archiving tool called \code{sqlar}\footlink{https://www.sqlite.org/sqlar} that use the database as storage just like a ZIP archive.
 This allow the database to store everything needed to reproduce the benchmark.
 But \first~decided not to do it to make debugging runs easier, a task which also occur surprisingly often alongside benchmarking.
 
@@ -186,14 +187,14 @@ It is also available as Git repository: \href{https://github.com/rkkautsar/repro
 Specifically, Python 3 is used as its predecessor Python 2 will meet its end of the line and not be supported anymore in 2020.
 It is a widely available language with huge community.
 Python also has good interopability with C and C++, it's relatively easy to write wrappers of C libraries to Python.
-That said, there is a huge collection of publicly available python packages in the Python Package Index (pypi)\footnote{\href{https://pypi.org/}{https://pypi.org/}} readily installable through \code{pip} tool, which often distributed alongside Python.
+That said, there is a huge collection of publicly available python packages in the Python Package Index (pypi)\footlink{https://pypi.org/} readily installable through \code{pip} tool, which often distributed alongside Python.
 This allows for rapid software development by reducing common implementation.
 
 Being an interpreter and not a compiled language, Python is relatively slow.
 For this project, speed can be sacrificed in place of developer experience.
 Most of the CPU usage will be used by the benchmarked program anyway, so the development speed is arguably more important.
 
-\First~use a combination of \textsc{pyenv}\footnote{\href{https://github.com/pyenv/pyenv}{https://github.com/pyenv/pyenv}} and \textsc{poetry}\footnote{\href{https://github.com/sdispater/poetry}{https://github.com/sdispater/poetry}} to manage dependencies and package publishing.
+\First~use a combination of \textsc{pyenv}\footlink{https://github.com/pyenv/pyenv} and \textsc{poetry}\footlink{https://github.com/sdispater/poetry} to manage dependencies and package publishing.
 With \textsc{pyenv}, it is easy to switch between specific versions of Python and also pin a project to use specific version of Python.
 This allow reproducible development environment across machines without influence from other projects using different Python version.
 Additionally, testing if the software works under specific version of Python is a trivial task.
@@ -278,7 +279,7 @@ It is also widely adopted and implemented in various programming languages.
 
 ``YAML Ain’t Markup Language'', recursively abbreviated to YAML, is a data serialization language designed to be human-friendly, portable between programming languages, and easy to use for every tasks \citep{ben2005yaml}.
 While it's easy to understand at a glance, it has an arguably complex specification allowing for various use cases.
-Avoiding its complexity, \first~choose to use \textsc{StrictYAML}\footnote{\href{https://github.com/crdoconnor/strictyaml}{https://github.com/crdoconnor/strictyaml}}, a relatively simple implementation of a small subset of the YAML specification.
+Avoiding its complexity, \first~choose to use \textsc{StrictYAML}\footlink{https://github.com/crdoconnor/strictyaml}, a relatively simple implementation of a small subset of the YAML specification.
 \textsc{StrictYAML} also allows definition of a schema to provide type-safe parsing.
 The schema for \OurBenchmarkingTool~configuration file is defined in \emph{reprobench/core/schema.py}.
 
@@ -315,19 +316,78 @@ In short, the server is implemented in three main phases.
 The first phase is setting up the database and sockets.
 Then the server waits for a \textsc{bootstrap} event from the client, as mentioned in Section \ref{sec:impl.design} earlier.
 As soon as the database is bootstrapped, the server query the needed observers and register the respective modules.
-Finally, the server spawn greenlets of the observers and its own loop method and waited for them to terminate.
+Finally, the server spawn `greenlets' of the observers and its own loop method and waited for them to terminate.
 
-Greenlets is
+\textsc{greenlet}\footlink{https://github.com/python-greenlet/greenlet} is a Python package that provides the use of `greenlets'.
+A greenlet is a lightweight pseudo-thread useful for concurrent programming.
+In contrast with implicit context switching of native OS-level threads, greenlet explicitly context switches.
+In short, it's a way of programmatically jump from one code frame to another, allowing thread-like behavior with minimal runtime overhead.
+This fits to \firstposs~need of concurrency for controlling the flow in the server.
+
+On the first phase, an \textsc{SQLite} database are initiated in the given output path.
+\First~choose to use SQLite because it is most of the time already available in various platforms.
+Even when it is not available, it can be installed easily with pre-compiled binaries or as a single-file C source code.
+It is also works on a single file database, allowing easy distribution for reproducibility.
+
+Two socket connections are also prepared in this phase.
+The official Python bindings for \O MQ, \textsc{pyzmq}\footlink{https://github.com/zeromq/pyzmq} is used to setup the related sockets.
+These two sockets are \textsc{router} and \textsc{pub} as discussed in Section \ref{sec:impl.messaging}.
+On one hand, the \textsc{router} socket acts as a `front-end' gateway and interacts with clients.
+On the other hand, the \textsc{pub} socket interacts with the observer greenlets and acts as the `back-end' gateway.
+
+Then the server waits for a bootstrap event from the client.
+It enters a loop waiting for the specific \textsc{bootstrap} event.
+After receiving this event, the server prepare the database schema with the payload from the event.
+Then the server loads the observer modules.
+The list of observer modules is extracted from the database, inserted from the earlier bootstrapping process.
+
+Last but not least, it spawns greenlets of the observers and its own loop method.
+The loop method waits for every event received in the front-end socket and forward it to the back-end socket, allowing the observers to act accordingly.
+Section \ref{sec:impl.observers} will explain the observers in detail.
+
+
 
 \subsection{Observers}
+\label{sec:impl.observers}
+
+The run step (explained in Section \ref{sec:impl.steps}) is usually accompanied by an observer.
+An observer is a class extending \mintinline{python}{class Observer} imported from \code{reprobench.core.base}.
+Since observers live in the server process, naturally they mostly deal with the database.
+This does not only include inserting data to the database, implementing notifications to e-mail or even to messaging services liked Slack or Telegram is also possible.
+
+\begin{listing}
+    \inputminted[firstline=7,lastline=13]{python}{assets/listings/reprobench/reprobench/executors/base.py}
+    \caption{An example observer used by the executor step}
+    \label{lst:impl.observer}
+\end{listing}
+
+One example can be seen in \lst~\ref{lst:impl.observer}, showing the observer accompanying the executor step.
+The most basic implementation of an observer includes defining the events it subscribes to in the \mintinline{python}{SUBSCRIBED_EVENTS} attribute and defining the \mintinline{python}{def handle_event(cls, ...)} class method.
+This observer is stated in the configuration file as a module.
+Additionally, there is also a single core observer that is always included regardless of the configuration.
+It is defined as the \mintinline{python}{class CoreObserver(Observer)} in \emph{reprobench/core/observers.py}.
 
 \subsection{Bootstrapper}
 
+The bootstrapper component receives the configuration file and prepare the execution environment accordingly.
+There is two bootstrapping process that take place.
+Both are defined in \emph{reprobench/core/bootstrap.py} as \mintinline{python}{def bootstrap_client(...)} and \mintinline{python}{def bootstrap_server(...)}.
+The client-side will prepare the execution environment, after that it passes the required information to the server-side.
+The server-side will then prepare for the data-related things such as the database schema.
+
+Additionally, it is also possible to update the configuration---mostly data-related---of an in-progress benchmark.
+This is also done by the bootstrapper, but the related code is contained in \emph{reprobench/core/update.py}.
+In essence, update is executed when the server detected that the database is in fact already bootstrapped.
+This allow addition of tools, parameters, or tasks to an already bootstrapped benchmark, ensuring the workflow is as flexible and as natural as possible.
+
 \subsection{Manager}
+
+
 
 \subsection{Workers}
 
 \subsection{Steps}
+\label{sec:impl.steps}
 
 \subsection{Tools}
 \label{sec:impl.tools}
@@ -335,15 +395,3 @@ Greenlets is
 \subsection{Task Sources}
 
 \subsection{Command Line Interface}
-
-
-\section{Usage Scenario}
-
-\subsection{Installation}
-
-\subsection{Benchmark Setup}
-
-\subsection{Running Benchmark}
-
-\subsection{Analysis}
-
