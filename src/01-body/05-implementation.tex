@@ -219,6 +219,7 @@ This allows others to freely contribute to the project and also encourage them t
 Additionally, the source code is licensed under the MIT License to allow permissive usage.
 
 \subsection{Project Structure}
+\label{sec:impl.structure}
 
 The source code organization and their brief descriptions is listed below:
 \begin{itemize}
@@ -365,7 +366,7 @@ One example can be seen in \lst~\ref{lst:impl.observer}, showing the observer ac
 The most basic implementation of an observer includes defining the events it subscribes to in the \mintinline{python}{SUBSCRIBED_EVENTS} attribute and defining the \mintinline{python}{def handle_event(cls, ...)} class method.
 This observer is stated in the configuration file as a module.
 Additionally, there is also a single core observer that is always included regardless of the configuration.
-It is defined as the \mintinline{python}{class CoreObserver(Observer)} in \emph{reprobench/core/observers.py}.
+It is defined as \mintinline{python}{class CoreObserver(Observer)} in \emph{reprobench/core/observers.py}.
 
 \subsection{Bootstrapper}
 
@@ -382,16 +383,100 @@ This allow addition of tools, parameters, or tasks to an already bootstrapped be
 
 \subsection{Manager}
 
+Manager manages the formation and termination of workers.
+It acts on top of the existing job scheduling system or manage its own queue system.
+A manager implementation extends \mintinline{python}{class BaseManager} defined in \emph{reprobench/managers/base.py}.
+\lst~\ref{lst:impl.manager} shows this base class and the base implementation.
 
+\begin{listing}
+    \inputminted[firstline=7,lastline=34]{python}{assets/listings/reprobench/reprobench/managers/base.py}
+    \caption{The BaseManager class}
+    \label{lst:impl.manager}
+\end{listing}
+
+The main method can be seen in \mintinline{python}{def run(self)}.
+First it calls the optional \mintinline{python}{def prepare(self)} method.
+Then it requests and stores the list of pending runs from the server.
+Finally it spawn the workers and wait for them to be terminated.
+Currently, two managers are implemented, namely the local manager and the \textsc{slurm} manager.
+
+The local manager as the most basic manager which implements its own scheduling system.
+This is typically used when the benchmarking tool is used---for quick benchmarking or testing, for example---outside the HPC cluster system.
+This manager maintains a process pool whose number of processes can be defined or defaults to the number of available cores.
+This pool of process then gets the job from the pending runs and spawn a worker exclusively for that job.
+This repeats until there is no more pending runs.
+
+The \textsc{slurm} manager works in the \textsc{slurm} cluster system\footlink{https://www.schedmd.com/} and also acts as a reference implementation for other potential managers.
+The implementation of this manager is straightforward.
+It submits the pending runs as a job array of the worker process with the \code{sbatch} command and cancel them when requested with the \code{scancel} command.
 
 \subsection{Workers}
+
+\begin{listing}
+    \inputminted{python}{assets/listings/pseudocodes/worker.py}
+    \caption{Pseudo-code of the worker component}
+    \label{lst:impl.worker}
+\end{listing}
+
+The worker is an implementation-agnostic process whose only purpose is to execute the run steps on top of the benchmark run.
+The pseudo-code of the implementation can be seen in \lst~\ref{lst:impl.worker}.
+First, it reports its existence to the server and requests for information (or context) regarding its assigned run.
+Then it creates a context object to be passed to steps, and executes them one by one sequentially.
+When it finishes executing all the steps, it reports its completion and terminates.
 
 \subsection{Steps}
 \label{sec:impl.steps}
 
+A step is implemented as a subclass of \mintinline{python}{class Step} in \emph{reprobench/core/base.py}.
+This base class defines only two class methods, \mintinline{python}{def register(cls, config)} and \mintinline{python}{def execute(cls, context, config)}.
+The register method is called on bootstrap phase and the execute method is called by the workers.
+Typically, the register method contains a database schema creation routine executed in the server-side.
+
+Steps are used in two benchmarking phase, that is the running phase and the analysis phase.
+These are differentiated in the configuration file under the \code{steps} key.
+One such example of a run step---a step executed in the running phase---is the executor.
+While an example of an analysis step---a step executed in the analysis phase---is spreadsheet generation summarizing statistics from the database.
+
 \subsection{Tools}
 \label{sec:impl.tools}
 
+To allow the benchmarking of any tools, there needs to be a common interface for interaction between \OurBenchmarkingTool~and the tool.
+Thus, benchmarking a tool in \OurBenchmarkingTool~also involves writing the respective interface module.
+A tool interface subclasses the base \mintinline{python}{class Tool} in \emph{reprobench/core/base.py}.
+Typically the user will not directly subclass this abstract class but instead subclass the more specific base class like the \mintinline{python}{class ExecutableTool(Tool)} defined in \emph{reprobench/tools/executable.py}.
+
+\begin{listing}
+    \inputminted[firstline=12]{python}{assets/listings/reprobench/examples/sat/tools/glucose.py}
+    \caption{Example tool interface implementation}
+    \label{lst:impl.tool.example}
+\end{listing}
+
+\lst~\ref{lst:impl.tool.example} presents an example of one such tool interface.
+This module defines its setup routine, involving downloading from specific URL and building with the GNU \code{make} tool.
+The \mintinline{python}{class ExecutableTool(Tool)} already takes care of setting the arguments and running the actual tool.
+This makes writing a tool interface easy with minimum effort.
+It is encouraged to create various abstractions from the base \mintinline{python}{class Tool} to further minimize the effort.
+
+Tools can be configured to use various parameters specified in the configuration file, as seen in \lst~\ref{lst:impl.config.example}.
+\OurBenchmarkingTool~supports defining parameter as ranges, that is by using an integer range syntax such as \code{1..10} or using YAML list syntax.
+Additionally, it also supports defining parameter range through a parameter configuration space (.pcs) file, allowing easy integration for tools already using this file for configuration.
+These parameters are processed by the tool interface and turn into arguments, for example.
+
+
 \subsection{Task Sources}
 
+To support achieving \(\bm{R_2}\) reproducibility, benchmark instances is encouraged to be sourced from remote location instead of local file system.
+For example, as seen in the example configuration in \lst~\ref{lst:impl.config.example} it can be sourced from specified URL.
+Of course it is still possible to use files in the local system but the use is discouraged as it will make the benchmarking process less portable and less reproducible.
+
+Task source implementation extends \mintinline{python}{class BaseTaskSource} defined in \emph{reprobench/task\_sources/base.py}.
+This base class contains a single \mintinline{python}{def setup(self)} method which returns a list of `tasks' and an init function.
+A task source class will be initialized by its defined configuration and then the setup method is then executed to get the list of tasks.
+
+As mentioned briefly in Section \ref{sec:impl.strucutre}, currently there are three implementation of this task source, namely local-based, URL-based, and DOI-based.
+The DOI-based task source extends the URL-based task source which in turn also an extension of the local-based task source.
+Note that the DOI-based task source only works with DOIs from Zenodo\footlink{http://zenodo.org}, but it is trivial to add support for more sources.
+
+
 \subsection{Command Line Interface}
+
