@@ -224,41 +224,41 @@ Additionally, the source code is licensed under the MIT License to allow permiss
 The source code organization and their brief descriptions is listed below:
 \begin{itemize}
     \item \emph{examples/}\\
-    This directory provides a collection of working usage benchmark examples demonstrating various features of the benchmarking tool.
+          This directory provides a collection of working usage benchmark examples demonstrating various features of the benchmarking tool.
 
     \item \emph{pyproject.toml}\\
-    Configuration file describing the various dependencies used and the packaging options used for publishing purposes.
+          Configuration file describing the various dependencies used and the packaging options used for publishing purposes.
 
     \item \emph{reprobench/console/}\\
-    This directory consists of the implementations of the command line interface (CLI), including the \code{reprobench} root command and related setup for the subcommands.
+          This directory consists of the implementations of the command line interface (CLI), including the \code{reprobench} root command and related setup for the sub-commands.
 
     \item \emph{reprobench/core/}\\
-    The core implementation of \OurBenchmarkingTool~is organized in this directory.
-    This includes generic classes, database models, and implementation for the worker, server, bootstrapper, and analyzer components.
+          The core implementation of \OurBenchmarkingTool~is organized in this directory.
+          This includes generic classes, database models, and implementation for the worker, server, bootstrapper, and analyzer components.
 
     \item \emph{reprobench/executors/}\\
-    Implementations of the special run step doing the actual execution and monitoring of the tools and its input.
-    This includes the accompanying observer, its database model and related events.
+          Implementations of the special run step doing the actual execution and monitoring of the tools and its input.
+          This includes the accompanying observer, its database model and related events.
 
     \item \emph{reprobench/managers/}\\
-    Implementations of the manager component and its CLI subcommands under the \code{reprobench manage} subcommand, e.g. \code{reprobench manage local} or \code{reprobench manage slurm}.
-    In the future, it is preferable for each manager to be separated into its own package.
+          Implementations of the manager component and its CLI sub-commands under the \code{reprobench manage} sub-command, e.g. \code{reprobench manage local} or \code{reprobench manage slurm}.
+          In the future, it is preferable for each manager to be separated into its own package.
 
     \item \emph{reprobench/statistics/}\\
-    This directory consists of reference implementations of the analysis step modules.
-    It is encouraged to implement analysis steps as separate packages and only put the most general ones in the main project.
+          This directory consists of reference implementations of the analysis step modules.
+          It is encouraged to implement analysis steps as separate packages and only put the most general ones in the main project.
 
     \item \emph{reprobench/task\_sources/}\\
-    This directory consists of various implementation for extracting tasks from the configuration.
-    Currently, this includes local filesystem sourced tasks, URL-based remote sourced tasks, and Digital Object Identifier (DOI) sourced tasks.
+          This directory consists of various implementation for extracting tasks from the configuration.
+          Currently, this includes local filesystem sourced tasks, URL-based remote sourced tasks, and Digital Object Identifier (DOI) sourced tasks.
 
     \item \emph{reprobench/tools/}\\
-    This directory implements some base classes to be extended for writing tool interfaces.
-    It is also possible in the future to allow tools to be defined only from the configuration, further lowering the barrier for using this benchmarking tool.
-    Writing tool interface is discussed in Section \ref{sec:impl.tools}.
+          This directory implements some base classes to be extended for writing tool interfaces.
+          It is also possible in the future to allow tools to be defined only from the configuration, further lowering the barrier for using this benchmarking tool.
+          Writing tool interface is discussed in Section \ref{sec:impl.tools}.
 
     \item \emph{reprobench/utils.py}\\
-    This file consists of various small utilities commonly used by the implementation.
+          This file consists of various small utilities commonly used by the implementation.
 
 
 \end{itemize}
@@ -473,10 +473,87 @@ Task source implementation extends \mintinline{python}{class BaseTaskSource} def
 This base class contains a single \mintinline{python}{def setup(self)} method which returns a list of `tasks' and an init function.
 A task source class will be initialized by its defined configuration and then the setup method is then executed to get the list of tasks.
 
-As mentioned briefly in Section \ref{sec:impl.strucutre}, currently there are three implementation of this task source, namely local-based, URL-based, and DOI-based.
+As mentioned briefly in Section \ref{sec:impl.structure}, currently there are three implementation of this task source, namely local-based, URL-based, and DOI-based.
 The DOI-based task source extends the URL-based task source which in turn also an extension of the local-based task source.
 Note that the DOI-based task source only works with DOIs from Zenodo\footlink{http://zenodo.org}, but it is trivial to add support for more sources.
+
+The URL-based task source allows one to specify a URL for downloading the benchmark instances.
+Combined with the automated download and setup of tools, one can just share the configuration file without having to worry about the tools or the benchmark instances.
+Thus it is two less thing to worry about for achieving \(\bm{R_1}\) reproducibility.
 
 
 \subsection{Command Line Interface}
 
+User interacts with \OurBenchmarkingTool~through a command line interface (CLI).
+It is also possible to create a graphical user interface or a web-based one, but \first~leave it for future works.
+\OurBenchmarkingTool~CLI is structured with sub-commands, each having their own arguments and options.
+\tab~\ref{tab:cli} shows description of each commands with its options and arguments.
+These description can also be accessed behind the \code{--help} option.
+
+\begin{table}
+    \begin{threeparttable}
+        \begin{adjustbox}{max width=\textwidth}
+            \begin{tabular}{llp{5cm}l}
+                \textbf{Command} & \textbf{Option/Argument}\tnote{$\alpha$}                                     & \textbf{Description}                              & \textbf{Default value}       \\
+                \midrule
+
+                \multirow{2}{*}{\code{reprobench}}
+                                 & \multicolumn{3}{l}{\textit{Root command of \OurBenchmarkingTool}}                                                                                               \\*
+                                 & \code{--version}                                                             & Prints the version                                &                              \\*
+                \midrule
+
+                \multirow{3}{*}{\code{\dots~server}}
+                                 & \multicolumn{3}{l}{\textit{Start the server}}                                                                                                                   \\*
+                                 & \code{-d, --output-dir}                                                      & Set output directory, e.g. for the database file  & ./output                     \\*
+                                 & \code{-a, --address}                                                         & Address to listen to                              & tcp://127.0.0.1:31313        \\*
+                \midrule
+
+                \multirow{5}{*}{\code{\dots~bootstrap}}
+                                 & \multicolumn{3}{l}{\textit{Execute the bootstrapping process}}                                                                                                  \\*
+                                 & \code{[config]}                                                              & Configuration file to use                         &                              \\*                                                                                               \\*
+                                 & \code{-r, --repeat}                                                          & Set run repetition                                & 1                            \\*
+                                 & \code{-d, --output-dir}                                                      & Set output directory, e.g.for organizing the runs & ./output                     \\*
+                                 & \code{-a, --address}                                                         & Server address                                    & tcp://127.0.0.1:31313        \\*
+                \midrule
+
+                \multirow{7}{*}{\code{\dots~manage}}
+                                 & \multicolumn{3}{l}{\textit{Use the selected manager to manage the workers.}}                                                                                    \\*
+                                 & \code{[manager]}                                                             & local or slurm                                    &                              \\*                                                                                               \\*
+                                 & \code{[command]}                                                             & run or stop\tnote{$\beta$}                        &                              \\*                                                                                               \\*
+                                 & \code{[config]}\tnote{$\beta$}                                               & Configuration file to use                         &                              \\*                                                                                               \\*
+                                 & \code{-w, --num-workers}\tnote{$\gamma$}                                     & Set the number of worker process pool             & \em{depends}\tnote{$\delta$} \\*
+                                 & \code{-d, --output-dir}                                                      & Set output directory, e.g.for organizing the runs & ./output                     \\*
+                                 & \code{-a, --address}                                                         & Server address                                    & tcp://127.0.0.1:31313        \\*
+                \midrule
+
+                \multirow{3}{*}{\code{\dots~worker}}
+                                 & \multicolumn{3}{l}{\textit{Start a worker manually}}                                                                                                            \\*
+                                 & \code{[run\_id]}                                                             & Run identifier assigned to the worker             &                              \\*
+                                 & \code{-a, --address}                                                         & Server address                                    & tcp://127.0.0.1:31313        \\*
+                \midrule
+
+                \multirow{3}{*}{\code{\dots~status}}
+                                 & \multicolumn{3}{l}{\textit{Monitor the benchmarking progress}}                                                                                                  \\*
+                                 & \code{-d, --output-dir}                                                      & Output directory containing the database          & ./output                     \\*
+                                 & \code{-n, --interval}                                                        & Polling interval in seconds                       & 2                            \\*
+                \midrule
+
+                \multirow{2}{*}{\code{\dots~analyze}}
+                                 & \multicolumn{3}{l}{\textit{Run the analysis step	}}                                                                                                              \\*
+                                 & \code{-d, --output-dir}                                                      & Output directory containing the database          & ./output                     \\*
+                \bottomrule
+            \end{tabular}
+        \end{adjustbox}
+
+        \begin{tablenotes}
+            \footnotesize
+            \item[$\alpha$] Arguments are denoted as \code{[argument]}.
+            \item[$\beta$] Slurm manager only.
+            \item[$\gamma$] Local manager only.
+            \item[$\delta$] Number of available (virtual) cores.
+        \end{tablenotes}
+
+        \caption{\OurBenchmarkingTool~CLI commands}
+        \label{tab:cli}
+    \end{threeparttable}
+\end{table}
