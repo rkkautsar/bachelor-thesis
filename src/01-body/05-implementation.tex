@@ -1,10 +1,15 @@
 \chapter{\chImplementation}
 \label{ch:implementation}
 
+This chapter discusses the design and implementation of \OurBenchmarkingTool, a new benchmarking tool developed to address the requirements defined in Section \ref{sec:idealBenchmarkingTool}.
+Section \ref{sec:impl.design} will describe the system design and the reason behind the design decisions.
+The chapter will then conclude with a description about the implementation in Section \ref{sec:impl.impl}.
+
 \section{System Design}
 \label{sec:impl.design}
 
 This section discusses the design of \OurBenchmarkingTool~and its rationale.
+This includes the system architecture, messaging mechanism, and also the workflow and model of benchmarking.
 
 \subsection{Architecture}
 \label{sec:impl.architecture}
@@ -177,8 +182,10 @@ This allow the database to store everything needed to reproduce the benchmark.
 But \first~decided not to do it to make debugging runs easier, a task which also occur surprisingly often alongside benchmarking.
 
 \section{Implementation}
+\label{sec:impl.impl}
 
 This section presents details regarding the implementation of \OurBenchmarkingTool.
+The section will be organized roughly by the components.
 The implementation is attached in the appendix.
 It is also available as Git repository: \href{https://github.com/rkkautsar/reprobench}{\code{https://github.com/rkkautsar/reprobench}} and pypi package: \href{https://pypi.org/project/reprobench/}{\code{https://pypi.org/project/reprobench/}}.
 
