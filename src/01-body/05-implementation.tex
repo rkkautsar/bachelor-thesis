@@ -45,6 +45,7 @@ In short, the bootstrapping is also separated to the computation-related and dat
 
 \emph{Manager} manages the benchmark workers.
 This component acts as an interface to the underlying job submitting system, or even implements its own job queue as in the case of the \emph{local} manager.
+Manager will first ask for a list of pending runs from the server before assigning the runs to workers.
 The manager is responsible for deploying, assigning tasks, and stopping the benchmark workers, making sure they finishes the assigned job.
 This allows the benchmarking tool to be agnostic about the execution environment and can be extended in many ways.
 
