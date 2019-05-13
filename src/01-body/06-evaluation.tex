@@ -1,25 +1,79 @@
 \chapter{\chEvaluation}
 \label{ch:evaluation}
 
-Section \ref{sec:prior_works.method} \first~define the key factors used to evaluate each tools.
-Finally, Section \ref{sec:prior_works.evaluation} presents the summary and details of the evaluation of each benchmarking tools.
 
-
-
-\section{Usage Scenario}
+\section{Example Benchmarking Scenario}
 
 \subsection{Installation}
 
+As noted in Chapter \ref{ch:implementation}, \OurBenchmarkingTool~is distributed through the Python standard pypi.
+There are various specific extra dependencies that also need to be installed depending on what the \OurBenchmarkingTool~will be doing in the system.
+This is taken care using the `extras' dependencies specification of the package.
+
+\begin{listing}
+    \begin{minted}{bash}
+client $ pip install reprobench[client,sysinfo,psmon]
+server $ pip install reprobench[server,pcs]
+personal $ pip install reprobench[analytics]
+    \end{minted}
+    \caption{Installing \OurBenchmarkingTool~in various environment}
+    \label{lst:eval.install}
+\end{listing}
+
+For example, one might want to set up to three different environment.
+These are the client-side for running the computation, server-side for collecting the data, and their own personal machine for analysis.
+\lst~\ref{lst:eval.install} shows the installation done for this scenario.
+
+
 \subsection{Benchmark Setup}
+
+
+
 
 \subsection{Running Benchmark}
 
 \subsection{Analysis}
 
+\begin{figure}
+	\centering
+	\ifdraft{
+		\dummyfig{assets/plots/cactus.pgf}
+	}{
+		\resizebox{\textwidth}{!}{\input{assets/plots/cactus.pgf}}
+	}
+	\caption{Example generated cactus plot on analysis step}
+\end{figure}
 
 
 
-\section{Evaluation method}
+\section{Stress Testing}
+
+657 out of 5304 tasks submitted concurrently failed.
+The cause is the High Water Mark settings in \O MQ.
+
+
+\section{Messaging Implications}
+
+A typical benchmark run with executor, system information collection, and output validation sends these messages:
+1 x worker join
+1 x run start
+3 x run step
+1 x sys info
+1 x run statistic
+1 x validation
+1 x run finish
+1 x worker leave
+
+Most of the events are just notifications with little or no payload.
+Validation also has small payload (< 20 bytes).
+Run step averages on about 60 bytes.
+Sys info averages on about 360 bytes.
+Run statistics averages on about 100 bytes.
+So a typical run will only consume below 1 KB each.
+
+With bandwidth that small, the TCP itself becomes the one contributing most to the latency.
+
+\section{Comparison to Other Benchmarking Tools}
 \label{sec:prior_works.method}
 
 The requirements from Section \ref{sec:idealBenchmarkingTool} are broken down to a few key factors.
@@ -123,9 +177,6 @@ then the degree of fulfillment is the average of $\mu_i$:
 
 Furthermore, as an overall measure, \first~also denote $M_\sigma$ as the overall overage of all $\mu_{i}$ regardless of its requirement category.
 
-
-\section{Evaluation}
-\label{sec:prior_works.evaluation}
 
 \begin{ThreePartTable}
 	\begin{TableNotes}

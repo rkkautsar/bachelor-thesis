@@ -345,6 +345,7 @@ On one hand, the \textsc{router} socket acts as a `front-end' gateway and intera
 On the other hand, the \textsc{pub} socket interacts with the observer greenlets and acts as the `back-end' gateway.
 
 Then the server waits for a bootstrap event from the client.
+Events are encoded with \textsc{MessagePack}\footlink{https://msgpack.org/} binary serialization format to minimize the amount of data transferred.
 It enters a loop waiting for the specific \textsc{bootstrap} event.
 After receiving this event, the server prepare the database schema with the payload from the event.
 Then the server loads the observer modules.
