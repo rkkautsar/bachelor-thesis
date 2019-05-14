@@ -275,7 +275,7 @@ The source code organization and their brief descriptions is listed below:
 \subsection{Configuration}
 
 \begin{listing}
-    \inputminted{yaml}{assets/listings/reprobench/examples/sat/benchmark.yml}
+    \inputminted{yaml}{assets/listings/pseudocodes/config.yml}
     \caption{Example of \OurBenchmarkingTool~configuration file}
     \label{lst:impl.config.example}
 \end{listing}
@@ -381,7 +381,7 @@ It is defined as \mintinline{python}{class CoreObserver(Observer)} in \emph{repr
 
 The bootstrapper component receives the configuration file and prepare the execution environment accordingly.
 There is two bootstrapping process that take place.
-Both are defined in \emph{reprobench/core/bootstrap.py} as \mintinline{python}{def bootstrap_client(...)} and \mintinline{python}{def bootstrap_server(...)}.
+Both are defined in \emph{reprobench/core/bootstrap/} as \mintinline{python}{def bootstrap_client(...)} in \code{client.py} and \mintinline{python}{def bootstrap_server(...)} in \code{server.py}.
 The client-side will prepare the execution environment, after that it passes the required information to the server-side.
 The server-side will then prepare for the data-related things such as the database schema.
 
@@ -504,7 +504,7 @@ These description can also be accessed behind the \code{--help} option.
         \begin{adjustbox}{max width=\textwidth}
             \begin{tabular}{llp{5cm}l}
                 \textbf{Command} & \textbf{Option/Argument}\tnote{$\alpha$}                                     & \textbf{Description}                              & \textbf{Default value}       \\
-                \midrule
+                \toprule
 
                 \multirow{2}{*}{\code{reprobench}}
                                  & \multicolumn{3}{l}{\textit{Root command of \OurBenchmarkingTool}}                                                                                               \\*
@@ -519,7 +519,7 @@ These description can also be accessed behind the \code{--help} option.
 
                 \multirow{5}{*}{\code{\dots~bootstrap}}
                                  & \multicolumn{3}{l}{\textit{Execute the bootstrapping process}}                                                                                                  \\*
-                                 & \code{[config]}                                                              & Configuration file to use                         &                              \\*                                                                                               \\*
+                                 & \code{[config]}                                                              & Configuration file to use                         & ./benchmark.yml              \\*                                                                                               \\*
                                  & \code{-r, --repeat}                                                          & Set run repetition                                & 1                            \\*
                                  & \code{-d, --output-dir}                                                      & Set output directory, e.g.for organizing the runs & ./output                     \\*
                                  & \code{-a, --address}                                                         & Server address                                    & tcp://127.0.0.1:31313        \\*

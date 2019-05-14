@@ -1,0 +1,46 @@
+title: sat
+description: SAT Benchmarking
+
+limits:
+  time: 15 # s
+  memory: 2048 # mb
+  cores: 2
+
+steps:
+  run:
+    - module: reprobench.core.sysinfo.CollectSystemInfo
+    - module: reprobench.executors.PsmonExecutor
+    - module: sat.validate.SATValidator
+  analysis:
+    - module: reprobench.statistics.plots.CactusPlot
+      config:
+        measure: wall_time
+        output: statistics/cactus.ipynb
+
+observers:
+  - module: reprobench.core.sysinfo.SystemInfoObserver
+  - module: reprobench.executors.RunStatisticObserver
+  - module: sat.validate.SATObserver
+
+tasks:
+  circuit_fuzz:
+    type: url
+    urls:
+      - http://aclib.net/cssc2014/instances/circuit_fuzz.tar.gz
+    path: ./tasks/circuit_fuzz
+    extract_archives: true
+    patterns: |
+      **/*.cnf
+      !**/*.tar.gz
+tools:
+  glucose:
+    module: tools.Glucose
+    parameters:
+      default:
+        __pcs: file://./tools/glucose.pcs
+        nthreads: 1..2
+  plingeling:
+    module: tools.Plingeling
+    parameters:
+      default:
+        t: 1..2
