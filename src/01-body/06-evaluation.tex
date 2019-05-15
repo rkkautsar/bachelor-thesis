@@ -164,74 +164,80 @@ These key factors are used to measure how much of the requirements are fulfilled
 	(\alph{reqFactorCount}) #1
 }
 
-\begin{ThreePartTable}
-	\begin{TableNotes}
-		\footnotesize
-		\item[$\alpha$] Subjective evaluation
-	\end{TableNotes}
-	\begin{longtable}{ll}
+\begin{table}
+	\begin{threeparttable}
+		\begin{tabular}{ll}
 
-		\textbf{Requirements} & \textbf{Factors} \\
-		\toprule
-		\endhead
+			\textbf{Requirements} & \textbf{Factors} \\
 
-		% \cmidrule{2-2}
-		\multicolumn{2}{r}{\textit{continued}}
-		\endfoot
+			\toprule
+			% \endhead
 
-		\bottomrule
-		\insertTableNotes\\
+			% % \cmidrule{2-2}
+			% \multicolumn{2}{r}{\textit{continued}}
+			% \endfoot
+
+			% \bottomrule
+			% \insertTableNotes\\
+
+			% \endlastfoot
+
+			\multirow{5}{*}{\reqLabel{Extensibility}}
+				& \reqFactor{Flexible evaluation step} \\*
+				& \reqFactor{Flexible analysis step} \\*
+				& \reqFactor{Flexible benchmark instance source} \\*
+				& \reqFactor{Does not enforce implementation type} \\*
+				& \reqFactor{Can support arbitrary task scheduler} \\*
+			\midrule
+
+			\multirow{5}{*}{\reqLabel{Configurability}}
+				& \reqFactor{Multiple runs} \\*
+				& \reqFactor{Multiple tool configurations} \\*
+				& \reqFactor{Support parameter space} \\*
+				& \reqFactor{Benchmark instance selection} \\*
+				& \reqFactor{Set resource limit} \\*
+			\midrule
+
+			\multirow{5}{*}{\reqLabel{Documentation}}
+				& \reqFactor{Self-documenting configuration} \\*
+				& \reqFactor{Installation guide} \\*
+				& \reqFactor{Configuration guide} \\*
+				& \reqFactor{Main workflow guide} \\*
+				& \reqFactor{Comprehensive documentation\tnote{$\alpha$}} \\*
+			\midrule
+
+			\multirow{4}{*}{\reqLabel{Setup Effort}}
+				& \reqFactor{No superuser privilege} \\*
+				& \reqFactor{Installation guide} \\*
+				& \reqFactor{Documented requirements} \\*
+				& \reqFactor{No cumbersome dependencies\tnote{$\alpha$}} \\*
+			\midrule
+
+			\multirow{6}{*}{\reqLabel{Accuracy \& Reliability}}
+				& \reqFactor{Measure and Limit Resources Accurately} \\*
+				& \reqFactor{Terminate Processes Reliably} \\*
+				& \reqFactor{Assign Cores Deliberately} \\*
+				& \reqFactor{Respect Nonuniform Memory Access} \\*
+				& \reqFactor{Avoid Swapping} \\*
+				& \reqFactor{Isolate Individual Runs} \\*
+			\midrule
+
+			\multirow{5}{*}{\reqLabel{Reproducibility}}
+				& \reqFactor{Stored system information} \\*
+				& \reqFactor{Sharable results} \\*
+				& \reqFactor{Sharable configuration} \\*
+				& \reqFactor{Encourage sharable data\tnote{$\alpha$}} \\*
+				& \reqFactor{Encourage sharable implementation\tnote{$\alpha$}} \\*
+		\end{tabular}
+
+		\begin{tablenotes}
+			\footnotesize
+			\item[$\alpha$] Subjective evaluation
+		\end{tablenotes}
+
 		\caption{Metrics for evaluating existing benchmarking tools}
-		\endlastfoot
-
-		\multirow{5}{*}{\reqLabel{Extensibility}}
-			& \reqFactor{Flexible evaluation step} \\*
-			& \reqFactor{Flexible analysis step} \\*
-			& \reqFactor{Flexible benchmark instance source} \\*
-			& \reqFactor{Does not enforce implementation type} \\*
-			& \reqFactor{Can support arbitrary task scheduler} \\*
-		\midrule
-
-		\multirow{5}{*}{\reqLabel{Configurability}}
-			& \reqFactor{Multiple runs} \\*
-			& \reqFactor{Multiple tool configurations} \\*
-			& \reqFactor{Support parameter space} \\*
-			& \reqFactor{Benchmark instance selection} \\*
-			& \reqFactor{Set resource limit} \\*
-		\midrule
-
-		\multirow{5}{*}{\reqLabel{Documentation}}
-			& \reqFactor{Self-documenting configuration} \\*
-			& \reqFactor{Installation guide} \\*
-			& \reqFactor{Configuration guide} \\*
-			& \reqFactor{Main workflow guide} \\*
-			& \reqFactor{Comprehensive documentation\tnote{$\alpha$}} \\*
-		\midrule
-
-		\multirow{4}{*}{\reqLabel{Setup Effort}}
-			& \reqFactor{No superuser privilege} \\*
-			& \reqFactor{Installation guide} \\*
-			& \reqFactor{Documented requirements} \\*
-			& \reqFactor{No cumbersome dependencies\tnote{$\alpha$}} \\*
-		\midrule
-
-		\multirow{6}{*}{\reqLabel{Accuracy \& Reliability}}
-			& \reqFactor{Measure and Limit Resources Accurately} \\*
-			& \reqFactor{Terminate Processes Reliably} \\*
-			& \reqFactor{Assign Cores Deliberately} \\*
-			& \reqFactor{Respect Nonuniform Memory Access} \\*
-			& \reqFactor{Avoid Swapping} \\*
-			& \reqFactor{Isolate Individual Runs} \\*
-		\midrule
-
-		\multirow{5}{*}{\reqLabel{Reproducibility}}
-			& \reqFactor{Stored system information} \\*
-			& \reqFactor{Sharable results} \\*
-			& \reqFactor{Sharable configuration} \\*
-			& \reqFactor{Encourage sharable data\tnote{$\alpha$}} \\*
-			& \reqFactor{Encourage sharable implementation\tnote{$\alpha$}} \\*
-	\end{longtable}
-\end{ThreePartTable}
+	\end{threeparttable}
+\end{table}
 
 Each of the evaluated tools are scored according to the degree of fulfillment for each requirements.
 That is, if $M_i$ is the scored degree of fulfillment of the $i$-th requirement, and $\mu_{i}$ is a vector of size $n$ such that
@@ -262,7 +268,7 @@ Furthermore, as an overall measure, \first~also denote $M_\sigma$ as the overall
 				\textsc{JuBE} & .80 & 1.00 & 1.00 & 1.00 & & .40 & .83 \\
 				\textsc{StarExec} & .60 & .60 & .80 & 1.00 & 1.00 & 1.00 & .83 \\
 				\textbf{\OurBenchmarkingTool} & 1.00 & 1.00 & .80 & 1.00 & & 1.00 & .95 \\
-				\bottomrule
+				% \bottomrule
 			\end{tabular}
 		\end{adjustbox}
 		\begin{tablenotes}
