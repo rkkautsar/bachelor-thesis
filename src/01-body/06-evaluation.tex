@@ -132,7 +132,7 @@ As a comparison, raw throughput between the machine as measured with \code{netca
 
 Furthermore, \first~also stress tested the network.
 Since the server only run in one process it might not handle high throughput messaging.
-Not that the \O MQ messaging framework also has a limit to its queue, defaults to 1000 messages.
+Note that the \O MQ messaging framework also has a limit to its queue, defaults to 1000 messages.
 Fortunately, the \textsc{dealer-router} pattern used in \textsc{client}-\textsc{server} connection implements a blocking behavior in the case of a full queue.
 To validate this, two experiments are conducted.
 First, a 100 parallel process is spawned, each sending up to 2\,000 events (totalling to 200\,000 events).
@@ -250,26 +250,29 @@ then the degree of fulfillment is the average of $\mu_i$:
 Furthermore, as an overall measure, \first~also denote $M_\sigma$ as the overall overage of all $\mu_{i}$ regardless of its requirement category.
 
 
-\begin{ThreePartTable}
-	\begin{TableNotes}
-		\footnotesize
-		\item[*] Values are emptied if it's not applicable. The complete evaluation is given in the appendix.
-	\end{TableNotes}
-	\begin{longtable}{lddddddd}
-		& \multicolumn{1}{c}{$M_1$} & \multicolumn{1}{c}{$M_2$} & \multicolumn{1}{c}{$M_3$} & \multicolumn{1}{c}{$M_4$} & \multicolumn{1}{c}{$M_5$} & \multicolumn{1}{c}{$M_6$} & \multicolumn{1}{c}{$M_\sigma$}\\
-		\midrule
-		\textsc{benchmark-tool} & .60 & .80 & .20 & .50 & .17 & .40 & .43 \\
-		\textsc{BenchExec} & .40 & .60 & .60 & .50 & 1.00 & .80 & .66 \\
-		\textsc{Benchkit} & .40 & .40 & .60 & .25 & .50 & .40 & .43 \\
-		\textsc{JuBE} & .80 & 1.00 & 1.00 & 1.00 & & .40 & .83 \\
-		% \textsc{Optil.io} & .40 & .80 & .60 & 1.00 & & .40 & .62 \\
-		\textsc{StarExec} & .60 & .60 & .80 & 1.00 & 1.00 & 1.00 & .83 \\
-		\bottomrule
-		\insertTableNotes\\
+\begin{table}
+	\begin{threeparttable}
+		\begin{adjustbox}{max width=\textwidth}
+			\begin{tabular}{lddddddd}
+				& \multicolumn{1}{c}{$M_1$} & \multicolumn{1}{c}{$M_2$} & \multicolumn{1}{c}{$M_3$} & \multicolumn{1}{c}{$M_4$} & \multicolumn{1}{c}{$M_5$} & \multicolumn{1}{c}{$M_6$} & \multicolumn{1}{c}{$M_\sigma$}\\
+				\midrule
+				\textsc{benchmark-tool} & .60 & .80 & .20 & .50 & .17 & .40 & .43 \\
+				\textsc{BenchExec} & .40 & .60 & .60 & .50 & 1.00 & .80 & .66 \\
+				\textsc{Benchkit} & .40 & .40 & .60 & .25 & .50 & .40 & .43 \\
+				\textsc{JuBE} & .80 & 1.00 & 1.00 & 1.00 & & .40 & .83 \\
+				\textsc{StarExec} & .60 & .60 & .80 & 1.00 & 1.00 & 1.00 & .83 \\
+				\textbf{\OurBenchmarkingTool} & 1.00 & 1.00 & .80 & 1.00 & & 1.00 & .95 \\
+				\bottomrule
+			\end{tabular}
+		\end{adjustbox}
+		\begin{tablenotes}
+			\footnotesize
+			\item[*] Values are emptied if it's not applicable. The complete evaluation is given in the appendix.
+		\end{tablenotes}
 		\caption{Requirements score for various existing benchmarking tools}
 		\label{tab:reqscoresummary}
-	\end{longtable}
-\end{ThreePartTable}
+	\end{threeparttable}
+\end{table}
 
 Table \ref{tab:reqscoresummary} shows that none of the considered benchmarking tools fulfilled the requirements given.
 The closest is \textsc{StarExec} and \textsc{JuBE}.
@@ -277,3 +280,9 @@ The closest is \textsc{StarExec} and \textsc{JuBE}.
 But most of the features available in \textsc{StarExec}, such as managing post-processors and plots, are restricted to the community leaders.
 The normal user is forced to use what was already available in the community space.
 On the other hand, \textsc{JuBE} is too generic and provides little support for reproducibility.
+
+\OurBenchmarkingTool~fulfills most of the requirements, with exception of $M_3$ and $M_5$, respectively documentation and accuracy and reliability.
+Currently, the documentation is not yet comprehensive but is adequate for most use cases.
+More comprehensive documentation is already on the back log for future works.
+Additionally, unit and integration testing is also in the development back log.
+Accuracy and reliability on the other hand is delegated to the resource monitor, or the executor step in this case.
