@@ -337,6 +337,7 @@ On the first phase, an \textsc{SQLite} database are initiated in the given outpu
 \First~choose to use SQLite because it is most of the time already available in various platforms.
 Even when it is not available, it can be installed easily with pre-compiled binaries or as a single-file C source code.
 It is also works on a single file database, allowing easy distribution for reproducibility.
+The \textsc{SQLite} database is opened in \emph{Write-ahead logging} mode to better handle concurrency.
 
 Two socket connections are also prepared in this phase.
 The official Python bindings for \O MQ, \textsc{pyzmq}\footlink{https://github.com/zeromq/pyzmq} is used to setup the related sockets.

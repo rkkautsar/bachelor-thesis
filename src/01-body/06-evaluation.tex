@@ -1,6 +1,11 @@
 \chapter{\chEvaluation}
 \label{ch:evaluation}
 
+This chapter presents several evaluation regarding the implementation of \OurBenchmarkingTool~and its position relative to other benchmarking tools mentioned in \Cref{ch:existing}.
+First, an example usage scenario is given in \Cref{sec:eval.scenario} to give an overview of how \OurBenchmarkingTool~can be used from setting up, running the benchmark, until the analysis step.
+\Cref{sec:eval.messaging} gives a detailed look to the performance and implications of the implemented messaging mechanism.
+A measurement of the resource usage of the implementation is then given in \Cref{sec:eval.resource}.
+Last but not least, comparisons to other mentioned benchmarking tools is discussed in \Cref{sec:eval.comparison} based on a breakdown of the requirements from \Cref{sec:idealBenchmarkingTool}.
 
 \section{Example Usage Scenario}
 \label{sec:eval.scenario}
@@ -16,8 +21,9 @@ This benchmark is \(\bm{R_1}\) reproducible in UNIX machines.
 The tools and tasks are downloaded from the internet and set up programmatically.
 
 For this scenario, the benchmarking is done in three environment.
-Computation is done in a \textsc{slurm} cluster system of Technicsche Universität Dresden (TU Dresden), Taurus.
-Taurus sports 2,179 nodes with a total of 41,468 cores, a typical node used for the computation has an Intel(R) Xeon(R) CPU E5-2690 @ 2.90GHz.
+Computation is done in a \textsc{slurm} cluster system of TU Dresden, Taurus.
+Taurus sports 2\,179 nodes with a total of 41\,468 cores.
+A typical node used for the computation has an Intel(R) Xeon(R) CPU E5-2690 @ 2.90GHz.
 Data collection is done in a VPS physically located in Paris, France.
 This is a small € 2.40 virtual instance sporting an Intel(R) Atom(TM) CPU C3955 @ 2.10GHz and 1 GB of RAM.
 For future reference, \first~refer to the IP bound for this VPS as \code{168.8.8.8}.
@@ -31,13 +37,13 @@ There are various specific extra dependencies that also need to be installed dep
 This is taken care using the `extras' dependencies specification of the package.
 
 \begin{listing}
-    \begin{minted}{bash}
+	\begin{minted}{bash}
 client $ pip install reprobench[client,sysinfo,psmon]
 server $ pip install reprobench[server,pcs]
 personal $ pip install reprobench[analytics]
     \end{minted}
-    \caption{Installing \OurBenchmarkingTool~in various environment}
-    \label{lst:eval.install}
+	\caption{Installing \OurBenchmarkingTool~in various environment}
+	\label{lst:eval.install}
 \end{listing}
 
 For example, one might want to set up to three different environment.
@@ -45,22 +51,22 @@ These are the client-side for running the computation, server-side for collectin
 \Cref{lst:eval.install} shows how the installation can be done for each environment.
 
 Additionally, Python's \code{virtualenv} is used in the server-side to contain the dependencies.
-In client-side, Miniconda environment is used instead.
+In client-side, a Miniconda\footlink{https://docs.conda.io/en/latest/miniconda.html} environment is used instead.
 Finally, a Jupyter\footlink{https://jupyter.org/} and IPython kernel is installed for running the analysis.
 Also, the repository is cloned to each environment.
 
 \subsection{Running the Benchmark}
 
 \begin{listing}
-    \begin{minted}{bash}
+	\begin{minted}{text}
 server $ reprobench server -a tcp://0.0.0.0:31313
 client $ reprobench bootstrap -a tcp://168.8.8.8:31313
 client $ reprobench manager slurm run -a tcp://168.8.8.8:31313
 server $ reprobench status
  74%[#######################        ] 3904/5304 [20:18<21:00,  1.11it/s]
     \end{minted}
-    \caption{Running the benchmark}
-    \label{lst:eval.running}
+	\caption{Running the benchmark}
+	\label{lst:eval.running}
 \end{listing}
 
 \Cref{lst:eval.running} shows the series of commands executed for running the benchmark.
@@ -86,6 +92,7 @@ The analysis is then executed by running the \code{reprobench analyze} command w
 
 \begin{figure}
 	\centering
+	% \dummyfig{assets/plots/cactus.pgf}
 	\ifdraft{
 		\dummyfig{assets/plots/cactus.pgf}
 	}{
@@ -103,6 +110,7 @@ This format allows one to easily read the code as well as its results in one eas
 Using it as an analysis step allows flexible configuration to iterate the result.
 
 \section{Messaging Performance}
+\label{sec:eval.messaging}
 
 A typical benchmark run with executor, system information collection, and output validation sends these 10 events:
 1 x worker join;
@@ -132,7 +140,7 @@ As a comparison, raw throughput between the machine as measured with \code{netca
 
 Furthermore, \first~also stress tested the network.
 Since the server only run in one process it might not handle high throughput messaging.
-Note that the \O MQ messaging framework also has a limit to its queue, defaults to 1000 messages.
+Note that the \O MQ messaging framework also has a limit to its queue, defaults to 1\,000 messages.
 Fortunately, the \textsc{dealer-router} pattern used in \textsc{client}-\textsc{server} connection implements a blocking behavior in the case of a full queue.
 To validate this, two experiments are conducted.
 First, a 100 parallel process is spawned, each sending up to 2\,000 events (totalling to 200\,000 events).
@@ -145,8 +153,82 @@ The highly parallel experiment also has no apparent time increase.
 This means there is no blocking since the server works fast enough to forward the event to the \textsc{pub}-\textsc{sub} channel to clear the queue.
 But it need to be noted that by using greenlets, this means it only works as fast as the event is processed.
 
+
+\section{Resource Usage}
+\label{sec:eval.resource}
+
+\begin{figure}
+	\centering
+
+	\begin{subfigure}{.45\textwidth}
+		\centering
+		\ifdraft{
+			\dummyfig{assets/plots/cactus.pgf}
+		}{
+			\resizebox{\textwidth}{!}{\input{assets/plots/perf_cpu.pgf}}
+		}
+		\caption{CPU Time}
+		\label{fig:eval.perf.cpu}
+	\end{subfigure}%
+	\hfill%
+	\begin{subfigure}{.45\textwidth}
+		\centering
+		\ifdraft{
+			\dummyfig{assets/plots/cactus.pgf}
+		}{
+			\resizebox{\textwidth}{!}{\input{assets/plots/perf_rss.pgf}}
+		}
+		\caption{Resident Memory}
+		\label{fig:eval.perf.rss}
+	\end{subfigure}
+
+	\vspace{1cm}
+
+	\begin{subfigure}{.45\textwidth}
+		\centering
+		\ifdraft{
+			\dummyfig{assets/plots/cactus.pgf}
+		}{
+			\resizebox{\textwidth}{!}{\input{assets/plots/perf_io_rw.pgf}}
+		}
+		\caption{Disk I/O}
+		\label{fig:eval.perf.disk}
+	\end{subfigure}%
+	\hfill%
+	\begin{subfigure}{.45\textwidth}
+		\centering
+		\ifdraft{
+			\dummyfig{assets/plots/cactus.pgf}
+		}{
+			\resizebox{\textwidth}{!}{\input{assets/plots/perf_io_recvsent.pgf}}
+		}
+		\caption{Network I/O}
+		\label{fig:eval.perf.network}
+	\end{subfigure}
+
+	\caption{Server resource usage for a sample benchmark}
+	\label{fig:eval.perf}
+\end{figure}
+
+
+\Cref{fig:eval.perf} shows the various resource usage over time for the server component.
+As shown in \Cref{fig:eval.perf.cpu}, the CPU Time usage is just below 13 seconds for a 90 seconds session.
+This means the server only uses about 15\% of CPU.
+\Cref{fig:eval.perf.rss} shows the resident memory usage peaked to only about 62 MB.
+Note that resident memory usage means the actual physical memory used by the process.
+The actual requested memory peaked to about 366 MB.
+\Cref{fig:eval.perf.disk} shows the cumulative amount of data read (resp. written) from (resp. to) the disk.
+It shows the server writing to the database steadily while the read only happened in the beginning.
+Finally, \Cref{fig:eval.perf.network} shows the cumulative amount of data sent (resp. received) through the network.
+It shows a similar trend although the data sent is a little higher than the data received.
+This is because the server is sending information regarding the run to the workers while the worker only reports a small amount of result.
+
+As the worker performance is very dependent to the steps it need to execute, we only present the performance measurement of the server.
+However, a quick experiment with a single executor step with \code{sleep 10} as the tool results in sub-second CPU Time, and 1724 KB of resident memory.
+
+
 \section{Comparison to Other Benchmarking Tools}
-\label{sec:prior_works.method}
+\label{sec:eval.comparison}
 
 The requirements from \Cref{sec:idealBenchmarkingTool} are broken down to a few key factors in \Cref{tab:reqfactors}.
 These key factors are used to measure how much of the requirements are fulfilled.
@@ -168,7 +250,7 @@ These key factors are used to measure how much of the requirements are fulfilled
 	\begin{threeparttable}
 		\begin{tabular}{ll}
 
-			\textbf{Requirements} & \textbf{Factors} \\
+			\textbf{Requirements} & \textbf{Factors}                                              \\
 
 			\toprule
 			% \endhead
@@ -183,51 +265,51 @@ These key factors are used to measure how much of the requirements are fulfilled
 			% \endlastfoot
 
 			\multirow{5}{*}{\reqLabel{Extensibility}}
-				& \reqFactor{Flexible evaluation step} \\*
-				& \reqFactor{Flexible analysis step} \\*
-				& \reqFactor{Flexible benchmark instance source} \\*
-				& \reqFactor{Does not enforce implementation type} \\*
-				& \reqFactor{Can support arbitrary task scheduler} \\*
+			                      & \reqFactor{Flexible evaluation step}                          \\*
+			                      & \reqFactor{Flexible analysis step}                            \\*
+			                      & \reqFactor{Flexible benchmark instance source}                \\*
+			                      & \reqFactor{Does not enforce implementation type}              \\*
+			                      & \reqFactor{Can support arbitrary task scheduler}              \\*
 			\midrule
 
 			\multirow{5}{*}{\reqLabel{Configurability}}
-				& \reqFactor{Multiple runs} \\*
-				& \reqFactor{Multiple tool configurations} \\*
-				& \reqFactor{Support parameter space} \\*
-				& \reqFactor{Benchmark instance selection} \\*
-				& \reqFactor{Set resource limit} \\*
+			                      & \reqFactor{Multiple runs}                                     \\*
+			                      & \reqFactor{Multiple tool configurations}                      \\*
+			                      & \reqFactor{Support parameter space}                           \\*
+			                      & \reqFactor{Benchmark instance selection}                      \\*
+			                      & \reqFactor{Set resource limit}                                \\*
 			\midrule
 
 			\multirow{5}{*}{\reqLabel{Documentation}}
-				& \reqFactor{Self-documenting configuration} \\*
-				& \reqFactor{Installation guide} \\*
-				& \reqFactor{Configuration guide} \\*
-				& \reqFactor{Main workflow guide} \\*
-				& \reqFactor{Comprehensive documentation\tnote{$\alpha$}} \\*
+			                      & \reqFactor{Self-documenting configuration}                    \\*
+			                      & \reqFactor{Installation guide}                                \\*
+			                      & \reqFactor{Configuration guide}                               \\*
+			                      & \reqFactor{Main workflow guide}                               \\*
+			                      & \reqFactor{Comprehensive documentation\tnote{$\alpha$}}       \\*
 			\midrule
 
 			\multirow{4}{*}{\reqLabel{Setup Effort}}
-				& \reqFactor{No superuser privilege} \\*
-				& \reqFactor{Installation guide} \\*
-				& \reqFactor{Documented requirements} \\*
-				& \reqFactor{No cumbersome dependencies\tnote{$\alpha$}} \\*
+			                      & \reqFactor{No superuser privilege}                            \\*
+			                      & \reqFactor{Installation guide}                                \\*
+			                      & \reqFactor{Documented requirements}                           \\*
+			                      & \reqFactor{No cumbersome dependencies\tnote{$\alpha$}}        \\*
 			\midrule
 
 			\multirow{6}{*}{\reqLabel{Accuracy \& Reliability}}
-				& \reqFactor{Measure and Limit Resources Accurately} \\*
-				& \reqFactor{Terminate Processes Reliably} \\*
-				& \reqFactor{Assign Cores Deliberately} \\*
-				& \reqFactor{Respect Nonuniform Memory Access} \\*
-				& \reqFactor{Avoid Swapping} \\*
-				& \reqFactor{Isolate Individual Runs} \\*
+			                      & \reqFactor{Measure and Limit Resources Accurately}            \\*
+			                      & \reqFactor{Terminate Processes Reliably}                      \\*
+			                      & \reqFactor{Assign Cores Deliberately}                         \\*
+			                      & \reqFactor{Respect Nonuniform Memory Access}                  \\*
+			                      & \reqFactor{Avoid Swapping}                                    \\*
+			                      & \reqFactor{Isolate Individual Runs}                           \\*
 			\midrule
 
 			\multirow{5}{*}{\reqLabel{Reproducibility}}
-				& \reqFactor{Stored system information} \\*
-				& \reqFactor{Sharable results} \\*
-				& \reqFactor{Sharable configuration} \\*
-				& \reqFactor{Encourage sharable data\tnote{$\alpha$}} \\*
-				& \reqFactor{Encourage sharable implementation\tnote{$\alpha$}} \\*
+			                      & \reqFactor{Stored system information}                         \\*
+			                      & \reqFactor{Sharable results}                                  \\*
+			                      & \reqFactor{Sharable configuration}                            \\*
+			                      & \reqFactor{Encourage sharable data\tnote{$\alpha$}}           \\*
+			                      & \reqFactor{Encourage sharable implementation\tnote{$\alpha$}} \\*
 		\end{tabular}
 
 		\begin{tablenotes}
@@ -245,7 +327,7 @@ That is, if $M_i$ is the scored degree of fulfillment of the $i$-th requirement,
 \[
 	\mu_{ij} =
 	\begin{cases}
-		1 & \text{if the $j$-th key factor of $i$-th requirement is fulfilled}\\
+		1 & \text{if the $j$-th key factor of $i$-th requirement is fulfilled} \\
 		0 & \text{otherwise}
 	\end{cases}
 \]
@@ -261,14 +343,14 @@ Furthermore, as an overall measure, \first~also denote $M_\sigma$ as the overall
 	\begin{threeparttable}
 		\begin{adjustbox}{max width=\textwidth}
 			\begin{tabular}{lddddddd}
-				& \multicolumn{1}{c}{$M_1$} & \multicolumn{1}{c}{$M_2$} & \multicolumn{1}{c}{$M_3$} & \multicolumn{1}{c}{$M_4$} & \multicolumn{1}{c}{$M_5$} & \multicolumn{1}{c}{$M_6$} & \multicolumn{1}{c}{$M_\sigma$}\\
+				                              & \multicolumn{1}{c}{$M_1$} & \multicolumn{1}{c}{$M_2$} & \multicolumn{1}{c}{$M_3$} & \multicolumn{1}{c}{$M_4$} & \multicolumn{1}{c}{$M_5$} & \multicolumn{1}{c}{$M_6$} & \multicolumn{1}{c}{$M_\sigma$} \\
 				\midrule
-				\textsc{benchmark-tool} & .60 & .80 & .20 & .50 & .17 & .40 & .43 \\
-				\textsc{BenchExec} & .40 & .60 & .60 & .50 & 1.00 & .80 & .66 \\
-				\textsc{Benchkit} & .40 & .40 & .60 & .25 & .50 & .40 & .43 \\
-				\textsc{JuBE} & .80 & 1.00 & 1.00 & 1.00 & & .40 & .83 \\
-				\textsc{StarExec} & .60 & .60 & .80 & 1.00 & 1.00 & 1.00 & .83 \\
-				\textbf{\OurBenchmarkingTool} & 1.00 & 1.00 & .80 & 1.00 & & 1.00 & .95 \\
+				\textsc{benchmark-tool}       & .60                       & .80                       & .20                       & .50                       & .17                       & .40                       & .43                            \\
+				\textsc{BenchExec}            & .40                       & .60                       & .60                       & .50                       & 1.00                      & .80                       & .66                            \\
+				\textsc{Benchkit}             & .40                       & .40                       & .60                       & .25                       & .50                       & .40                       & .43                            \\
+				\textsc{JuBE}                 & .80                       & 1.00                      & 1.00                      & 1.00                      &                           & .40                       & .83                            \\
+				\textsc{StarExec}             & .60                       & .60                       & .80                       & 1.00                      & 1.00                      & 1.00                      & .83                            \\
+				\textbf{\OurBenchmarkingTool} & 1.00                      & 1.00                      & .80                       & 1.00                      &                           & 1.00                      & .95                            \\
 				% \bottomrule
 			\end{tabular}
 		\end{adjustbox}
@@ -291,5 +373,9 @@ On the other hand, \textsc{JuBE} is too generic and provides little support for 
 \OurBenchmarkingTool~fulfills most of the requirements, with exception of $M_3$ and $M_5$, respectively documentation and accuracy and reliability.
 Currently, the documentation is not yet comprehensive but is adequate for most use cases.
 More comprehensive documentation is already on the back log for future works.
-Additionally, unit and integration testing is also in the development back log.
 Accuracy and reliability on the other hand is delegated to the resource monitor, or the executor step in this case.
+
+This comparison is not complete and should only serves as a high level comparison between the tools.
+\First~tried to make the comparison as objective as possible but some of the factors subjects to non-objective evaluation and might be vague.
+There are also many other factors that are not taken into account.
+This means advantages and disadvantages between the benchmarking tools is not fully captured from the evaluation.
