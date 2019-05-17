@@ -163,7 +163,7 @@ But it need to be noted that by using greenlets, this means it only works as fas
 	\begin{subfigure}{.45\textwidth}
 		\centering
 		\ifdraft{
-			\dummyfig{assets/plots/cactus.pgf}
+			\dummyfig{assets/plots/perf_cpu.pgf}
 		}{
 			\resizebox{\textwidth}{!}{\input{assets/plots/perf_cpu.pgf}}
 		}
@@ -174,7 +174,7 @@ But it need to be noted that by using greenlets, this means it only works as fas
 	\begin{subfigure}{.45\textwidth}
 		\centering
 		\ifdraft{
-			\dummyfig{assets/plots/cactus.pgf}
+			\dummyfig{assets/plots/perf_rss.pgf}
 		}{
 			\resizebox{\textwidth}{!}{\input{assets/plots/perf_rss.pgf}}
 		}
@@ -187,7 +187,7 @@ But it need to be noted that by using greenlets, this means it only works as fas
 	\begin{subfigure}{.45\textwidth}
 		\centering
 		\ifdraft{
-			\dummyfig{assets/plots/cactus.pgf}
+			\dummyfig{assets/plots/perf_io_rw.pgf}
 		}{
 			\resizebox{\textwidth}{!}{\input{assets/plots/perf_io_rw.pgf}}
 		}
@@ -198,7 +198,7 @@ But it need to be noted that by using greenlets, this means it only works as fas
 	\begin{subfigure}{.45\textwidth}
 		\centering
 		\ifdraft{
-			\dummyfig{assets/plots/cactus.pgf}
+			\dummyfig{assets/plots/perf_io_recvsent.pgf}
 		}{
 			\resizebox{\textwidth}{!}{\input{assets/plots/perf_io_recvsent.pgf}}
 		}
@@ -210,9 +210,9 @@ But it need to be noted that by using greenlets, this means it only works as fas
 	\label{fig:eval.perf}
 \end{figure}
 
-
-\Cref{fig:eval.perf} shows the various resource usage over time for the server component.
-As shown in \Cref{fig:eval.perf.cpu}, the CPU Time usage is just below 13 seconds for a 90 seconds session.
+\textsc{resource\_monitor}\footlink{http://ccl.cse.nd.edu/software/resource\_monitor} is used to monitor the resource usage over time for the server component as shown in \Cref{fig:eval.perf}.
+It is another resource monitoring tools mentioned by \citet{juvePracticalResourceMonitoring2015} besides \textsc{kickstart}.
+\Cref{fig:eval.perf.cpu} shows that the CPU Time usage is just below 13 seconds for a 90 seconds session.
 This means the server only uses about 15\% of CPU.
 \Cref{fig:eval.perf.rss} shows the resident memory usage peaked to only about 62 MB.
 Note that resident memory usage means the actual physical memory used by the process.
@@ -224,7 +224,7 @@ It shows a similar trend although the data sent is a little higher than the data
 This is because the server is sending information regarding the run to the workers while the worker only reports a small amount of result.
 
 As the worker performance is very dependent to the steps it need to execute, we only present the performance measurement of the server.
-However, a quick experiment with a single executor step with \code{sleep 10} as the tool results in sub-second CPU Time, and 1724 KB of resident memory.
+However, a quick experiment with a single executor step with \code{sleep 10} as the tool results in sub-second CPU Time, and only 1\,724 KB of resident memory.
 
 
 \section{Comparison to Other Benchmarking Tools}
