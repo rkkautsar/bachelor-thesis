@@ -80,7 +80,7 @@ This whole process may take a while.
 In this scenario and the environment listed earlier, it takes about a minute to fully download the tools, tasks, and ready the database.
 
 Last but not least, the \textsc{slurm} manager spawn the workers to do the computation.
-This submits a 5,304-sized job array to the job queue, as much as the number of pending runs, which also happen to be the total number of runs in the beginning.
+This submits a 5\,304-sized job array to the job queue, as much as the number of pending runs, which also happen to be the total number of runs in the beginning.
 While the worker interacts with the server and do the computation, a \code{reprobench status} command can be used to monitor the progress in real time.
 Besides giving reports of the progress, this command also gives an estimate of the remaining time to completion by analyzing the speed of completion.
 
@@ -92,12 +92,12 @@ The analysis is then executed by running the \code{reprobench analyze} command w
 
 \begin{figure}
 	\centering
-	% \dummyfig{assets/plots/cactus.pgf}
-	\ifdraft{
-		\dummyfig{assets/plots/cactus.pgf}
-	}{
-		\resizebox{\textwidth}{!}{\input{assets/plots/cactus.pgf}}
-	}
+	\dummyfig{assets/plots/cactus.pgf}
+	% \ifdraft{
+	% 	\dummyfig{assets/plots/cactus.pgf}
+	% }{
+	% 	\resizebox{\textwidth}{!}{\input{assets/plots/cactus.pgf}}
+	% }
 	\caption{An example cactus plot on analysis step}
 	\label{fig:eval.cactus}
 \end{figure}
@@ -141,7 +141,7 @@ As a comparison, raw throughput between the machine as measured with \code{netca
 Furthermore, \first~also stress tested the network.
 Since the server only run in one process it might not handle high throughput messaging.
 Note that the \O MQ messaging framework also has a limit to its queue, defaults to 1\,000 messages.
-Fortunately, the \textsc{dealer-router} pattern used in \textsc{client}-\textsc{server} connection implements a blocking behavior in the case of a full queue.
+Fortunately, the \textsc{dealer-router} pattern used in \textsc{client-server} connection implements a blocking behavior in the case of a full queue.
 To validate this, two experiments are conducted.
 First, a 100 parallel process is spawned, each sending up to 2\,000 events (totalling to 200\,000 events).
 Second, a variable number of process up to 500 parallel process, each sending 25 events (totalling to 12\,500 events).
@@ -163,7 +163,7 @@ But it need to be noted that by using greenlets, this means it only works as fas
 	\begin{subfigure}{.45\textwidth}
 		\centering
 		\ifdraft{
-			\dummyfig{assets/plots/perf_cpu.pgf}
+			\dummyfig{assets/plots/perf\_cpu.pgf}
 		}{
 			\resizebox{\textwidth}{!}{\input{assets/plots/perf_cpu.pgf}}
 		}
@@ -174,7 +174,7 @@ But it need to be noted that by using greenlets, this means it only works as fas
 	\begin{subfigure}{.45\textwidth}
 		\centering
 		\ifdraft{
-			\dummyfig{assets/plots/perf_rss.pgf}
+			\dummyfig{assets/plots/perf\_rss.pgf}
 		}{
 			\resizebox{\textwidth}{!}{\input{assets/plots/perf_rss.pgf}}
 		}
@@ -187,7 +187,7 @@ But it need to be noted that by using greenlets, this means it only works as fas
 	\begin{subfigure}{.45\textwidth}
 		\centering
 		\ifdraft{
-			\dummyfig{assets/plots/perf_io_rw.pgf}
+			\dummyfig{assets/plots/perf\_io\_rw.pgf}
 		}{
 			\resizebox{\textwidth}{!}{\input{assets/plots/perf_io_rw.pgf}}
 		}
@@ -198,7 +198,7 @@ But it need to be noted that by using greenlets, this means it only works as fas
 	\begin{subfigure}{.45\textwidth}
 		\centering
 		\ifdraft{
-			\dummyfig{assets/plots/perf_io_recvsent.pgf}
+			\dummyfig{assets/plots/perf\_io\_recvsent.pgf}
 		}{
 			\resizebox{\textwidth}{!}{\input{assets/plots/perf_io_recvsent.pgf}}
 		}
@@ -212,6 +212,8 @@ But it need to be noted that by using greenlets, this means it only works as fas
 
 \textsc{resource\_monitor}\footlink{http://ccl.cse.nd.edu/software/resource\_monitor} is used to monitor the resource usage over time for the server component as shown in \Cref{fig:eval.perf}.
 It is another resource monitoring tools mentioned by \citet{juvePracticalResourceMonitoring2015} besides \textsc{kickstart}.
+The same VPS instance as in \Cref{sec:eval.scenario,sec:eval.messaging} is used for this experiment.
+
 \Cref{fig:eval.perf.cpu} shows that the CPU Time usage is just below 13 seconds for a 90 seconds session.
 This means the server only uses about 15\% of CPU.
 \Cref{fig:eval.perf.rss} shows the resident memory usage peaked to only about 62 MB.

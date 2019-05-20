@@ -13,10 +13,11 @@
 %
 % Tipe dokumen adalah report dengan satu kolom.
 %
-\documentclass[12pt, a4paper, onecolumn, oneside, final]{report}
-% \documentclass[12pt, a4paper, onecolumn, oneside, draft]{report}
+% \documentclass[12pt, a4paper, onecolumn, oneside, final]{report}
+\documentclass[12pt, a4paper, onecolumn, oneside, draft]{report}
 
 % Load konfigurasi LaTeX untuk tipe laporan thesis
+\usepackage[usenames,dvipsnames]{xcolor}
 \usepackage{_internals/uithesis}
 \usepackage{enumitem}
 \usepackage{bm}
@@ -29,6 +30,7 @@
 \usepackage{adjustbox}
 \usepackage{cleveref}
 \usepackage{subcaption}
+\usepackage{microtype}
 
 \newcommand{\dummyfig}[1]{
   \centering
