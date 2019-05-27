@@ -1,73 +1,97 @@
 \chapter{\chExperimentation}
 \label{ch:experimentation}
 
-This chapter discusses about the practice of experimentation in science (specifically computational science), the particular issue of reproducibility, and how benchmarking as means of experimentation could lessen this issue.
-\hyperref[sec:experimentation]{Section 2.1} discusses about how experimentation is used in science with scientific method, and a few examples to motivate the needs of experimentation.
-The reproducibility issue and benchmarking---a specific method of experimentation which could address the issue---is discussed in \hyperref[sec:reproducibleBenchmarks]{Section 2.2}.
-Finally, \hyperref[sec:idealBenchmarkingTool]{Section 2.3} discusses the requirements identified for an ideal benchmarking tool for reproducible research.
+\newcontent{
+First and foremost, \first~introduce the concepts and definitions that is used throughout the rest of this thesis.
+This is to ensure alignment of the concepts of experiments, benchmarking, and reproducibility and how they relate with each other.
+\First~discusses the practice of experimentation in science, specifically computational science, the concern of reproducibility, and how benchmarking as a systematic technique for experimenting may address this issue.
+\Cref{sec:experimentation} considers how scientific method is used for experimentation in science and a few examples to motivate the needs of experimentation.
+\Cref{sec:reproducibleBenchmarks} the reproducibility issue and benchmarking.
+Finally, \hyperref[sec:idealBenchmarkingTool]{Section 2.3} outlines the requirements \first~identified for an ideal benchmarking tool supporting reproducible research.
+}
 
 \section{Experimentation}
 \label{sec:experimentation}
 
-Science aims to understand why things happen as they do in the natural world \citep{careyBeginnerGuideScientific2012}
-Investigating these why questions can be achieved by following what is known as the scientific method, or what Karl Popper has defined as the hypothetico-deductive method, a combination of inductive and deductive reasoning \citep{wallimanResearchMethodsBasics2010a}.
+\newstyle{Science aims to further our understanding of why things happen \st{as they do} in the natural world \citep{careyBeginnerGuideScientific2012}.}
+Investigating these \st{why} questions can be achieved by following what is known as the scientific method.
+\newstyle{This method is identical to hypothetico-deductive method which is a combination of inductive and deductive reasoning \citep{wallimanResearchMethodsBasics2010a}.}
 He further defines the scientific method as follows:
-\begin{itemize}[noitemsep]
+\begin{enumerate}[noitemsep]
 	\item identification or clarification of a problem;
 	\item developing a hypothesis (testable theory) inductively from observations;
 	\item charting their implications by deduction;
 	\item practical or theoretical testing of the hypothesis;
 	\item rejecting or refining it in the light of the results.
-\end{itemize}
+\end{enumerate}
 
-\citet{careyBeginnerGuideScientific2012} provides a simpler definition for the scientific method as three simple steps: observing, explaining, and testing.
-These definitions suggest that science advances by the means of trial and error.
+\citet{careyBeginnerGuideScientific2012} provides a simpler definition for the scientific method as three simple steps:
+\newstyle{ (1) observing, (2) explaining, and (3) testing}.
+
+
+\newstyle{Both definitions} suggest that science advances by the means of trial and error.
 The explaining-testing steps are repeated until the result is acceptable.
 When a theory is falsified, another one is proposed and tested, until the most fitting theory is accepted \citep{wallimanResearchMethodsBasics2010a}.
 
 Experimentation is one way to test these proposed theories or hypotheses.
-Some would argue that as experiments don't proof anything.
-But on the other hand, experiments can falsify a theory and corroborate it, but not actually proofing that the theory is true \citep{tichyShouldComputerScientists1998}.
-Thus, experiments can be seen as just another way of proofing theories by \textit{reductio ad absurdum}, like what proof by contradiction is commonly used in logic and mathematics.
+Some would argue that as experiments \newstyle{do not} proof anything.
+But on the other hand, experiments can falsify a theory and corroborate it, but not actually proving that the theory is true \citep{tichyShouldComputerScientists1998}.
+\newcontent{This is similar to proof by contradiction commonly used in logic and mathematics.}
 
-Experimentation can also be used for induction, deriving generalized conclusion from repeated observations.
+Experimentation can also be used for induction to derive generalized conclusion from repeated observations.
 A rather well-known example in computer science is the case of artificial neural networks.
-Experiments demonstrated that its performance is better than what was predicted after being discarded in theoretical grounds \citep{tichyShouldComputerScientists1998}.
-And now artificial neural networks are used in a number of surprising real-world applications.
+Experiments demonstrated that its performance is better than \newstyle{what was predicted in theory} \citep{tichyShouldComputerScientists1998}.
+\newcontent{Today, artificial neural networks are used in a number of surprising real-world applications.
+Its applications includes image recognition, speech recognition, natural language understanding and even self-driving cars \citep{lecunDeepLearning2015}.}
 
-Another example is Boolean Satisfiability (SAT).
-It has been proved to be $\mathcal{NP}$-complete by the Cook-Levin theorem.
-Many would give up after seeing that the problem they are trying to solve is in $\mathcal{NP}$.
-But this is not the case.
-State-of-the-art SAT solvers are good enough in solving real world problems with millions of literals and clauses.
-It is widely used in many fields despite the fact that the problem itself is seen as bad in theory.
+\newcontent{
+The Boolean Satisfiability (SAT) problem has been proven to be $\textbf{NP}$-complete by \citet{cook1971complexity} and \citet{levin1973universal} independently.
+This means SAT solving algorithms exponential worst case running time.
+\citet{nordstromPebbleGamesProof2013} remarks that most modern solvers are based on Davis-Putnam-Logemann-Loveland (DPLL) backtracking procedure from the 1960s with augmented clause learning, also known as conflict-driven clause learning (CDCL).
+He further remarks that it is not yet fully understood why these solvers can be so efficient in practice \citep{elffersTradeoffsTimeMemory2016}.
+This can be seen from the majority solvers submitted to the annual international SAT competition being CDCL-based, and successfully solving problems with millions of literals and clauses \citep{heule2018proceedings}.
+}
 
 Not only in computer science, experimentation has been used in practice in many fields.
 In particular fields like physics and chemistry that involves observing and explaining physical objects often use this method.
 
-An early example would be the famous thought experiment by Galileo Galilei.
-The thought experiment was about tying two bodies of object, one lighter and one heavier and dropping if from top of a tower.
-If, like many believed in that time, heavier object will fall faster as such the case with a heavy metal ball and a feather, the lighter one will pull the heavier one and slow down the fall.
-But these tied objects makes an object of heavier than either and thus should fall faster, this makes it a contradiction \citep{goodmanWhatDoesResearch2016}. This example also points out that external factors which are not taken into account can effect the result of an experiment in a bad way, such as air resistance in this case.
+\newcontent{
+	\citet{gowerScientificMethodHistorical2012} mention an early example of experiment: the famous thought experiment by Galileo Galilei.
+	The claim as described was as follows.
+	Take two objects, one lighter and the other heavier in weight.
+	Then tie it together and drop it from top of a tower.
+	If, like many has believed at that time, heavier object fall faster then the lighter one will pull the heavier one and slow down the fall.
+	But instead this new tied object is heavier than both and should have fallen faster.
+	This is a contradiction.
+	Thus, Galileo postulated that this phenomenon was due to air resistance and friction, independent to the object mass.
+	This example shows that experiment can also take place in the mind not have to be physical.
+}
 
-There's also a rather extreme case of measuring the weight of a human soul, conducted by Duncan MacDougall, MD. He suggest that human soul has a measurable mass. To proof this hypothesis, he use six terminal patients and weighed them before, during, and after the process of death \citep{ryanModernExperimentalDesign2007a}.
+\citet{ryanModernExperimentalDesign2007a} gives a rather extreme case of measuring the weight of a human soul, conducted by Duncan MacDougall, MD.
+MacDougall suggests that human soul has a measurable mass.
+To proof this hypothesis, he \newstyle{took} six terminal patients and weighed them before, during, and after the process of death.
+\newcontent{
+	The first patient lost $\frac{3}{4}$ of an ounce.
+	However, after performing the same experiment to other patients and 15 healthy dogs, the result can not be reproduced.
+	His work is then viewed as an example of small sample size and imprecise measuring instrument.
+}
 
-And last but not least, there's the expensive validation by Isaac Eddington in 1919 to prove Einstein's theory that gravity bends light.
+And last but not least, \newstyle{there is} the expensive validation by Isaac Eddington in 1919 to prove Einstein's theory that gravity bends light.
 This important experiment involves expedition to Principe Island, West Africa and pushed the limits of photographic emulsion technology \citep{tichyShouldComputerScientists1998}.
-And now, 100 years after the validation, it was further supported by another great advancement in astronomy.
-In April 10th 2019, the Event Horizon Telescope (EHT) presented to the public the first ever successful image of a black hole, an object predicted by Einstein's general theory of relativity.
+\newstyle{Today, 100 years after the validation, this is further supported by another great advancement in astronomy.}
+In April 10th 2019, the Event Horizon Telescope (EHT) presented to the public the first ever successful image of a black hole, an object predicted by Einstein's general theory of relativity \citep{akiyama2019first}.
 
-Besides for the objectives of validation and induction already mentioned above, there's a lot of reason to run an experiment.
+Besides for the objectives of validation and induction already mentioned above, \newstyle{there is} a lot of reason to run an experiment.
 \citet{montgomeryDesignAnalysisExperiments2013} mentioned some of the reasons as follows:
-\begin {itemize}[noitemsep]
+\begin {enumerate}[noitemsep]
 	\item \textbf{Factor screening or characterization}. This is often the case when working with new systems or technologies to minimize wasted resource usage.
 	\item \textbf{Optimization}. Finding the desirable settings of factors that result in desirable response.
 	\item \textbf{Confirmation}. Same as the validation objective already mentioned.
 	\item \textbf{Discovery}. Same as the induction objective already mentioned.
 	\item \textbf{Robustness}. Finding the condition on which the response variables will degrade.
-\end{itemize}
+\end{enumerate}
 
-\citet{montgomeryDesignAnalysisExperiments2013} also defines a guideline in designing an experiment that maps nicely to the scientific method:
+\newstyle{\citet{montgomeryDesignAnalysisExperiments2013} also defines a guideline in designing an experiment:}
 
 \begin{enumerate}[noitemsep]
 	\item Recognition of and statement of the problem
@@ -79,50 +103,79 @@ Besides for the objectives of validation and induction already mentioned above, 
 	\item Conclusions and recommendations
 \end{enumerate}
 
-Step 1-3 can be considered as the pre-experimental planning steps.
-He also noted that steps 2 and 3 is interchangeable in practice.
-Furthermore, the experiment should also be done in an iterative way.
+Steps 1-3 can be considered as the pre-experimental planning steps.
+He also noted that Steps 2 and 3 are interchangeable in practice.
+The experiment should also be done in an iterative way.
+\newcontent{
+	This is because generally \first~do not know the exact choices such as the factors, ranges, and measurements right away.
+	Instead, \first~learn it as \first~go along with the experiments.
+}
+
 
 
 \section{Reproducible Benchmarks}
 \label{sec:reproducibleBenchmarks}
 
-The term reproducibility is often intertwined with the term replicability.
-\citet{drummondReplicabilityNotReproducibility2009} argues that replicability is the impoverished version of reproducibility which albeit the great effort to achieve it, its purpose is only for preventing fraud.
-On the other hand, \citet{vitekR3RepeatabilityReproducibility2012} argues that replicability is as important as reproducibility since it provides baseline and facilitates extending and building on previous works.
+The term reproducibility is closely related with the term replicability.
+\newstyle{
+	\citet{drummondReplicabilityNotReproducibility2009} argues that replicability is the impoverished version of reproducibility which.
+	While achieving it need a great effort, its purpose is only for preventing fraud.
+	\citet{vitekR3RepeatabilityReproducibility2012} argued the opposite.
+	Replicability is as important as reproducibility, since replicability provides baseline and facilitates extending and building on previous works.
+}
 
 \citet{goodmanWhatDoesResearch2016} suggests to define new terminologies for reproducibility to avoid the inconsistencies between replicability and reproducibility:
-\begin{itemize}
+\begin{enumerate}
 	\item \textbf{Methods reproducibility}. Ability to implement, as exactly as possible, the experimental and computational procedures, with the same data and tools, to obtain the same results.
 	\item \textbf{Results reproducibility}. The production of corroborating results in a new study, having followed the same experimental methods.
 	\item \textbf{Inferential reproducibility}. The making of knowledge claims of similar strength from a study replication or reanalysis.
-\end{itemize}
+\end{enumerate}
 
-\citet{gundersenStateArtReproducibility2018} remarks that methods reproducibility is what \citet{drummondReplicabilityNotReproducibility2009} states by replicability, and the combination of both results and inferential reproducibility is what \citet{drummondReplicabilityNotReproducibility2009} states by reproducibility.
-They also adopts the definition by \citet{goodmanWhatDoesResearch2016} specific to the Artificial Intelligence (AI) field.
-While these are defined as specific in the AI field, it can be applied to computational science in general with a slight modification:
-\begin{itemize}
-	\item \textbf{$\bm{R_1}$: Experiment Reproducible}. The results of an experiment are experiment reproducible when the execution of the same implementation produces the same results when executed on the same data.
-	\item \textbf{$\bm{R_2}$: Data Reproducible}. The results of an experiment are data reproducible when an experiment is conducted that executes an alternative implementation that produces the same results when executed on the same data.
-	\item \textbf{$\bm{R_3}$: Method Reproducible}. The results of an experiment are method reproducible when the execution of an alternative implementation produces the same results when executed on different data.
-\end{itemize}
+\newstyle{
+	\citet{gundersenStateArtReproducibility2018} compares this definition to \citeauthor{drummondReplicabilityNotReproducibility2009} definition.
+	Methods reproducibility is the same as replicability, while the combination of both results and inferential reproducibility is reproducibility.
+	They also adopt the definition by \citet{goodmanWhatDoesResearch2016} specific to the field of Artificial Intelligence (AI).
+	While they define it specific in the AI field, it can also be applied to computational science in general with the modification in \Cref{def:reproducibility}.
+}
+\begin{mydef}[Reproducibility]
+	\label{def:reproducibility}
+	Degrees of reproducibility from highest to lowest, as generalized from \citet{gundersenStateArtReproducibility2018} is as follows:
+	\begin{enumerate}
+		\item \textbf{R1: Experiment Reproducible}. The results of an experiment are experiment reproducible when the execution of the same implementation \newcontent{\st{of an AI method}} produces the same results when executed on the same data.
+		\item \textbf{R2: Data Reproducible}. The results of an experiment are data reproducible when an experiment is conducted that executes an alternative implementation \newcontent{\st{of the AI method}} that produces the same results when executed on the same data.
+		\item \textbf{R3: Method Reproducible}. The results of an experiment are method reproducible when the execution of an alternative implementation \newcontent{\st{of the AI method}} produces the same results when executed on different data.
+	\end{enumerate}
+\end{mydef}
 
-In short, $\bm{R_1}$ is the highest degree of reproducibility.
-$\bm{R_3}$ only requires documented method of the experiment, while $\bm{R_2}$ additionally requires documented data used in the experiment, and finally $\bm{R_1}$ also requires documented experiment implementation.
-This definition will be used to state the degree of reproducibility throughout the rest of this \MakeLowercase{\type}.
+\newstyle{
+	\textbf{R1} is the highest degree of reproducibility and \textbf{R3} the lowest, based on the documentation.
+	Achieving \textbf{R3} only requires documented method of the experiment.
+	\textbf{R2} extends \textbf{R3} to also require the documentation of the data used.
+	Finally, \textbf{R1} further extends \textbf{R2} by also requiring documented experiment implementation.
+	\Cref{def:reproducibility} will be used to state the degree of reproducibility throughout the rest of this \MakeLowercase{\type}.
+}
 
-They also reported that no papers are fully reproducible by any degree defined above.
-The degree of reproducibility of each paper (measured by the number of required variables documented) is only in the 24-26\% range.
-\citet{collbergRepeatabilityComputerSystems2016} results further support this issue.
-The degree of reproduciblity in computer science is only up to 54\% even after considerable effort in contacting the authors.
-They mention some of the reasons as licensing issues, no version tracking, the code is not ready for public, no backup, obsolete dependencies, and so on.
+\newstyle{
+	\citet{gundersenStateArtReproducibility2018} surveyed 400 papers from 2013-2016 AI conferences and reported none of them achieve any degree of reproducibility in \Cref{def:reproducibility}.
+	They define a number of indicators to measure the degree of reproducibility for each factor: method, data, and implementation.
+	The degree of reproducibility of each paper as measured by the number of fulfilled indicators is only in the 24-26\% range.
 
-\citet{beyerReliableBenchmarkingRequirements2019} defines benchmarking as a performance evaluation method that is used for comparing different tools of the same domain, evaluating and comparing different features or configurations of a tool, or finding out the performance of a tool under different inputs.
-This suggests that benchmarking is a good option for experiments where the design chosen is comparative or variance analysis.
+	\citet{collbergRepeatabilityComputerSystems2016} study further increase the consent of reproducibility.
+	The degree of reproduciblity of papers from ACM conferences and computer science journals in 2012-2013 is only up to 54\% even after contacting the authors and waiting for reply for up to two months.
+	They mention some of the reasons as licensing issues, no version tracking, the code is not ready for public, no backup, obsolete dependencies, and so on.
+}
 
-Formally, the process of benchmarking a set of tool configurations $\bm{C}$ and a set of input or benchmark instances $\bm{I}$ is the process of evaluating the performance of a set of benchmark runs $\bm{R} \in \bm{C} \times \bm{I}$. A tool configuration $\bm{C}_i$ is the product of a tool and its defined configuration space: $\bm{T_i} \times \bm{S_i}$.
+Benchmarking as a performance evaluation method that is used for comparing different tools of the same domain, evaluating and comparing different features or configurations of a tool, or finding out the performance of a tool under different inputs \citep{beyerReliableBenchmarkingRequirements2019}.
+\First~formally define benchmarking in \Cref{def:benchmarking}.
 
-The process of benchmarking is almost the same as the steps \citet{montgomeryDesignAnalysisExperiments2013} defines to design an experiment:
+\begin{mydef}[Benchmarking]
+	\label{def:benchmarking}
+	The process of \emph{benchmarking} takes a set of \emph{tool configurations} $\bm{C}$ and a set of \emph{input instances} $\bm{I}$ that are subject to benchmarking.
+	$\bm{R} \in \bm{C} \times \bm{I}$ is the set of \emph{benchmark runs} that is evaluated in this process.
+	A tool configuration $\bm{C}_i$ is further defined as the product of a \emph{tool} and the space of its \emph{configuration}: $\bm{T_i} \times \bm{S_i}$.
+\end{mydef}
+
+The process of benchmarking is almost the same as the steps \citet{montgomeryDesignAnalysisExperiments2013} defined to design an experiment:
 \begin{enumerate}[noitemsep]
 	\item \textbf{Planning}. As with designing an experiment, this includes selecting the measurements, the tool configurations, and benchmark instances.
 	\item \textbf{Performing benchmarks \& collecting results}. This step can (and should) be automated to allow for repeated runs. The run itself is usually embarrassingly parallel so it can easily be run on multiple threads or machines.
@@ -132,40 +185,87 @@ The process of benchmarking is almost the same as the steps \citet{montgomeryDes
 
 By packing an experiment as a benchmark, the experiment can be repeated as much as needed because the process is automated.
 It is a good way to simplify repeated experiments \citep{tichyShouldComputerScientists1998}.
-When the benchmarking process itself is able to be shared, it has achieved the $\bm{R_3}$ reproducibility, and can be called as a reproducible benchmark.
-Then, depending on the effort to provide the data and software implementation, it can also achieve $\bm{R_2}$ or even $\bm{R_1}$ reproducibility.
+When the benchmarking process itself is able to be shared, it has achieved the \textbf{R3} reproducibility, and can be called as a reproducible benchmark.
+Then, depending on the effort to provide the data and software implementation, it can also achieve \textbf{R2} or even \textbf{R1} reproducibility.
 This way, others can easily confirm or extends the benchmark with their own implementation and compare it with the original benchmarks.
 
-A good benchmarking setup---with documented hardware, software, configuration, and results---is a good way to invite researchers to embrace reproducible research. And naturally there's a need for a tool to help researchers setting up a reproducible benchmark.
+Good benchmarking setup with documented hardware, software, configuration, and results is a good way to invite researchers to embrace reproducible research.
+\newcontent{
+	A tool for helping researchers setting up a reproducible benchmark is thus needed to reduce repeated work and lower the barrier of achieving reproducibility.
+}
 
 
 \section{An Ideal Benchmarking Tool}
 \label{sec:idealBenchmarkingTool}
 
-These requirements for an ideal benchmarking tool are compiled by identifying strengths and weaknesses of existing solutions (see Chapter \ref{ch:existing}).
+\newcontent{
+	\First~define the following four requirements for the ideal benchmarking tool:
+	\begin{enumerate}[noitemsep]
+		\item Extensible/configurable
+		\item Minimal effort to setup
+		\item Accurate and Reliable
+		\item Reproducibility
+	\end{enumerate}
 
-\subsection{Extensible \& Configurable}
-The benchmarking tool should not be domain-specific and should be as general as possible to allow everyone to use it.
-This might also be a major factor as to why many researchers chose to create their own makeshift benchmarking tool from scratch because they just can't configure the existing benchmarking tool to their needs.
+	Requirements 1-4 above are compiled based on literature study and identifying strengths and weaknesses of existing solutions.
+	\First~consider five existing solutions described in \Cref{ch:existing}.
+}
 
-Like other extensible frameworks, this factor will benefit greatly from the open source community. People can reuse features others has developed and get a head start in benchmarking. This will in turn motivates them to also contribute to the community.
 
-\subsection{Properly documented}
-The benchmarking tool should have a proper documentation to allow the user to actually start using the tool.
-Many of the existing benchmarking tool has minimum or no documentation at all.
-This will make it harder for people to adopt the tool.
-From my experience using some of the existing benchmarking tool, it's not rare to have to dig into the source code to understand what to do to start benchmarking.
+\subsection{Extensible/Configurable}
+\newcontent{
+	Depending on the subject to be benchmarked, the benchmarking process can vary greatly in terms of the things measured and evaluated.
+	For example, the runtime measured for a sequential and parallel algorithm differs.
+	While CPU time is a more representative measurement of the actual time an algorithm use, wall-clock time captures the benefit of parallelism compared to the former.
+	Evaluation step also differs from one experiment to another.
+	One experiment might want to evaluate the performance of an algorithm, or the soundness of an algorithm, or even both.
+	This is why a benchmarking tool should be configurable to allow a wide range of usage across fields of research.
 
-\subsection{Minimum effort to setup}
-\citet{vitekR3RepeatabilityReproducibility2012} mentions that researches dealing with repeatability took considerable amount of effort to publish.
-A benchmarking tool to help researchers with repeatability and reproducibility should not hinder the researchers further with complex setup.
-Setting up a benchmark and running it should be as easy as possible to reduce the barrier to reproducible research.
-Some existing solutions requires the user to have elevated privilege to the system, which often is not the case.
+	Another benefit from an extensible tool is community contribution.
+	For example, the popular python web framework Django\footlink{https://www.djangoproject.com/} has more than 35\,000 projects providing feature extensions for the framework to date\footlink{https://github.com/search?q=for+django}.
+	Additionally, an open sourced tool will also benefit from direct contribution to the project.
+	Taking another example from Django, today there are 1\,751 user from all over the world contributing directly to the project repository.
+}
 
-\subsection{Accurate and reliable}
-To be useful, the benchmark itself need to be accurate and reliable.
-This is particularly challenging, for example: since benchmark runs are often executed in parallel and they can influence each other.
-In their paper Reliable Benchmarking Requirements, \citet{beyerReliableBenchmarkingRequirements2019} defines several requirements of a reliable benchmarks (and their solution) comprehensively:
+\subsection{Minimal Effort to Use}
+\citet{vitekR3RepeatabilityReproducibility2012} mention that researches dealing with repeatability took considerable amount of effort to publish.
+A benchmarking tool to help researchers with repeatability and reproducibility should not hinder the researchers with complex setup.
+Setting up a benchmark and running it should be as easy as possible.
+\newcontent{
+	For example, requiring elevated privilege to the system for setting up the tools will often require additional complicated administration work, as such the case in TU Dresden cluster system.
+}
+Easy adoption of the tools can reduce the barrier to reproducible research.
+
+\newcontent{
+	\citet{nielsenTenUsabilityHeuristics2006} defines ten general usability heuristics in user interaction design.
+	This can be followed to ensure the usage is as easy as possible.
+	The ten principles are as follows:
+	\begin{enumerate}[noitemsep]
+		\item Visibility of system status
+		\item Match between system and the real world
+		\item User control and freedom
+		\item Consistency and standards
+		\item Error prevention
+		\item Recognition rather than recall
+		\item Flexibility and efficiency of use
+		\item Aesthetic and minimalist design
+		\item Help users recognize, diagnose, and recover from errors
+		\item Help and documentation
+	\end{enumerate}
+
+	Principle 10 from above in particular is very important in this context.
+	Help and documentation is needed to guide the user through setting up the benchmark.
+	A helpful guide can cut down the setup time and allow the user to instead focus on the important things such as choosing what to measure and how the evaluation should be executed.
+}
+
+
+\subsection{Accurate and Reliable}
+To be useful, the benchmark itself needs to be accurate and reliable.
+This is particularly challenging.
+For example, since benchmark runs are often executed in parallel, they influence each other and thus the measurement can be inaccurate.
+\citet{beyerReliableBenchmarkingRequirements2019} define several requirements of a reliable benchmark (and their solution) comprehensively.
+\newcontent{The requirements are as follows:}
+
 \begin{enumerate}[noitemsep]
 	\item Measure and Limit Resources Accurately
 	\item Terminate Processes Reliably
@@ -175,7 +275,10 @@ In their paper Reliable Benchmarking Requirements, \citet{beyerReliableBenchmark
 	\item Isolate Individual Runs
 \end{enumerate}
 
-\subsection{Reproducible}
+\subsection{Reproducibility}
 The benchmarking tool should also embrace reproducibility.
-$\bm{R_3}$ reproducibility can be achieved by making the benchmark setup sharable and can easily be re-run in another environment.
-Additionally, to achieve $\bm{R_2}$ or even $\bm{R_1}$ reproducibility, the benchmarking tool should document the source of the data used and the version of the software implementation used in the benchmark.
+\newcontent{
+	This is to address the issue of reproducibility discussed earlier in \Cref{sec:reproducibleBenchmarks}.
+}
+The \textbf{R3} reproducibility can be achieved by making the benchmark setup sharable and can easily be re-run in another environment.
+Additionally, to achieve \textbf{R2} or even \textbf{R1} reproducibility, the benchmarking tool should document the source of the data used and the version of the software implementation used in the benchmark, respectively.

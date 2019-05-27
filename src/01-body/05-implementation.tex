@@ -366,7 +366,7 @@ Section \ref{sec:impl.observers} will explain the observers in detail.
 The run step (explained in Section \ref{sec:impl.steps}) is usually accompanied by an observer.
 An observer is a class extending \mintinline{python}{class Observer} imported from \code{reprobench.core.base}.
 Since observers live in the server process, naturally they mostly deal with the database.
-This does not only include inserting data to the database, implementing notifications to e-mail or even to messaging services liked Slack or Telegram is also possible.
+This does not only include inserting data to the database, implementing notifications to e-mail or even to messaging services like Slack or Telegram is also possible.
 
 \begin{listing}
     \inputminted[firstline=7,lastline=13]{python}{assets/listings/reprobench/reprobench/executors/base.py}
