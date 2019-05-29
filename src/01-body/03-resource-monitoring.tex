@@ -8,25 +8,22 @@ Three different mechanisms for monitoring resource and its examples are describe
 \First~also give a brief description of virtualization as one way to produce more reliable resource measurement in Section \ref{sec:resource.virtualization}.
 Finally, we discusses various implementation of resource monitoring tool and each of its mechanism in Section \ref{sec:resource.impl}.
 
-\section{The Task of Resource Monitoring}
+\section{Resource Monitoring}
 \label{sec:resource.overview}
 
 To objectively compare two or more programs, an objective measurement is needed.
-Resource consumption like CPU time elapsed, CPU instruction used, or peak memory usage is often considered as the go-to measurement for benchmarking in computational science.
 The resources measured might include information regarding processes, threads, computation, memory, input/output, and files of a program \citep{juvePracticalResourceMonitoring2015}.
-The task of measuring and limiting these resources can also be described as resource monitoring.
+The task of measuring these resources can also be described as resource monitoring.
+Since usually \first~do not have unlimited resource, \first~are also interested in limiting these resource usages as \first~monitor them.
 
 Measurement of these resource consumption is not only used in benchmarking.
-Some of its usage includes but not limited to:
-its daily usage in user program such as \textit{Task Manager} in Windows or \code{top} in Linux,
-judging whether a program passes some threshold marks in education or competition field,
-measuring the efficiency of a job scheduling system in High Throughput Computing (HTC) field,
-selecting dataset for a competition,
-and getting best-enough result from an iterative optimization algorithm after some desired time.
+Computation and network resource is measured heavily in cloud applications for various purposes such as resource planning, quality of service (QoS) assurance, billing management, and troubleshooting \citep{aceto2013cloud}.
+Resource monitoring is also used to automatically plan system resource allocation for computation tasks in a job scheduling system to efficiently use the available resources \citep{tovarJobSizingStrategy2018}.
+Last but not least, resource usage measurement is also used to select data set for competitions such as the International SAT Competition \citep{heule2018proceedings}.
 Because of this wide area of usage, there are many attempts to implement these measurement to achieve the best result.
 
-\section{Monitoring Mechanism}
-\label{sec:resource.mechanism}
+\section{Monitoring Mechanisms}
+\label{sec:resource.mechanisms}
 
 \citet{juvePracticalResourceMonitoring2015} categorize resource monitoring into three different mechanisms.
 \newcontent{
@@ -50,26 +47,34 @@ To monitor the resource usage over time, this means the query is executed at som
 More frequent polling will result in a more timely information but the overhead also increases.
 Querying is often the easiest resource monitoring mechanism in term of implementation \citep{juvePracticalResourceMonitoring2015}.
 
+\newcontent{This query mechanism described by \citeauthor{juvePracticalResourceMonitoring2015} can also be reworded as sampling as it can be seen as a more specialized form of statistical sampling.}
 It is the least intrusive mechanism, albeit the information received from this mechanism also immediately expires.
 A resource usage surge could happen in between the queries, so this mechanism is not accurate.
 In short, the query mechanism provides an easy to implement but inaccurate measurement of the resource monitored.
 
-\code{getrusage()}\footnote{See \href{https://linux.die.net/man/2/getrusage}{\code{man getrusage}}} is a POSIX standard system call.
+\code{getrusage()} is a POSIX standard system call to query resource usage of a process and its children \citep{manpages}.
 Unfortunately, this standard only specifies \code{ru\_utime} and \code{ru\_stime}, the user mode time spent and kernel mode time spent, respectively.
 In practice, \code{getrusage()} includes more information, for example the \code{ru\_maxrss}, indicating the maximum resident set size.
 
-A Linux specific feature that is often used for querying resource usage is the procfs\footnote{See \href{https://linux.die.net/man/5/proc}{\code{man 5 proc}}} pseudo-file system.
-The information provided includes user time, system time, resident set size, number of threads, and many more.
-On a side note, since the operating system always account these informations for all running processes, the clock resolution used is not too accurate.
-The user time and system time in \code{/proc/[pid]/stat} is measured in system ticks, which turns out to be 10 milliseconds in a typical Linux system.
-Recently, Linux control groups (CGroups)\footnote{See \href{http://man7.org/linux/man-pages/man7/cgroups.7.html}{\code{man 7 cgroups}}} is also used for querying similar or more comprehensive information for a group of processes.
+A Linux specific feature that is often used for querying resource usage is the procfs pseudo-file system.
+procfs provides resource information for a process such as elapsed user time, elapsed system time, current resident set size, and number of threads \citep{manpages}.
+On a side note, since the operating system always records these information for all running processes, the clock resolution used is not too accurate.
+The user time and system time in \code{/proc/[pid]/stat} is measured in system ticks, which turns out to be 10 milliseconds in a typical Linux system \citep{manpages}.
 
-A more universal query mechanism is using performance counters.
-Most system nowadays---disregarding its operating system---has a hardware clock that has an incredibly accurate clock resolution, some even achieving nanoseconds resolution.
+\newcontent{
+    Since Linux kernel version 2.6.24 (released January 2008), Linux control groups (cgroups) can be used to record process resource usage \citep[cgroups(7)]{manpages}.
+    It organizes processes as hierarchical groups whose resource usage can be monitored and limited.
+    Resource tracking and limiting are managed by using resource-specific cgroups controllers such as CPU, CPU accounting, and memory.
+    Cgroups excels in managing groups of processes and their resources \citep{beyerBenchmarkingResourceMeasurement2015}.
+}
+
+
+Performance counters is a more universal method for this query mechanism.
+Most system nowadays has a hardware clock that has an incredibly accurate clock resolution, some even achieving nanoseconds resolution.
 Querying this clock at the start and end of a program could measure what is called the wall clock time.
 This measurement is less informative than CPU times measured by user time and system time, but still useful in spite of that.
 
-The library \textsc{psutil}\footnote{\href{https://github.com/giampaolo/psutil}{https://github.com/giampaolo/psutil}} provides an abstraction for various resource queries that works in many operating systems.
+The library \textsc{psutil} \citep{rodolaCrossplatformLibProcess2019} provides an abstraction for various resource queries that works in many operating systems.
 This allows a cross-platform resource monitoring tool based on query mechanism to be developed.
 As of now however, \first~can not find the relevant resource monitoring tool making use of this abstraction.
 
@@ -83,19 +88,19 @@ This is a strong restriction because most of the computation in HTC or computati
 A more reliable mechanism to query a resource usage is to ask the system itself to report the usage on specific events.
 This also produces less overhead compared to the query mechanism, although the information queried also immediately expires \citep{juvePracticalResourceMonitoring2015}.
 
-\code{wait4()}\footnote{See \href{https://linux.die.net/man/2/wait4}{\code{man wait4}}} is a system call available in most UNIX that waits for a child process (and blocks the process calling this system call), then returns its \code{getrusage()} information when the process exits.
+\code{waitpid()} is a system call available in most UNIX that waits for a child process (and blocks the process calling this system call), then returns its resource usage information when the process exits \citep{manpages}.
 This one example of the notification mechanism in practice.
 
-\code{inotify}\footnote{See \href{https://linux.die.net/man/7/inotify}{\code{man inotify}}} application programming interface (API) in Linux can also be leveraged.
-This API allows one to listen for file system events, such as new file or directory created, existing files edited, a file is accessed, or a file is deleted.
-Most operating system also have APIs similar to this, such as \code{fsevents} in OS X. Watchman\footnote{\href{https://facebook.github.io/watchman/}{https://facebook.github.io/watchman/}} is an open source tool by Facebook that abstracts these file system notification APIs.
+\code{inotify} application programming interface (API) in Linux can also be leveraged to provide notification regarding filesystem events.
+This API allows one to listen for file system events, such as new file or directory created, existing files edited, a file is accessed, or a file is deleted \citep{manpages}.
+Most operating system also have APIs similar to this, such as \code{fsevents} in OS X. Watchman \citep{WatchesFilesRecords2019} is an open source tool that abstracts these file system notification APIs and provide a unified API.
 
-Another useful notification is \code{forkstat}\footnote{\href{http://manpages.ubuntu.com/manpages/cosmic/en/man8/forkstat.8.html}{http://manpages.ubuntu.com/manpages/cosmic/en/man8/forkstat.8.html}}.
-This tool notify system-wide \code{fork()}, \code{exec()}, and \code{exit()} system call activities.
-Unfortunately, this tool needs superuser privilege because uses Linux netlink connector, a special socket for communication between kernel and user space.
+\code{forkstat} provides system-wide notification for \code{fork()}, \code{exec()}, and \code{exit()} system call activities \citep{UbuntuManpageForkstat}.
+This can be used to keep track of the tree of processes being monitored.
+Unfortunately, this tool needs superuser privilege because it uses Linux netlink connector, a special socket for communication between kernel and user space.
 
-A more powerful albeit intrusive notification can be achieved by using the UNIX \code{ptrace()}\footnote{See \href{https://linux.die.net/man/2/ptrace}{\code{man ptrace}}} system call.
-\code{ptrace()}, often use for debugging, allows a process to intercept and modify system calls.
+A more powerful albeit intrusive notification can be achieved by using the UNIX \code{ptrace} system call.
+\code{ptrace()}, often used for debugging purposes, allows a process to intercept and modify system calls \citep{manpages}.
 When a system call occurs, the kernel will check if the process is being traced, and if so, will notify the tracer.
 With this system call one can observe, for example, the \code{fork()}, \code{exec()}, and \code{exit()} system call to track process trees.
 In Linux, it is also possible to only stop the process when specific, pre-defined system calls occur, these include the three system calls above.
@@ -109,8 +114,16 @@ This effectively allows the procfs query method to work more reliably compared t
 \citet{juvePracticalResourceMonitoring2015} defines this group of mechanism as the ones in which the monitor intercepts actions performed by the process.
 This mechanism is highly intrusive because it actively changes the way the program runs.
 \code{ptrace()} mentioned earlier also belongs to this group since the kernel stops the system call and forward an event to the monitor (in this case the tracer).
-In general this method introduces huge overhead compared to the other mechanism.
+\newstyle{In general this method introduces relatively huge overhead compared to the other mechanism.}
 In \code{ptrace()} for example, there need to be at least two context switches for every system call intercepted.
+
+\newcontent{
+    The overhead depends on the number of system calls made by the program being traced.
+    \citet{kimPracticalEffectiveSandboxing2013} reports 36.5\% overhead when extracting a Linux kernel archive compared to 0.1\% overhead when running matrix calculations.
+    This result supports the theory that the overhead is a function of the number is system calls since extracting an archive includes many system calls compared to the matrix calculations.
+    Extracting an archive involves invoking many system calls related to input/output (I/O) such as \code{fstat}, \code{write}, \code{read}, \code{open}, and \code{close} while matrix calculations is mostly done in the CPU and system calls is mainly only used to write the output in the very end.
+    This means the overhead should be negligible for most computation heavy programs involving little I/O.
+}
 
 A less intrusive method compared to the one \code{ptrace()} used is function interposition.
 In this mechanism, the monitor replace some original function by a wrapper that also record parameters and results of the original function \citep{juvePracticalResourceMonitoring2015}.
@@ -118,15 +131,17 @@ The environment variable \code{LD\_PRELOAD} in Linux and \code{DYLD\_INSERT\_LIB
 This way, one can write a wrapper function that will be called instead of the original function.
 
 On the other hand, \code{ptrace()} is less practical because it interrupts each system call made by the program, but it is more robust and can be used in statically-linked programs.
-\citet{kimPracticalEffectiveSandboxing2013} has shown that using the recent \code{seccomp/BPF}\footnote{See \href{http://man7.org/linux/man-pages/man2/seccomp.2.html}{\code{man seccomp}}} feature to filter out what system call is going to be intercepted results in an efficient system call interposition technique.
+\citet{kimPracticalEffectiveSandboxing2013} has shown that using the recent \code{seccomp/BPF} feature to filter out what system call is going to be intercepted results in an efficient system call interposition technique.
 
-\code{seccomp} is a security feature in Linux (since 2.6.23) to allow only some set of system calls for a program.
-Furthermore, Berkeley Packet Filter (\code{BPF}) is also supported since Linux 3.5 as a mean to configure the way \code{seccomp} filters the system call.
-With the combination of \code{seccomp} and \code{BPF}, they can configure only some set of the system call to send a \code{ptrace()} event while the rest just continue normally, effectively reducing the overhead of system call interposition.
-This feature---usually combined with Linux namespaces---can also be used to provide simple yet secure isolation for the program, as used by \textsc{nsjail}\footnote{See Section \ref{sec:resource.impl.nsjail}} and \textsc{firejail}\footnote{\href{https://github.com/netblue30/firejail/}{https://github.com/netblue30/firejail/}}.
+The Linux User's Manual (\citeyear{manpages}) for \code{seccomp} describes it as a security feature in Linux (since 2.6.23) to allow only some set of system calls for a program.
+Since Linux 3.5, Berkeley Packet Filter (\code{BPF}) is used as a mean to configure the way \code{seccomp} filters the system call.
+With the combination of \code{seccomp} and \code{BPF} (\code{seccomp/BPF}), they can configure only some set of the system call to send a \code{ptrace()} event while the rest just continue normally, effectively reducing the overhead of system call interposition.
+This feature---usually combined with Linux namespaces---can also be used to provide simple yet secure isolation for the program, as used by \textsc{nsjail} (see \Cref{sec:resource.impl.nsjail}) and \textsc{firejail} \citep{netblue30LinuxNamespacesSeccompbpf2019}.
+Aside from selective tracing, the system call filtering itself is particularly interesting for online benchmarking tools.
+\First~can execute arbitrary user code with white-listed system calls to prevent remote code execution.
 
 With this interposition mechanism, one can reliably use the query mechanism.
-For example, before the \code{exit()} system call actually happen, the \code{procfs} can be queried because the program itself can be stopped before the entry is removed from the pseudo-file system.
+For example, before the \code{exit()} system call actually happen, the procfs can be queried because the program itself can be stopped before the entry is removed from the pseudo-file system.
 While this is the most accurate method compared to the others, this is also highly intrusive so caution must be exercised when using this method.
 
 \section{Virtualization: More Reliable Measurements}
@@ -142,12 +157,12 @@ Additionally, virtualization tools that are widely used also contribute to the r
 
 Virtual machines (VMs) use a technique called hypervisor-based virtualization.
 Hypervisor is a software that creates and runs virtual machines \citep{scheepersVirtualizationContainerizationApplication2014}.
-There are many of such hypervisor programs that are widely used, examples include VirtualBox, Xen, Hyper-V, and many more.
+There are many of such hypervisor programs that are widely used, examples include VirtualBox \citep{OracleVMVirtualBox}, Xen \citep{XenProject}, and Hyper-V \citep{scooleyIntroductionHyperVWindows}.
 
 Hypervisor manages the resource that will be used by the VMs.
 When deployed, each VM run its own operating system with its own kernel.
 All the dependencies needed by the program, is also included in the VM itself.
-This results in a portable and isolated way to run a program.
+This results in a portable and isolated way to run the OS with the program and all its dependencies.
 
 Alas, this comprehensive virtualization comes with a cost.
 The overhead of bootstrapping a VM is not negligible.
@@ -156,8 +171,8 @@ The overhead of bootstrapping a VM is not negligible.
 
 \subsection{Containers}
 
-A relatively new technique addressing the overhead issue is container-based virtualization.
-Linux Containers (LXC)\footnote{\href{https://linuxcontainers.org/}{https://linuxcontainers.org/}} uses this technique to create an isolated environment without hosting multiple kernels like in hypervisor-based virtualization.
+A relatively new technique trying to reduce the overhead of virtualization is container-based virtualization.
+Linux Containers (LXC) \citep{LinuxContainers} uses this technique to create an isolated environment without hosting multiple kernels like in hypervisor-based virtualization.
 The implementation share the Linux kernel with the host machine.
 This makes it more lightweight and particularly good for deploying many small isolated instances, as often the case in benchmarking.
 
@@ -165,36 +180,55 @@ Docker\footnote{\href{https://www.docker.com/}{https://www.docker.com/}} is an e
 An application built with Docker extends upon existing Docker images with a reproducible \code{Dockerfile} configuration, stating each step needed to create the exact image.
 With the key feature of sharing the Linux kernel, an OS image in Docker can achieve minimum size, with a notable example like Alpine Linux even reaching only 2-3 megabytes in size (its virtual machine images is ten times larger in size).
 
-\citet{zhangComparativeStudyContainers2018} report a much less boot up latency---period from starting a VM or container to usable service---in Docker containers compared to VMs.
-Booting a VM when there are about 250 other idle VMs takes more than 1000 seconds, while booting 512 Docker contains only takes 987 seconds (an average of 1.89 seconds per container).
+\citet{zhangComparativeStudyContainers2018} report a much less boot up latency in Docker containers compared to VMs.
+Booting a VM that does not do anything when there are about 250 other idle VMs takes more than 1000 seconds, while booting 512 Docker containers that also does not do anything only takes 987 seconds (an average of 1.89 seconds per container).
 This is also true for the amount of memory consumed in idle state.
-A VM takes 0.23 GB compared to 0.03 GB of memory of Docker container in their experiment.
+The VM takes 0.23 GB compared to 0.03 GB of memory of Docker container in their experiment.
 
 A more lightweight containerization or sandboxing technique is using Linux namespaces.
 This relatively new feature in the Linux kernel allows isolation of process with practically no overhead.
 Both \citet{beyerReliableBenchmarkingRequirements2019} and \citet{marevs2012new} report no overhead from their experiments compared to bare process execution.
-This feature allow a few levels of isolation by mix-and-matching various namespaces, namely CGroup, IPC, Network, Mount, PID, User, and UTS\footnote{See \href{http://man7.org/linux/man-pages/man7/namespaces.7.html}{\code{man 7 namespaces}}}.
+This feature allow a few levels of isolation by mix-and-matching various namespaces, namely Cgroup, IPC, Network, Mount, PID, User, and UTS \citep[namespaces(7)]{manpages}.
 
 \newcontent{
     \section{Difficulties}
     \label{sec:resource.difficulties}
 
     Before reviewing the implementation of various resource monitoring tools, \first~list several difficulties that may result in unreliable or inaccurate measurement of resource usage.
-    \citet{beyerBenchmarkingResourceMeasurement2015} mention three limitations of commonly used methods compared to their CGroups-based implementation.
+    \citet{beyerBenchmarkingResourceMeasurement2015} describe three limitations of commonly used methods compared to their cgroups-based implementation.
     \First~decided these three limitations is general enough to give an overview of the difficulties encountered when monitoring resource usage.
     These three difficulties are as follows:
 
     \begin{enumerate}
-        \item \textbf{Measuring resources may fail.}
+        \item \textbf{Measuring resources.}
+
         As already mentioned before, querying information from the OS will result in immediately expired information.
+        Information about surge in resource usage and short-living processes may be missed.
         But this is not only the problem, since that information is not only inaccurate but can also be unreliable.
-        For example, \code{getrusage} only report the resource usage of child processes \code{wait}-ed by their parents \citep[getrusage]{manpages}
+        For example, \code{getrusage} only report the resource usage of processes \code{wait}-ed by their parents \citep{manpages}.
+        If the process being monitored does not bother to \code{wait} for its children, those children resource usage is lost and not accumulated to the total usage reported.
 
-        \item \textbf{Enforcing limits may fail.}
-        \lipsum[1-1]
+        \item \textbf{Enforcing limits.}
 
-        \item \textbf{Killing processes may fail.}
-        \lipsum[1-1]
+        Limiting resource through \code{setrlimit} only limits the resource on per process basis \citep{manpages}.
+        This means a process can use as many resource as they want by spawning processes.
+        A process with one child process has double the CPU time limit and double the maximum allowed memory.
+        Additionally, \code{setrlimit} does not do anything when the maximum RSS limit is exceeded \citep{manpages}.
+        Manually limiting resource usages may also fail because the sampling method may miss sudden resource usage surges.
+
+        \item \textbf{Managing processes.}
+
+        Killing a group of processes is not easy.
+        Especially when dealing with zombie process.
+        The Linux User's Manual (\citeyear{manpages}) for \code{waitpid} explains zombie process as a process that terminates but has not been waited by its parent.
+        This is troublesome because the record will take space in the process table, which normally has a fairly low limit (defaults to 32768 in Linux, as stated in the manual for procfs).
+        Furthermore, the manual states that if the parent terminates, these zombie processes will not terminate and instead adopted by the \code{init} process to be \code{wait}-ed.
+        This means the child processes will continue to consume resources after the monitoring tool kills parent.
+        Note that this behavior may also be intended to create long-living process (daemon).
+        The parent spawn a child process which in turn spawn a grandchild process which do the actual work.
+        The child process will then terminate and the grandchild process adopted by \code{init}, allowing it to run in the background as a long-living process.
+        Finally, limiting the number of processes itself is also important.
+        A malicious or misconfigured tool may spawn a huge number of processes faster than the monitoring tool can kill them.
 
     \end{enumerate}
 }
@@ -224,7 +258,7 @@ This feature allow a few levels of isolation by mix-and-matching various namespa
             \footnotesize
             \item[1] Extensible.
             \item[2] Through a fork implementation.
-            \item[3] If using CGroups or network isolation.
+            \item[3] If using cgroups or network isolation.
 
             \note Virt. and Priv. stand for virtualization and privileged respectively.\\
             \textbf{S, N} and \textbf{I} stand for sampling, notification, and interposition respectively.\\
@@ -239,7 +273,7 @@ This feature allow a few levels of isolation by mix-and-matching various namespa
     \First~consider seven existing implementation and additionally our implementation, \textsc{psmon} (see \Cref{sec:res.psmon}).
     \First~discuss their method of measuring and limiting resource.
     \Cref{tab:monitors.overview} outlines and compares these eight resource monitoring tool.
-    Note that all of the existing implementation \first~selected is developed for Linux and may not work for other UNIX-like OSes.
+    Note that all of the existing implementation \first~found and selected is developed for Linux and may not work for other UNIX-like OSes.
     For example, none of these existing implementations run in MacOS.
     That is also why we developed \textsc{psmon} initially.
 }
@@ -248,7 +282,7 @@ This feature allow a few levels of isolation by mix-and-matching various namespa
 \subsection{\textsc{runsolver}}
 \label{sec:resource.impl.runsolver}
 
-\textsc{runsolver}\footnote{Available at \href{https://www.cril.univ-artois.fr/~roussel/runsolver/}{https://www.cril.univ-artois.fr/~roussel/runsolver/}} \citep{rousselControllingSolverExecution2011} is a resource monitoring and limiting tool for computational task solvers.
+\textsc{runsolver} \citep{rousselControllingSolverExecution2011} is a resource monitoring and limiting tool for computational task solvers.
 The development is driven by competitions such as pseudo-boolean competitions and CSP/MaxCSP competitions.
 It is quite popular in the computational science field as it is fairly easy to use and requires no superuser privileges.
 
@@ -258,24 +292,30 @@ This version can neither handle multi-process nor sending SIGTERM in the case of
 The second version uses \code{ptrace()} for interposing system calls, giving it precise control of the processes and memory management system calls.
 They report an increase of 60\% to 160\% in CPU time for this second version.
 Finally, the third and current version of \textsc{runsolver} polls (at 1 Hz frequency) the list of processes in order to determine the solver's process tree.
-The resources is polled from the \code{procfs} and accumulated.
+The resources is polled from the procfs and accumulated.
 
-It is not clear whether this tool is still being maintained, but the latest release was on November of 2017.
+It is not clear whether this tool is still being maintained, since the latest release was on November of 2017.
 
 
 \subsection{\textsc{runexec}}
 
-\citet{beyerReliableBenchmarkingRequirements2019} provides \textsc{runexec} along with their \textsc{BenchExec} tool as a solution for a reliable benchmarking.
+\citet{beyerReliableBenchmarkingRequirements2019} provide \textsc{runexec} along with their \textsc{BenchExec} tool as a solution for a reliable benchmarking.
 The development was driven by repeated organization of the International Competition on Software Verification (SV-COMP).
-It is still being actively developed along with the \textsc{BenchExec} benchmarking framework\footnote{See Section \ref{sec:benchmarking.impl.benchexec}}.
+It is still being actively developed along with the \textsc{BenchExec} benchmarking framework (see \Cref{sec:benchmarking.impl.benchexec}).
 
-The implementation uses Linux-specific feature CGroups with its various controllers.
+The implementation uses Linux-specific feature cgroups with its various controllers.
 The \code{cpuacct} controller is used to measure the CPU time usage.
-A separate thread checks the time on predicted time and terminates the process group on timeout.
 \code{cpuset} controller is used to attach process groups to specified CPU cores.
 \code{freezer} controller is used to freeze and unfreeze the process group when terminating them.
 This is to prevent the processes from spawning new processes.
 They also used \code{memory} and \code{memsw} controllers to account and limit memory and swap resources.
+
+\newcontent{
+    For limiting the resource, it use separate threads for each resource limit monitored.
+    To limit CPU time and wall-clock time, they predict the time the program will time-out based on remaining time and number of used CPU cores and set a timer, and repeat this routine until it times out or the thread is canceled.
+    To limit the memory, the rely on the kernel to send notification when the cgroups encounters out-of-memory.
+    Finally, to limit file counts, it relies on polling the information from the cgroups \code{blkio} controller.
+}
 
 Additionally, they also provide a non-privileged, optional container-based execution environment, \textsc{containerexecutor}.
 It works by combining Linux user namespaces and overlay filesystem features available in Linux kernel 3.8 onwards.
@@ -286,13 +326,13 @@ The PID namespace also allows for a reliable cleanup since other processes will 
 
 \subsection{\textsc{kickstart}}
 
-\citet{juvePracticalResourceMonitoring2015} presents \textsc{kickstart}\footnote{Available as part of Pegasus: \href{https://github.com/pegasus-isi/pegasus}{https://github.com/pegasus-isi/pegasus}} as one of the tools developed to address monitoring resource usage.
+\citet{juvePracticalResourceMonitoring2015} present \textsc{kickstart} \citep[part of][]{PegasusWorkflowManagement2019} as one of the tools developed to address monitoring resource usage.
 It is still in active development along with the Pegasus Workflow Management System.
 
 The implementation is UNIX compatible but the feature leveraging \code{ptrace()} is only available in Linux.
 The implementation allow several detail of monitoring.
 On the lowest detail, it uses \code{wait4()} for the main process.
-Then, if specified, it can also use \code{ptrace()} combined with \code{procfs} to catch process-related events to allow more reliable measurement.
+Then, if specified, it can also use \code{ptrace()} combined with procfs to catch process-related events to allow more reliable measurement.
 Finally, it can also operate full interposition with \code{ptrace()} to capture I/O related information.
 
 Currently, it has no feature for limiting resource usages like CPU time or memory usage.
@@ -301,52 +341,53 @@ It is only possible to limit run time (with \code{SIGTERM} and eventually \code{
 
 \subsection{\textsc{timeout}}
 
-\textsc{timeout}\footnote{\href{https://github.com/pshved/timeout}{https://github.com/pshved/timeout}}---not to be confused with a tool with the same name in GNU coreutils with lesser capabilities---is a Perl script for monitoring and limiting time and memory consumption of a process.
-It uses \code{ps}\footnote{See \href{https://linux.die.net/man/1/ps}{\code{man ps}}} to scan for related processes and queries from \code{procfs} with a configurable frequency.
+\textsc{timeout} \citep{shvedScriptMeasureLimit2019} is a Perl script for monitoring and limiting time and memory consumption of a process.
+It uses \code{ps} \citep[ps(1)]{manpages} to scan for related processes and queries from procfs with a configurable frequency.
 
 It has not been updated since April 2016.
-The author also recommends to use CGroups feature instead of using this tool.
+\citeauthor{shvedScriptMeasureLimit2019} also recommends to use cgroups feature instead of using this tool.
 They suggests it is a much better method and not limited with some issues occurring with the method used in \textsc{timeout}.
 
 \subsection{\textsc{NsJail}}
 \label{sec:resource.impl.nsjail}
 
-\textsc{NsJail}\footnote{\href{https://github.com/google/nsjail}{https://github.com/google/nsjail}}, as described in its project home, is a lightweight process isolation tool for Linux.
-It uses several Linux kernel features such as Linux namespaces, CGroups, and \code{seccomp/BPF}.
+\textsc{NsJail} \citep{LightweightProcessIsolation2019}, as described in its project home, is a lightweight process isolation tool for Linux.
+It uses several Linux kernel features such as Linux namespaces, cgroups, and \code{seccomp/BPF}.
 It is actively being developed by Google security team, although it is not an official Google product.
 
 \textsc{NsJail} is more of a security tool instead of a resource monitoring tool, but it can be used as one to some degree.
-The tool allows limiting various resources through CGroup controllers.
-Currently there is no report of the actual resource usage, but it can be extended to do so\footnote{See \href{https://github.com/google/nsjail/issues/105}{https://github.com/google/nsjail/issues/105}} by just querying relevant information from the CGroups pseudo-file system.
+The tool allows limiting various resources through cgroups controllers.
+Currently there is no report of the actual resource usage, but it can be extended to do so\footlink{https://github.com/google/nsjail/issues/105} by just querying relevant information from the cgroups pseudo-file system.
 
-Utilizing \code{seccomp/BPF} through their separate \textsc{Kafel}\footnote{\href{https://github.com/google/kafel}{https://github.com/google/kafel}} language for configuration, it is possible to specify various system call filtering policies.
+Utilizing \code{seccomp/BPF} through their separate \textsc{Kafel} \citep{LanguageLibrarySpecifying2019} language for configuration, it is possible to specify various system call filtering policies.
 For example, one can decide to kill a process when it tries to use \code{execve}, or just log each attempt.
 
 
 \subsection{\textsc{isolate}}
 
-\textsc{isolate}\footnote{\href{https://github.com/ioi/isolate}{https://github.com/ioi/isolate}} is developed under the requirements of competitive programming competition \citep{marevs2012new}.
-It is used in the International Olympiad in Informatics (IOI).
+\textsc{isolate} \citep{SandboxSecurelyExecuting2019} is developed under the requirements of competitive programming competition \citep{marevs2012new}.
+It is used in the International Olympiad in Informatics (IOI), replacing the old \code{ptrace}-based sandbox and resource monitoring tool \citep{maggioloCMSGrowingGrading2014}.
 The development for this project is still active under the open-source license of GNU General Public License version 2.
 
 It needs superuser capabilities to use privileged Linux namespaces and so it is designed to be run under \code{setuid}.
 This means that the binary will always run under superuser privilege, with or without \code{sudo}.
-It also uses CGroup (when specified) for reliable accounting and limiting of process group's resource usage.
+From security perspective this is dangerous since this means the user can execute arbitrary command in escalated privilege if the isolation is not implemented correctly.
+It also uses cgroups (when specified) for reliable accounting and limiting of process group's resource usage.
 
-In general, it runs three processes: one keeper process, one proxy process, and the child process and potentially its subprocesses.
+In general, it runs three processes: one keeper process, one proxy process, and the child process and potentially its sub-processes.
 The keeper process monitors the child process and terminates it if the resource usage exceed its limit.
 The proxy process becomes the parent of the child process and reports the exit status to the keeper process.
-Finally, the child process runs inside its own namespace and CGroups and closely being monitored.
-The resource usage is queried from the CGroup pseudo-filesystem if possible, then \code{wait4()}-reported resource usage if available, or from \code{procfs}.
+Finally, the child process runs inside its own namespace and cgroups and closely being monitored.
+The resource usage is queried from the cgroups pseudo-filesystem if possible, then \code{wait4()}-reported resource usage if available, or from procfs.
 
 
 \subsection{\textsc{runlim}}
 
 \newcontent{
-    \textsc{runlim}\footlink{http://fmv.jku.at/runlim/} uses recursive sampling to monitor the resource usage.
+    \textsc{runlim} \citep{RunLim} uses recursive sampling to monitor the resource usage.
     The tool samples every one tenth of a second.
     For every sampling executed, it queries the list of all processes, then recursively samples resource usage of the child process and its children.
-    It uses \code{procfs} for all resource queries including querying the process list.
+    It uses procfs for all resource queries including querying the process list.
     The source code is published and licensed under the 4-clause BSD License.
     Not that it has not been updated since 2011 and the source code itself is not managed in a public version control system.
 
@@ -360,13 +401,13 @@ The resource usage is queried from the CGroup pseudo-filesystem if possible, the
 \label{sec:res.psmon}
 
 From the seven selected resource monitoring tools above, none works in MacOS.
-Motivated by that and the fact that \first~use MacOS for daily use, \first~developed a simple query-based resource monitoring tool.
-The code is open source and licensed under the MIT license\footnote{Available at \href{https://github.com/rkkautsar/psmon}{https://github.com/rkkautsar/psmon}}.
+Motivated by that and the fact that \first~use MacOS for daily use, \first~developed a simple query-based resource monitoring tool usable not only in Linux but also MacOS.
+The code is open source and licensed under the MIT license \citep{kautsarPsmonMonitorsLimits2019}.
 
 The basic mechanism is similar to those used in \textsc{runsolver} (see Section \ref{sec:resource.impl.runsolver}).
-Since \code{procfs} is only available in Linux, we utilizes \textsc{psutil} to implement cross-platform process tree scanning and resource usage query.
-The polling frequency is configurable, and the resource monitor is also extensible.
-To handle short-living process, the notification mechanism \code{wait4()} is used.
+Since procfs is only available in Linux, we utilizes \textsc{psutil} to implement cross-platform process tree scanning and resource usage query.
+The polling frequency is configurable, and \first~can also extend what resource is being monitored and limited easily.
+To handle short-living process, the notification mechanism \code{wait4()} is used to check if the process spawned already terminates by the time the tool started the polling.
 
 This is just a basic implementation and by no means reliable by the requirements defined by \citet{beyerReliableBenchmarkingRequirements2019}.
 But \first~hope this can be a stepping stone for the development of other tool to also targets non-Linux operating systems.
