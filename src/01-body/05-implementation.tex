@@ -1,6 +1,10 @@
 \chapter{\chImplementation}
 \label{ch:implementation}
 
+\newcontent{
+    \First~tried to refactor \textsc{benchmark-tool} to some degree\footlink{https://github.com/daajoe/benchmark-tool/tree/refactor}, but decided to create a new tool instead in the middle of refactoring.
+    This is because to create the ideal tool, we need significant architecture overhaul and decided it is better to start anew.
+}
 This chapter discusses the design and implementation of \OurBenchmarkingTool, a new benchmarking tool developed to address the requirements defined in Section \ref{sec:idealBenchmarkingTool}.
 Section \ref{sec:impl.design} will describe the system design and the reason behind the design decisions.
 The chapter will then conclude with a description about the implementation in Section \ref{sec:impl.impl}.
@@ -297,21 +301,11 @@ The schema for \OurBenchmarkingTool~configuration file is defined in \emph{repro
 
 \subsection{Module}
 
-\begin{listing}
-    \inputminted[firstline=31, lastline=34]{python}{assets/listings/reprobench/reprobench/utils.py}
-    \caption{Importing class module from path string}
-    \label{lst:impl.import}
-\end{listing}
-
-
 To enable high extensibility, many components of \OurBenchmarkingTool~is defined in a modular, reusable Python \emph{modules}.
 What \first~define as a module is in fact just a Python class that can be imported by path strings.
 For example, the path string \mintinline{python}{"my_package.my_folder.my_file.MyClass"} references the class \code{MyClass} in \emph{my\_folder/my\_file.py} (or \emph{my\_folder/my\_file/\_\_init\_\_.py}) file in the Python package \code{my\_package}.
 This allows \OurBenchmarkingTool~to flexibly import user defined code, either it's in the working directory or installed through \code{pip}.
 
-The related utility for importing these modules is shown in \lst~\ref{lst:impl.import}.
-Firstly, it uses \mintinline{python}{importlib.import_module(...)} from Python's standard library to import the path as a Python module.
-Then \mintinline{python}{getattr(...)} is used to extract the class from the last part of the path string.
 
 \subsection{Server}
 
@@ -354,16 +348,10 @@ After receiving this event, the server prepare the database schema with the payl
 Then the server loads the observer modules.
 The list of observer modules is extracted from the database, inserted from the earlier bootstrapping process.
 
-Last but not least, it spawns greenlets of the observers and its own loop method.
+The server spawns greenlets of the observers and its own loop method.
 The loop method waits for every event received in the front-end socket and forward it to the back-end socket, allowing the observers to act accordingly.
-Section \ref{sec:impl.observers} will explain the observers in detail.
 
-
-
-\subsection{Observers}
-\label{sec:impl.observers}
-
-The run step (explained in Section \ref{sec:impl.steps}) is usually accompanied by an observer.
+The run step (explained in Section \ref{sec:impl.workers}) is usually accompanied by an observer.
 An observer is a class extending \mintinline{python}{class Observer} imported from \code{reprobench.core.base}.
 Since observers live in the server process, naturally they mostly deal with the database.
 This does not only include inserting data to the database, implementing notifications to e-mail or even to messaging services like Slack or Telegram is also possible.
@@ -423,6 +411,7 @@ The implementation of this manager is straightforward.
 It submits the pending runs as a job array of the worker process with the \code{sbatch} command and cancel them when requested with the \code{scancel} command.
 
 \subsection{Workers}
+\label{sec:impl.workers}
 
 \begin{listing}
     \inputminted{python}{assets/listings/pseudocodes/worker.py}
@@ -435,9 +424,6 @@ The pseudo-code of the implementation can be seen in \lst~\ref{lst:impl.worker}.
 First, it reports its existence to the server and requests for information (or context) regarding its assigned run.
 Then it creates a context object to be passed to steps, and executes them one by one sequentially.
 When it finishes executing all the steps, it reports its completion and terminates.
-
-\subsection{Steps}
-\label{sec:impl.steps}
 
 A step is implemented as a subclass of \mintinline{python}{class Step} in \emph{reprobench/core/base.py}.
 This base class defines only two class methods, \mintinline{python}{def register(cls, config)} and \mintinline{python}{def execute(cls, context, config)}.

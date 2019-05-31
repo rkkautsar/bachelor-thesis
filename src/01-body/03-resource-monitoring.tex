@@ -71,8 +71,8 @@ The user time and system time in \code{/proc/[pid]/stat} is measured in system t
 
 Performance counters is a more universal method for this query mechanism.
 Most system nowadays has a hardware clock that has an incredibly accurate clock resolution, some even achieving nanoseconds resolution.
-Querying this clock at the start and end of a program could measure what is called the wall clock time.
-This measurement is less informative than CPU times measured by user time and system time, but still useful in spite of that.
+Querying this clock at the start and end of a program could measure what is called the wall-clock time.
+\newcontent{While not as representative as CPU time usage, wall-clock time is convenient to measure the performance of parallel tools.}
 
 The library \textsc{psutil} \citep{rodolaCrossplatformLibProcess2019} provides an abstraction for various resource queries that works in many operating systems.
 This allows a cross-platform resource monitoring tool based on query mechanism to be developed.
@@ -200,7 +200,7 @@ This feature allow a few levels of isolation by mix-and-matching various namespa
     These three difficulties are as follows:
 
     \begin{enumerate}
-        \item \textbf{Measuring resources.}
+        \item \textbf{Measuring resources}
 
         As already mentioned before, querying information from the OS will result in immediately expired information.
         Information about surge in resource usage and short-living processes may be missed.
@@ -208,7 +208,7 @@ This feature allow a few levels of isolation by mix-and-matching various namespa
         For example, \code{getrusage} only report the resource usage of processes \code{wait}-ed by their parents \citep{manpages}.
         If the process being monitored does not bother to \code{wait} for its children, those children resource usage is lost and not accumulated to the total usage reported.
 
-        \item \textbf{Enforcing limits.}
+        \item \textbf{Enforcing limits}
 
         Limiting resource through \code{setrlimit} only limits the resource on per process basis \citep{manpages}.
         This means a process can use as many resource as they want by spawning processes.
@@ -216,7 +216,7 @@ This feature allow a few levels of isolation by mix-and-matching various namespa
         Additionally, \code{setrlimit} does not do anything when the maximum RSS limit is exceeded \citep{manpages}.
         Manually limiting resource usages may also fail because the sampling method may miss sudden resource usage surges.
 
-        \item \textbf{Managing processes.}
+        \item \textbf{Managing processes}
 
         Killing a group of processes is not easy.
         Especially when dealing with zombie process.
@@ -283,7 +283,7 @@ This feature allow a few levels of isolation by mix-and-matching various namespa
 \label{sec:resource.impl.runsolver}
 
 \textsc{runsolver} \citep{rousselControllingSolverExecution2011} is a resource monitoring and limiting tool for computational task solvers.
-The development is driven by competitions such as pseudo-boolean competitions and CSP/MaxCSP competitions.
+The development is driven by competitions such as pseudo-boolean competitions\label{sec:resource.difficulties} and CSP/MaxCSP competitions.
 It is quite popular in the computational science field as it is fairly easy to use and requires no superuser privileges.
 
 The accompanying paper describes the implementation over time.
@@ -294,7 +294,11 @@ They report an increase of 60\% to 160\% in CPU time for this second version.
 Finally, the third and current version of \textsc{runsolver} polls (at 1 Hz frequency) the list of processes in order to determine the solver's process tree.
 The resources is polled from the procfs and accumulated.
 
-It is not clear whether this tool is still being maintained, since the latest release was on November of 2017.
+\newcontent{
+    Since the latest version rely only on sampling, it suffers from the first two difficulties listed in \Cref{sec:resource.difficulties}.
+    For handling zombie processes, it uses Linux-specific \code{prctl} \citep[prctl(2)]{manpages} to set itself as the parent when any of its child process lost its parent.
+}
+It is not clear whether this tool is still being maintained, since the latest release was on November 2017.
 
 
 \subsection{\textsc{runexec}}
@@ -336,7 +340,7 @@ Then, if specified, it can also use \code{ptrace()} combined with procfs to catc
 Finally, it can also operate full interposition with \code{ptrace()} to capture I/O related information.
 
 Currently, it has no feature for limiting resource usages like CPU time or memory usage.
-It is only possible to limit run time (with \code{SIGTERM} and eventually \code{SIGKILL}) by the process wall clock time elapsed.
+It is only possible to limit run time (with \code{SIGTERM} and eventually \code{SIGKILL}) by the process wall-clock time elapsed.
 
 
 \subsection{\textsc{timeout}}
@@ -347,6 +351,7 @@ It uses \code{ps} \citep[ps(1)]{manpages} to scan for related processes and quer
 It has not been updated since April 2016.
 \citeauthor{shvedScriptMeasureLimit2019} also recommends to use cgroups feature instead of using this tool.
 They suggests it is a much better method and not limited with some issues occurring with the method used in \textsc{timeout}.
+\newcontent{Some of its issues include unreliable termination of child process and not handling multiple child processes.}
 
 \subsection{\textsc{NsJail}}
 \label{sec:resource.impl.nsjail}
@@ -389,7 +394,7 @@ The resource usage is queried from the cgroups pseudo-filesystem if possible, th
     For every sampling executed, it queries the list of all processes, then recursively samples resource usage of the child process and its children.
     It uses procfs for all resource queries including querying the process list.
     The source code is published and licensed under the 4-clause BSD License.
-    Not that it has not been updated since 2011 and the source code itself is not managed in a public version control system.
+    Note that it has not been updated since 2011 and the source code itself is not managed in a public version control system.
 
     Since it only samples the list of all processes, this tool also suffers from missing short-living processes.
     Additionally, when the resource usage exceeds the specified limits, it only kills the direct child process.

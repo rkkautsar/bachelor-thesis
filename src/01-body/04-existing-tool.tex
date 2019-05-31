@@ -1,53 +1,54 @@
 \chapter{\chExisting}
 \label{ch:existing}
 
-This chapter discusses the existing benchmarking tools developed by the community.
-Section \ref{sec:prior_works.overview} gives an overview of the benchmarking tool considered.
-Then the following sections describes each of the considered benchmarking tools.
+\newcontent{
+    Resource monitoring tools are useful to produce a comparable measurement, but as per our definition of benchmarking in \Cref{def:benchmarking}, benchmarking involves a set of runs.
+    Benchmarking tools exists to orchestrate these runs and use the resource monitoring tools to compare the benchmarking runs.
+    This chapter discusses various existing benchmarking tools developed by the community.
+}
 
-\section{Overview}
-\label{sec:prior_works.overview}
+\section{Existing Tools}
 
-There are five benchmarking tool that \first~selected for evaluation.
-This is by no means an exhaustive collection but it should represent the current state of existing benchmarking tools.
+% Insert overview table
+
+There are five benchmarking tool that \first~selected to represent the existing tools.
+Each are described in their own section.
+This is by no means an exhaustive collection, but it should represent the current state of existing benchmarking tools.
 \textsc{StarExec} particularly took a web-based approach, where the user submit the configuration and the run happened in the host system.
 The rest of them, \textsc{benchmark-tool}, \textsc{BenchExec}, \textsc{BenchKit}, and \textsc{JuBE}, approaches benchmarking as task to be run in the local machine or submitted to a cluster system.
 
-\section{\textsc{benchmark-tool}}
-\textsc{benchmark-tool}\footlink{https://github.com/potassco/benchmark-tool} is originally a part of Potassco\footlink{https://potassco.org/}, the Postdam Answer Set Solving Collection, developed at the University of Potsdam.
-It has been forked and used by some researchers in the computational logic field, such as its use in Technische Universität Dresden (TU Dresden) and Technische Universität Wien (TU Wien).
+\subsection{\textsc{benchmark-tool}}
 
-The general workflow is like this:
-(a) create a \textit{runscript}, defining the benchmark run configuration;
-(b) generate the file necessary for the benchmark by running the \code{bgen} script;
-(c) run the benchmark by running the script generated in the output dir;
-(d) evaluate the benchmark by running the \code{beval} script, outputting an xml file;
-(e) generate a CSV or OpenOffice spreadsheet from the evaluated result by running the \code{bconv} script.
+\newstyle{\textsc{benchmark-tool} \citep{GitmirrorBenchmarktoolContribute2018} is originally developed from the need to carry out experiments in the Potassco (Potsdam Answer Set Solving Collection, \url{https://potassco.org/}) project at the University of Potsdam.}
+It has been forked and used by some researchers in the computational logic field, such as its use in Technische Universit\"at Dresden (TU Dresden) and Technische Universit\"at Wien (TU Wien).
 
-This benchmarking tool is not designed to be reusable.
-Instead, the user has to clone the source code, then add their benchmarking config on top of the cloned code.
-This makes it possible to achieve some degree of extensibility.
-For example, it can be extended to submit the benchmarking job to any cluster job scheduler, like Slurm or HTCondor by writing a specific script generation used in the step (b).
+% The general workflow is like this:
+% (a) create a \textit{runscript}, defining the benchmark run configuration;
+% (b) generate the file necessary for the benchmark by running the \code{bgen} script;
+% (c) run the benchmark by running the script generated in the output dir;
+% (d) evaluate the benchmark by running the \code{beval} script, outputting an xml file;
+% (e) generate a CSV or OpenOffice spreadsheet from the evaluated result by running the \code{bconv} script.
+
+This benchmarking tool is not designed for sharing or integrating multiple tools.
+The user has to clone the source code, then add their benchmarking config on top of the cloned source code.
+This also makes it possible to achieve some degree of extensibility.
+For example, it can be extended to submit the benchmarking job to any cluster job scheduler, like \textsc{Slurm} \citep{yoo2003slurm} or \textsc{HTCondor} \citep{condor-practice} by writing a specific script generation used in the step (b).
 On the other hand, this also makes it hard to share the configuration without actually sharing the whole cloned source code.
 Some user even uses a centralized git repository and manages different benchmarks with git branches.
 
-This tool is also lacking in documentation and accuracy.
-The only documentation available is minimal and not has not been updated since 9 years ago.
-Additionally, it uses \textsc{runsolver} to measure and limit the resources.
-According to \citet{beyerReliableBenchmarkingRequirements2019}, \textsc{runsolver} is not accurate and reliable.
+This tool is also lacking in documentation and \newstyle{reliable measurement}.
+The only documentation available is minimal and has not been updated since 2010.
+It uses \textsc{runsolver} to measure and limit the resources which suffers from unreliable measurement as discussed before in \Cref{ch:resource}.
 
 Setting up a benchmark with this tool takes a lot effort.
-The requirements for the Python interpreter and external requirements is not made clear in the 9 years old documentation.
-There is also certain rules for location and name of the tool that will be used.
+Requirements such as the used Python version and external dependencies are not listed clearly in the 9 years old documentation.
+There are also certain rules for location and name of the tool that will be used.
 Furthermore, writing the \textit{result parser} often involves a lot of copying since there is no certain definition of it and most of the time it is specific to each benchmark.
 
-\First~tried to refactor this tool to some degree\footlink{https://github.com/daajoe/benchmark-tool/tree/refactor}, but decided to create a new tool instead in the middle of refactoring.
-This is because to create the ideal tool, we need significant architecture overhaul and decided it's better to start anew.
-
-\section{\textsc{BenchExec}}
+\subsection{\textsc{BenchExec}}
 \label{sec:benchmarking.impl.benchexec}
 
-\textsc{BenchExec} \citep{philipp_wendler_2019_2561835} is developed by the Software and Computational Systems Lab of Ludwig-Maximilians-Universität München (LMU Munich)\footlink{https://www.sosy-lab.org/} with the main goal of reliable measurement and limitation of resource usage.
+\newstyle{\textsc{BenchExec} \citep{philipp_wendler_2019_2561835} is developed by the SoSy-Lab (Software and Computational Systems Lab, \url{https://www.sosy-lab.org/}) of Ludwig-Maximilians-Universit\"at München (LMU Munich) with the main goal of reliable measurement and limitation of resource usage.}
 It has been used successfully and proven its reliability and usefulness in the International Competition on Software Verification (SV-COMP) \citep{beyerReliableBenchmarkingRequirements2019}.
 It is actively developed with the last release (as of 24th April 2019) in 11th February 2019 and licensed under the Apache License 2.0.
 
@@ -57,30 +58,33 @@ This allows the tool to contain the underlying process and its descendants relia
 But in turn this also makes the installation a bit difficult and requires a minimum requirement for the kernel (full support for these features is available in Linux kernel 3.18 onwards).
 Setting up CGroups in particular requires superuser access which often is not directly available in shared cluster systems.
 
-The general workflow for benchmarking with this tool is as follows:
-(a) defining an xml configuration file for the benchmark;
-(b) defining a tasks set to be run (optionally in a yaml definition);
-(c) reusing or defining a new \textit{tool-info module} for the tool to benchmark;
-(d) running the \code{benchexec} program with the xml configuration;
-(e) generating interactive table and plots with the \code{table-generator} program.
+% The general workflow for benchmarking with this tool is as follows:
+% (a) defining an xml configuration file for the benchmark;
+% (b) defining a tasks set to be run (optionally in a yaml definition);
+% (c) reusing or defining a new \textit{tool-info module} for the tool to benchmark;
+% (d) running the \code{benchexec} program with the xml configuration;
+% (e) generating interactive table and plots with the \code{table-generator} program.
 
-The documentation for this benchmarking framework, although somewhat sufficient, is not comprehensive and feels incomplete.
+\newcontent{
+    The documentation for this benchmarking framework is sufficient but not comprehensive.
+    It only covers basic use case and points out several details to the source code.
+}
 There is no tutorial or guides for getting started on benchmarking, instead the documentation revolves around the usage of each tools.
 This makes following the documentation a bit difficult because the information is scattered across files.
 
 The modular structure of this framework makes it extensible.
 Tools are defined in self-contained \textit{tool-info modules} and can be reused.
-They encourage user to submit a pull request for their \textit{tool-info modules} to the main repository so other user can reuse it, albeit this does not mean that the tool itself is made available to achieve $\bm{R_1}$.
+They encourage user to submit a pull request for their \textit{tool-info modules} to the main repository so other user can reuse it, albeit this does not mean that the tool itself is made available to achieve \textbf{R1}.
 There is also an executor module that can be written to enable running the benchmark in arbitrary execution environment, such as in cluster system.
 
 \begin{listing}
-	\begin{minted}{text}
-		CHECK( init(main()), LTL(G valid-free) )
-		CHECK( init(main()), LTL(G valid-deref) )
-		CHECK( init(main()), LTL(G valid-memtrack) )
-	\end{minted}
-	\caption{An example property definition for \textsc{BenchExec}}
-	\label{lst:benchexec.property}
+    \begin{minted}{text}
+        CHECK( init(main()), LTL(G valid-free) )
+        CHECK( init(main()), LTL(G valid-deref) )
+        CHECK( init(main()), LTL(G valid-memtrack) )
+    \end{minted}
+    \caption{An example property definition for \textsc{BenchExec}}
+    \label{lst:benchexec.property}
 \end{listing}
 
 The downside of this framework is the evaluation is tightly coupled to the convention used in SV-COMP.
@@ -88,31 +92,41 @@ They use a property file like the one listed in Listing \ref{lst:benchexec.prope
 Combined with the lack of documentation, this makes it impossible, for now, to evaluate and analyze a benchmark outside the scope of software verification with \textsc{BenchExec}.
 
 
-\section{\textsc{Benchkit}}
+\subsection{\textsc{Benchkit}}
 
-\textsc{Benchkit} \citep{benchkit:2013} is a benchmarking tool actively used in the Model Checking Contest (MCC)\footlink{https://mcc.lip6.fr/}.
+\textsc{BenchKit} \citep{benchkit:2013} is a benchmarking tool actively used in the MCC (Model Checking Contents, \url{https://mcc.lip6.fr/}).
 The competition participants submit a virtual machine consisting of the (minimal) operating system (OS) to run the program, dependencies, and a small \textsc{BenchKit} head to interface with the \textsc{BenchKit} kernel.
 
 The documentation for this tool\footlink{http://cosyverif.org/wp-content/benchmarks/BenchKit.pdf} has not been updated since version $\beta1$, released in February, 2013.
-This documentation is plentiful and guides the user through the general workflow, but the workflow itself is confusing to follow.
+The documentation guides the user through the general workflow with comprehensive explanation.
+\newcontent{
+    Unfortunately, some of the details of setting up the virtual machine image and interfacing it with \textsc{BenchKit} is left unexplained.
+    An example image implementation can greatly improve the documentation.
+}
 
 This tool allows the user to run the benchmark across remote nodes, which in turn execute the run inside multiple virtual machines (this is not yet the case in the $\beta1$ version of the software described in the documentation).
 The result is then compiled manually or sent automatically through e-mails from the remote nodes and then manually analyzed from the generated CSV files.
 It also forces certain requirements before running the benchmarks, such as the need for a specific folder structure, and the deployment of virtual machine images to the remote nodes in advance.
 
-It uses \textsc{SysStat}\footlink{https://github.com/sysstat/sysstat}, which measures the whole virtual machine resource usage.
-This means that the resource usage measured also includes the OS.
-Accordingly, \cite{beyerReliableBenchmarkingRequirements2019} assess this measurement tool as neither accurate nor reliable.
+It uses \textsc{SysStat} \citep{sebastienPerformanceMonitoringTools2019}, a general purpose system monitoring tool which measures the whole virtual machine resource usage.
+\newcontent{
+    This means that the resource usage measured also includes the one used by the virtualized OS, which may not be reliably comparable with each other since the OS can differ.
+    \First~ do not put \textsc{SysStat} as the discussed resource monitoring tool in \Cref{ch:resource} because normally \first~want to monitor resource usage of a process, not the whole OS.
+}
 
-Although the necessity of providing virtual machine makes sure the program is $\bm{R_1}$ reproducible, \citet{kordonBenchKitToolMassive2014} reported an overhead of 40 seconds per run in their experiment due to the boot-up time of virtual machines.
-\cite{beyerReliableBenchmarkingRequirements2019} remarks that this 40 seconds overhead would have taken an additional 190 CPU days if used in their competition, definitely a prohibitive overhead.
+Although the necessity of providing virtual machine makes sure the program is \textbf{R1} reproducible, \citet{kordonBenchKitToolMassive2014} reported an overhead of 40 seconds per run in their experiment due to the boot-up time of virtual machines.
+\cite{beyerReliableBenchmarkingRequirements2019} remark that this 40 seconds overhead would have taken an additional 190 CPU days if used in their competition.
+\newcontent{
+    The total computation time for their competition is 490 days \citep{beyer2017software}.
+    This means the booting overhead for using virtual machine alone will result in 39\% more computation time.
+}
 
 
-\section{\textsc{JuBE}}
+\subsection{\textsc{JuBE}}
 
 \textsc{JuBE} \citep{frings2010flexible} is a benchmarking environment developed by Jülich Supercomputing Centre (JSC) of Forschungszentrum Jülich, Germany.
-It is actively developed, albeit with no public version control repository, with the last release (as of 24th April 2019) in 4th February 2019.
-It is licensed under the GNU General Public License version 3.
+It is actively developed \newstyle{internally} with the last release (as of 24th April 2019) in 4th February 2019.
+\newcontent{Its source code is publicly available and} is licensed under the GNU General Public License version 3.
 
 Compared to other benchmarking tool, it approaches the benchmarking task in a different, completely generic way.
 There is no explicit measurement and limiter tool, no explicit task instances, and no specific evaluation or analysis step.
@@ -135,14 +149,14 @@ The flexibility of this tool is surely its strong point.
 But this flexibility also burdens the user to do all the repetitive task of benchmarking on their own, although it is possible to create some reusable wrappers for these repetitive tasks.
 The analysis step is also restricting, since the user has to output the metrics to a file, then capture it with patterns.
 Additionally, the tool itself does not provide much in terms of reproducibility.
-It is up to the user how to make their benchmarking reproducible since shell commands is often not reproducible by itself.
+It is up to the user how to make their benchmarking reproducible since shell commands are often not reproducible by itself.
 
 
-\section{\textsc{StarExec}}
+\subsection{\textsc{StarExec}}
 
 \textsc{StarExec} is a web-based service for evaluating logic solvers on user-supplied benchmarks input \citep{stumpStarExecCrossCommunityInfrastructure2014}.
 It is officially hosted at \href{https://www.starexec.org/}{\code{https://www.starexec.org/}}.
-The source code is publicly available\footlink{https://github.com/StarExec/StarExec} and is actively developed under the MIT license.
+The source code is publicly available and is actively developed under the MIT license in \citet{StarExecCrossCommunity2019}.
 \First~will consider the hosted version of this tool for the evaluation.
 
 The service is built around the idea of \emph{spaces} and \emph{primitives}.
@@ -150,9 +164,10 @@ A space is a collection of solvers, benchmarks, jobs, and users, collectively de
 Spaces have a hierarchical structure.
 The topmost spaces are called the \emph{community spaces}, while the descendants are called \emph{subspaces} \citep{stumpStarExecCrossCommunityInfrastructure2014}.
 
-The documentation for this service is by no mean complete, but it is detailed enough for a normal user.
-Measurement and limitation of resource usage currently can be handled by either \textsc{runsolver} or \textsc{RunExec} from \textsc{BenchExec}.
-There is also an active effort to apply containerization feature of \textsc{RunExec}.
+The documentation for this service is not comprehensive but is detailed enough for a normal user.
+Some parts, particularly the feature specific for community leader is not documented.
+Measurement and limitation of resource usage can currently be handled by either \textsc{runsolver} or \textsc{RunExec}.
+There is also an active effort to apply containerization feature of \textsc{RunExec}\footlink{https://github.com/StarExec/StarExec/pull/167}.
 
 To register, a user has to apply to be approved---or in other words, endorsed---by a community leader, the person managing a community space.
 Then after accepted, the user can log in and view the public spaces in their community or create new subspaces.
@@ -161,9 +176,215 @@ A benchmarking job can then be submitted with the existing solver configurations
 These community-specific post-processors can only be configured by a community leader.
 
 The service encourage shared solvers and benchmarks in the community to reduce duplication of effort.
-This also helps the community practice $\bm{R_1}$ reproducibility.
+This also helps the community practice \textbf{R1} reproducibility.
 Other users can view or even re-run another user's job to confirm the results in a fully reproducible way since the execution environment is the same.
 
 The limitation that only the community leaders can approve members and configure things like pre- and post-processors is limiting the capability of this service.
-Sure, for a specific community the measured metrics is more or less the same, but this also prevent other metrics to be evaluated freely.
-This decision might be necessary to prevent abuse as this involves sharing a large computing power.
+For a specific community the measured metrics is more or less the same, but this also prevent other from using different metrics that may only be needed specifically for their benchmark.
+This decision might be necessary to prevent abuse as this service involves sharing a large computing power.
+
+\subsection{\textsc{compbench}}
+
+\lipsum[1-2]
+
+
+\section{Comparison of Existing Tools}
+
+\First~breakdown the requirements defined in \Cref{sec:idealBenchmarkingTool} to a few key factors or indicators.
+These key factors are used to measure how much of the requirements are fulfilled.
+The breakdown is as following:
+
+\begin{enumerate}[noitemsep]
+    \item Extensible/configurable
+    \begin{enumerate}[noitemsep]
+        \item Evaluation is not enforced.
+        \item Analysis is not enforced.
+        \item Able to source benchmark instances from remote sources.
+        \item Able to submit jobs to arbitrary job scheduler such as \textsc{Slurm} and \textsc{HTCondor} cluster system.
+        \item Does not enforce tool to be implemented in specific language.
+        \item Support multiple repeated runs.
+        \item Support multiple tool configurations.
+        \item Support defining tool configurations as parameter spaces.
+        \item Support resource limiting.
+        \item Support arbitrary resource limiting tool.
+    \end{enumerate}
+
+    \item Minimal effort to use
+    \begin{enumerate}[noitemsep]
+        \item Configuration is human editable.
+        \item Documentation exists.
+        \item Installation guide exists.
+        \item Documentation is comprehensive.
+        \item Requires no superuser privilege.
+        \item Requirements are documented.
+        \item Installation can be done in only a few steps.
+        \item Provides basic implementation for common benchmarking usage.
+        \item Ensure robust user experience through unit and integration testing.
+    \end{enumerate}
+
+    \item Accurate and Reliable
+    \begin{enumerate}[noitemsep]
+        \item Measure and limit resources accurately.
+        \item Terminate processes reliably.
+        \item Assign cores deliberately.
+        \item Respect Nonuniform Memory Access.
+        \item Avoid Swapping.
+        \item Isolate Individual Runs.
+    \end{enumerate}
+
+    \item Reproducible
+    \begin{enumerate}[noitemsep]
+        \item System information is recorded.
+        \item Results can be shared easily.
+        \item Benchmark setup can be shared easily.
+        \item Encourage the use of reproducible benchmark (\textbf{R2}).
+        \item Encourage the use of reproducible tool implementation (\textbf{R1}).
+    \end{enumerate}
+\end{enumerate}
+
+\newcounter{reqCount}
+\newcounter{reqFactorCount}[reqCount]
+\newcommand{\reqLabel}[1]{
+    \setcounter{reqFactorCount}{0}
+    \addtocounter{reqCount}{1}
+    \arabic{reqCount}.
+    #1
+}
+\newcommand{\reqFactor}[1]{
+    \addtocounter{reqFactorCount}{1}
+    (\alph{reqFactorCount}) #1
+}
+
+% \begin{table}
+%     \begin{threeparttable}
+%         \begin{tabular}{ll}
+
+%             \toprule
+
+%             \textbf{Requirements} & \textbf{Factors}                                              \\
+
+%             \midrule
+%             % \endhead
+
+%             % % \cmidrule{2-2}
+%             % \multicolumn{2}{r}{\textit{continued}}
+%             % \endfoot
+
+%             % \bottomrule
+%             % \insertTableNotes\\
+
+%             % \endlastfoot
+
+%             \multirow{10}{*}{\reqLabel{Extensible/Configurable}}
+%                                   & \reqFactor{Flexible evaluation step}                          \\*
+%                                   & \reqFactor{Flexible analysis step}                            \\*
+%                                   & \reqFactor{Flexible benchmark instance source}                \\*
+%                                   & \reqFactor{Can support arbitrary task scheduler}              \\*
+%                                   & \reqFactor{Multiple runs}                                     \\*
+%                                   & \reqFactor{Multiple tool configurations}                      \\*
+%                                   & \reqFactor{Parameter space}                           \\*
+%                                   & \reqFactor{Set resource limit}                                \\*
+%             \midrule
+
+%             \multirow{5}{*}{\reqLabel{Minimal Effort to Use}}
+%                                   & \reqFactor{Self-documenting configuration}                    \\*
+%                                   & \reqFactor{Installation guide}                                \\*
+%                                   & \reqFactor{Setup guide}                               \\*
+%                                   & \reqFactor{Comprehensive documentation\tnote{1}}       \\*
+%                                   & \reqFactor{No superuser privilege}                            \\*
+%                                   & \reqFactor{Installation guide}                                \\*
+%                                   & \reqFactor{Documented requirements}                           \\*
+%                                   & \reqFactor{No cumbersome dependencies\tnote{1}}        \\*
+%             \midrule
+
+%             \multirow{6}{*}{\reqLabel{Accurate and Reliable}}
+%                                   & \reqFactor{Measure and Limit Resources Accurately}            \\*
+%                                   & \reqFactor{Terminate Processes Reliably}                      \\*
+%                                   & \reqFactor{Assign Cores Deliberately}                         \\*
+%                                   & \reqFactor{Respect Nonuniform Memory Access}                  \\*
+%                                   & \reqFactor{Avoid Swapping}                                    \\*
+%                                   & \reqFactor{Isolate Individual Runs}                           \\*
+%             \midrule
+
+%             \multirow{5}{*}{\reqLabel{Reproducibility}}
+%                                   & \reqFactor{Stored system information}                         \\*
+%                                   & \reqFactor{Sharable results}                                  \\*
+%                                   & \reqFactor{Sharable configuration}                            \\*
+%                                   & \reqFactor{Encourage sharable data\tnote{1}}           \\*
+%                                   & \reqFactor{Encourage sharable implementation\tnote{1}} \\*
+
+%             \bottomrule
+%         \end{tabular}
+
+%         \begin{tablenotes}
+%             \footnotesize
+%             \item[1] Subjective evaluation
+%         \end{tablenotes}
+
+%         \caption{Metrics for evaluating existing benchmarking tools}
+%         \label{tab:reqfactors}
+%     \end{threeparttable}
+% \end{table}
+
+Each of the evaluated tools are scored according to the degree of fulfillment for each requirements.
+That is, if $M_i$ is the scored degree of fulfillment of the $i$-th requirement, and $\mu_{i}$ is a vector of size $n$ such that
+\[
+    \mu_{ij} =
+    \begin{cases}
+        1 & \text{if the $j$-th key factor of $i$-th requirement is fulfilled} \\
+        0 & \text{otherwise}
+    \end{cases}
+\]
+then the degree of fulfillment is the average of $\mu_i$:
+\(
+    M_i = \frac{\sum\mu_{i}}{|\mu_i|}
+\)
+
+Furthermore, as an overall measure, \first~also denote $M_\sigma$ as the overall overage of all $\mu_{i}$ regardless of its requirement category.
+
+
+\begin{table}
+    \todo{update table}
+    \begin{threeparttable}
+        \begin{adjustbox}{max width=\textwidth}
+            \begin{tabular}{lddddddd}
+                \toprule
+
+                                              & \multicolumn{1}{c}{$M_1$} & \multicolumn{1}{c}{$M_2$} & \multicolumn{1}{c}{$M_3$} & \multicolumn{1}{c}{$M_4$} & \multicolumn{1}{c}{$M_5$} & \multicolumn{1}{c}{$M_6$} & \multicolumn{1}{c}{$M_\sigma$} \\
+                \midrule
+                \textsc{benchmark-tool}       & .60                       & .80                       & .20                       & .50                       & .17                       & .40                       & .43                            \\
+                \textsc{BenchExec}            & .40                       & .60                       & .60                       & .50                       & 1.00                      & .80                       & .66                            \\
+                \textsc{Benchkit}             & .40                       & .40                       & .60                       & .25                       & .50                       & .40                       & .43                            \\
+                \textsc{JuBE}                 & .80                       & 1.00                      & 1.00                      & 1.00                      &                           & .40                       & .83                            \\
+                \textsc{StarExec}             & .60                       & .60                       & .80                       & 1.00                      & 1.00                      & 1.00                      & .83                            \\
+                \textsc{compbench} \\ % TODO
+                % \textbf{\OurBenchmarkingTool} & 1.00                      & 1.00                      & .80                       & 1.00                      &                           & 1.00                      & .95                            \\
+                \bottomrule
+            \end{tabular}
+        \end{adjustbox}
+        \begin{tablenotes}
+            \footnotesize
+            \note Values are emptied if it's not applicable. The complete evaluation is given in the appendix.
+        \end{tablenotes}
+        \caption{Requirements score for various existing benchmarking tools}
+        \label{tab:reqscoresummary}
+    \end{threeparttable}
+\end{table}
+
+Table \ref{tab:reqscoresummary} shows that none of the considered benchmarking tools fully fulfill the given requirements.
+The closest is \textsc{StarExec} and \textsc{JuBE}.
+\newstyle{Note that most} of the features available in \textsc{StarExec}, such as managing post-processors and plots, are restricted to the community leaders.
+The normal user is forced to use what was already available in the community space.
+\newstyle{This contrasts with} \textsc{JuBE} that is too generic and provides little support for reproducibility.
+
+This comparison is not complete and should only serves as a high level comparison between the tools.
+\First~tried to make the comparison as objective as possible but some of the factors still subjects to non-objective evaluation.
+There are also many other factors that are not taken into account.
+This means advantages and disadvantages between the benchmarking tools is not fully captured from the evaluation.
+
+Since the existing tools does not meet the criteria for the ideal benchmarking tool, \first~decided to develop a new benchmarking tool.
+\First~also take some ideas from the existing tools.
+For example, \first~take the approach of \textsc{JuBE} that presents wide range of extensibility and is agnostic to the resource monitoring tool used for the benchmark.
+Modular approach that is used in \textsc{compbench} is also interesting to take as it provides easy implementation of extensibility.
+We integrate these ideas to our own approach such as the \textsc{client-server} architecture.
+The new benchmarking tool is described in \Cref{ch:implementation}.
