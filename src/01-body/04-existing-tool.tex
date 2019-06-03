@@ -17,10 +17,11 @@
                 \midrule
                 \textsc{benchmark-tool} & & Python & & \textsc{runsolver} & & 2018 \\
                 \textsc{BenchExec} & & Python & Apache-2.0 & \textsc{runexec} & Container & 2019 \\
-                \textsc{JuBE} & & Python & GPL-3 & & VM & 2019 \\
+                \textsc{JuBE} & & Python & GPL-3 & & & 2019 \\
                 \textsc{compbench} & & Python & MIT & Perf. counter + \code{getrusage()} & & 2018 \\
-                \textsc{BenchKit} & & Bash & & \textsc{SysStat} & & 2017 \\
+                \textsc{BenchKit} & & Bash & & \textsc{SysStat} & VM & 2017 \\
                 \textsc{StarExec} & \checkmark & Java & MIT & \textsc{runsolver} or \textsc{runexec} & Container\tnote{1} & 2019\\
+                \textsc{Optil.io} & \checkmark & ? & Closed source & ? & ? & ? \\
                 \bottomrule
             \end{tabular}
         \end{adjustbox}
@@ -35,12 +36,12 @@
 
 
 There are six benchmarking tools that \first~selected to represent the existing tools.
-An overview describing these  tools is given in \Cref{tab:existing.overview}.
+An overview describing these tools is given in \Cref{tab:existing.overview}.
 This is by no means an exhaustive collection, but it should represent the current state of existing benchmarking tools.
 \textsc{StarExec} particularly took the approach as an internet-based service where user submit the configuration and the run happened in the host system.
 The rest of them, \textsc{benchmark-tool}, \textsc{BenchExec}, \textsc{BenchKit}, and \textsc{JuBE}, approaches benchmarking as task to be run in the local machine or submitted to a cluster system.
 \textsc{Optil.io} \citep{wasikOptilIoCloud2016a} is another internet-based approach for doing experimentation.
-Alas, because the source code is not publicly available and the publication does not mention its details, \first~decided not to discuss it here.
+Alas, because the source code is not publicly available and the publication does not mention its details, \first~decided not to discuss it further.
 \First~describe each tools in its own section.
 
 \subsection{\textsc{benchmark-tool}}
@@ -223,7 +224,7 @@ The tools are listed in the configuration file, allowing the user to fully custo
 Analysis is then done separately with the resulting result stored in the database.
 
 
-\section{Comparison of Existing Tools}
+\section{Evaluation of Existing Tools}
 
 \First~breakdown the requirements defined in \Cref{sec:idealBenchmarkingTool} to a few key factors or indicators.
 These key factors are used to measure how much of the requirements are fulfilled.
@@ -277,19 +278,6 @@ The breakdown is as following:
     \end{enumerate}
 \end{enumerate}
 
-\newcounter{reqCount}
-\newcounter{reqFactorCount}[reqCount]
-\newcommand{\reqLabel}[1]{
-    \setcounter{reqFactorCount}{0}
-    \addtocounter{reqCount}{1}
-    \arabic{reqCount}.
-    #1
-}
-\newcommand{\reqFactor}[1]{
-    \addtocounter{reqFactorCount}{1}
-    (\alph{reqFactorCount}) #1
-}
-
 Each of the evaluated tools are scored according to the degree of fulfillment for each requirements.
 That is, if $M_i$ is the scored degree of fulfillment of the $i$-th requirement, and $\mu_{i}$ is a vector of size $n$ such that
 \[
@@ -311,37 +299,65 @@ Furthermore, as an overall measure, \first~also denote $M_\sigma$ as the overall
     \todo{update table}
     \begin{threeparttable}
         \begin{adjustbox}{max width=\textwidth}
-            \begin{tabular}{lddddddd}
+            \begin{tabular}{l | cccccccccc | ccccccccc | cccccc | ccccc}
                 \toprule
 
-                                              & \multicolumn{1}{c}{$M_1$} & \multicolumn{1}{c}{$M_2$} & \multicolumn{1}{c}{$M_3$} & \multicolumn{1}{c}{$M_4$} & \multicolumn{1}{c}{$M_5$} & \multicolumn{1}{c}{$M_6$} & \multicolumn{1}{c}{$M_\sigma$} \\
+                                            %   & \multicolumn{1}{c}{$M_1$} & \multicolumn{1}{c}{$M_2$} & \multicolumn{1}{c}{$M_3$} & \multicolumn{1}{c}{$M_4$} & \multicolumn{1}{c}{$M_5$} & \multicolumn{1}{c}{$M_6$} & \multicolumn{1}{c}{$M_\sigma$} \\
+                \multirow{2}{*}{Tool} &
+                    \multicolumn{10}{c|}{Extensible/configurable} &
+                    \multicolumn{9}{c|}{Minimal effort to use} &
+                    \multicolumn{6}{c|}{Accurate and Reliable} &
+                    \multicolumn{4}{c}{Reproducible}\\
+                    & a & b & c & d & e & f & g & h & i & j &
+                    a & b & c & d & e & f & g & h & i &
+                    a & b & c & d & e & f &
+                    a & b & c & d & e\\
                 \midrule
-                \textsc{benchmark-tool}       & .60                       & .80                       & .20                       & .50                       & .17                       & .40                       & .43                            \\
-                \textsc{BenchExec}            & .40                       & .60                       & .60                       & .50                       & 1.00                      & .80                       & .66                            \\
-                \textsc{Benchkit}             & .40                       & .40                       & .60                       & .25                       & .50                       & .40                       & .43                            \\
-                \textsc{JuBE}                 & .80                       & 1.00                      & 1.00                      & 1.00                      &                           & .40                       & .83                            \\
-                \textsc{compbench} \\ % TODO
-                \textsc{StarExec}             & .60                       & .60                       & .80                       & 1.00                      & 1.00                      & 1.00                      & .83                            \\
+                \textsc{benchmark-tool} &
+                    \checkmark & \checkmark & & \checkmark & & \checkmark & \checkmark & & \checkmark & \checkmark &
+                    \checkmark & \checkmark & & & \checkmark & & & & &
+                    & & & \checkmark & &
+                    & & \checkmark & & & \\
+                \textsc{BenchExec} &
+                    \\
+                \textsc{BenchKit} &
+                    \\
+                \textsc{JuBE} &
+                    \\
+                \textsc{compbench} &
+                    \\
+                \textsc{StarExec} &
+                    \\
+                % \textsc{benchmark-tool}       & .60                       & .80                       & .20                       & .50                       & .17                       & .40                       & .43                            \\
+                % \textsc{BenchExec}            & .40                       & .60                       & .60                       & .50                       & 1.00                      & .80                       & .66                            \\
+                % \textsc{Benchkit}             & .40                       & .40                       & .60                       & .25                       & .50                       & .40                       & .43                            \\
+                % \textsc{JuBE}                 & .80                       & 1.00                      & 1.00                      & 1.00                      &                           & .40                       & .83                            \\
+                % \textsc{compbench} \\ % TODO
+                % \textsc{StarExec}             & .60                       & .60                       & .80                       & 1.00                      & 1.00                      & 1.00                      & .83                            \\
                 % \textbf{\OurBenchmarkingTool} & 1.00                      & 1.00                      & .80                       & 1.00                      &                           & 1.00                      & .95                            \\
                 \bottomrule
             \end{tabular}
         \end{adjustbox}
-        \begin{tablenotes}
-            \footnotesize
-            \note Values are emptied if it's not applicable. The complete evaluation is given in the appendix.
-        \end{tablenotes}
         \caption{Requirements score for various existing benchmarking tools}
         \label{tab:reqscoresummary}
     \end{threeparttable}
 \end{table}
 
-Table \ref{tab:reqscoresummary} shows that none of the considered benchmarking tools fully fulfill the given requirements.
+
+\Cref{tab:reqscoresummary} shows that none of the considered benchmarking tools fully fulfill the given requirements.
 The closest is \textsc{StarExec} and \textsc{JuBE}.
 \newstyle{Note that most} of the features available in \textsc{StarExec}, such as managing post-processors and plots, are restricted to the community leaders.
 The normal user is forced to use what was already available in the community space.
-\newstyle{This contrasts with} \textsc{JuBE} that is too generic and provides little support for reproducibility.
+\newstyle{This contrasts with} \textsc{JuBE} that approaches benchmarking in \newstyle{a very generic way}.
+\newcontent{
+    While this approach allows the tool to be used in many possible use cases, it may also discourage new users to start using it since there is no sensible defaults and the effort to customize it might be a bit much.
+}
 
-This comparison is not complete and should only serves as a high level comparison between the tools.
+Additionally, it can be seen from \Cref{tab:existing.overview} that most tools are implemented in Python.
+This decision might be because Python offers an easy to understand language while also allowing low-level interfacing with C libraries.
+For example, it has been shown that developers unfamiliar with both \textsc{BenchExec} and Python can write tools integration successfully for SV-COMP 2016 \citep{beyerReliableBenchmarkingRequirements2019}.
+
+Note that this comparison is not complete and should only serves as a high level comparison between the tools.
 \First~tried to make the comparison as objective as possible but some of the factors still subjects to non-objective evaluation.
 There are also many other factors that are not taken into account.
 This means advantages and disadvantages between the benchmarking tools is not fully captured from the evaluation.
@@ -349,8 +365,3 @@ This means advantages and disadvantages between the benchmarking tools is not fu
 Since the existing tools does not meet the criteria for the ideal benchmarking tool, \first~decided to develop a new benchmarking tool.
 We introduce this new benchmarking tool in \Cref{ch:implementation}.
 
-
-% \First~also take some ideas from the existing tools.
-% For example, \first~take the approach of \textsc{JuBE} that presents wide range of extensibility and is agnostic to the resource monitoring tool used for the benchmark.
-% Modular approach that is used in \textsc{compbench} is also interesting to take as it provides easy implementation of extensibility.
-% We integrate these ideas to our own approach such as the \textsc{client-server} architecture.

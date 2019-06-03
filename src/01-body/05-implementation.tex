@@ -2,12 +2,28 @@
 \label{ch:implementation}
 
 \newcontent{
-    \First~tried to refactor \textsc{benchmark-tool} to some degree\footlink{https://github.com/daajoe/benchmark-tool/tree/refactor}, but decided to create a new tool instead in the middle of refactoring.
+    After reviewing the existing benchmarking tools, we consider improving the situation to fulfill our requirements.
+    At first, \first~tried refactoring a fork of \textsc{benchmark-tool}\footlink{https://github.com/daajoe/benchmark-tool/tree/refactor}.
+    We improved the tool architecture to be more decentralized, allowing the benchmark to be shared easily.
+    We has also written documentation and getting started guide for this tool.
+    But after those efforts, we decided to create a new tool instead.
     This is because to create the ideal tool, we need significant architecture overhaul and decided it is better to start anew.
 }
+
 This chapter discusses the design and implementation of \OurBenchmarkingTool, a new benchmarking tool developed to address the requirements defined in Section \ref{sec:idealBenchmarkingTool}.
 Section \ref{sec:impl.design} will describe the system design and the reason behind the design decisions.
 The chapter will then conclude with a description about the implementation in Section \ref{sec:impl.impl}.
+
+
+\section{Preliminary}
+\label{sec:impl.prelim}
+
+% \First~also take some ideas from the existing tools.
+% For example, \first~take the approach of \textsc{JuBE} that presents wide range of extensibility and is agnostic to the resource monitoring tool used for the benchmark.
+% Modular approach used in \textsc{compbench} is also interesting to take as it provides easy implementation of extensibility.
+% We integrate these ideas to our own approach such as the \textsc{client-server} architecture.
+
+
 
 \section{System Design}
 \label{sec:impl.design}
