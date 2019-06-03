@@ -11,6 +11,9 @@
 - Analysis steps should not be stored in db. Better to use the config file instead
 - CLI arguments can be set in the config file
 - SSH-based manager for server & worker
+- Add pluggable message dispatcher to allow for custom database storage, git integration, logging, etc.
+- May want to move to kv-store for runs?
+- Encryption: RSA (https://pycryptodome.readthedocs.io/en/latest/)? SSH (https://github.com/pahaz/sshtunnel)?
 
 
 

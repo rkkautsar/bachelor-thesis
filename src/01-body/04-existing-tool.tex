@@ -3,19 +3,45 @@
 
 \newcontent{
     Resource monitoring tools are useful to produce a comparable measurement, but as per our definition of benchmarking in \Cref{def:benchmarking}, benchmarking involves a set of runs.
-    Benchmarking tools exists to orchestrate these runs and use the resource monitoring tools to compare the benchmarking runs.
+    Benchmarking tools exist to orchestrate these runs and use the resource monitoring tools to compare the benchmarking runs.
     This chapter discusses various existing benchmarking tools developed by the community.
 }
 
 \section{Existing Tools}
 
-% Insert overview table
+\begin{table}[h]
+    \begin{threeparttable}
+        \begin{adjustbox}{max width=\textwidth}
+            \begin{tabular}{r c l l m{2.7cm} l l}
+                Tool & Online & Language & License & Res. Monitor & Virtualization & Updated \\
+                \midrule
+                \textsc{benchmark-tool} & & Python & & \textsc{runsolver} & & 2018 \\
+                \textsc{BenchExec} & & Python & Apache-2.0 & \textsc{runexec} & Container & 2019 \\
+                \textsc{JuBE} & & Python & GPL-3 & & VM & 2019 \\
+                \textsc{compbench} & & Python & MIT & Perf. counter + \code{getrusage()} & & 2018 \\
+                \textsc{BenchKit} & & Bash & & \textsc{SysStat} & & 2017 \\
+                \textsc{StarExec} & \checkmark & Java & MIT & \textsc{runsolver} or \textsc{runexec} & Container\tnote{1} & 2019\\
+                \bottomrule
+            \end{tabular}
+        \end{adjustbox}
+        \begin{tablenotes}
+            \footnotesize
+            \item[1] Unmerged implementation
+        \end{tablenotes}
+        \caption{Overview of existing benchmarking tools}
+        \label{tab:existing.overview}
+    \end{threeparttable}
+\end{table}
 
-There are five benchmarking tool that \first~selected to represent the existing tools.
-Each are described in their own section.
+
+There are six benchmarking tools that \first~selected to represent the existing tools.
+An overview describing these  tools is given in \Cref{tab:existing.overview}.
 This is by no means an exhaustive collection, but it should represent the current state of existing benchmarking tools.
-\textsc{StarExec} particularly took a web-based approach, where the user submit the configuration and the run happened in the host system.
+\textsc{StarExec} particularly took the approach as an internet-based service where user submit the configuration and the run happened in the host system.
 The rest of them, \textsc{benchmark-tool}, \textsc{BenchExec}, \textsc{BenchKit}, and \textsc{JuBE}, approaches benchmarking as task to be run in the local machine or submitted to a cluster system.
+\textsc{Optil.io} \citep{wasikOptilIoCloud2016a} is another internet-based approach for doing experimentation.
+Alas, because the source code is not publicly available and the publication does not mention its details, \first~decided not to discuss it here.
+\First~describe each tools in its own section.
 
 \subsection{\textsc{benchmark-tool}}
 
@@ -149,7 +175,7 @@ The flexibility of this tool is surely its strong point.
 But this flexibility also burdens the user to do all the repetitive task of benchmarking on their own, although it is possible to create some reusable wrappers for these repetitive tasks.
 The analysis step is also restricting, since the user has to output the metrics to a file, then capture it with patterns.
 Additionally, the tool itself does not provide much in terms of reproducibility.
-It is up to the user how to make their benchmarking reproducible since shell commands are often not reproducible by itself.
+It is up to the user how to make their benchmarking process reproducible since the tool only provides a high level structure for benchmarking.
 
 
 \subsection{\textsc{StarExec}}
@@ -185,7 +211,16 @@ This decision might be necessary to prevent abuse as this service involves shari
 
 \subsection{\textsc{compbench}}
 
-\lipsum[1-2]
+\textsc{compbench} \citep{gochtPythonFrameworkRunning2018} is an experimentation tool developed by Stephan Gocht from KTH Royal Institute of Technology.
+It was used to carry out the experiment for their master thesis in Karlsruhe Institute of Technology \citep{gochtIncrementalSATSolving}.
+It is implemented as a Python module, although not published to any Python package publisher.
+The source code is publicly under the MIT License.
+It was last updated at October 2018.
+
+There is no documentation available, although a minimal example is given with the source code.
+\textsc{compbench} is designed to be extensible by using modular tools as building blocks.
+The tools are listed in the configuration file, allowing the user to fully customize how the benchmarking process will run.
+Analysis is then done separately with the resulting result stored in the database.
 
 
 \section{Comparison of Existing Tools}
@@ -255,77 +290,6 @@ The breakdown is as following:
     (\alph{reqFactorCount}) #1
 }
 
-% \begin{table}
-%     \begin{threeparttable}
-%         \begin{tabular}{ll}
-
-%             \toprule
-
-%             \textbf{Requirements} & \textbf{Factors}                                              \\
-
-%             \midrule
-%             % \endhead
-
-%             % % \cmidrule{2-2}
-%             % \multicolumn{2}{r}{\textit{continued}}
-%             % \endfoot
-
-%             % \bottomrule
-%             % \insertTableNotes\\
-
-%             % \endlastfoot
-
-%             \multirow{10}{*}{\reqLabel{Extensible/Configurable}}
-%                                   & \reqFactor{Flexible evaluation step}                          \\*
-%                                   & \reqFactor{Flexible analysis step}                            \\*
-%                                   & \reqFactor{Flexible benchmark instance source}                \\*
-%                                   & \reqFactor{Can support arbitrary task scheduler}              \\*
-%                                   & \reqFactor{Multiple runs}                                     \\*
-%                                   & \reqFactor{Multiple tool configurations}                      \\*
-%                                   & \reqFactor{Parameter space}                           \\*
-%                                   & \reqFactor{Set resource limit}                                \\*
-%             \midrule
-
-%             \multirow{5}{*}{\reqLabel{Minimal Effort to Use}}
-%                                   & \reqFactor{Self-documenting configuration}                    \\*
-%                                   & \reqFactor{Installation guide}                                \\*
-%                                   & \reqFactor{Setup guide}                               \\*
-%                                   & \reqFactor{Comprehensive documentation\tnote{1}}       \\*
-%                                   & \reqFactor{No superuser privilege}                            \\*
-%                                   & \reqFactor{Installation guide}                                \\*
-%                                   & \reqFactor{Documented requirements}                           \\*
-%                                   & \reqFactor{No cumbersome dependencies\tnote{1}}        \\*
-%             \midrule
-
-%             \multirow{6}{*}{\reqLabel{Accurate and Reliable}}
-%                                   & \reqFactor{Measure and Limit Resources Accurately}            \\*
-%                                   & \reqFactor{Terminate Processes Reliably}                      \\*
-%                                   & \reqFactor{Assign Cores Deliberately}                         \\*
-%                                   & \reqFactor{Respect Nonuniform Memory Access}                  \\*
-%                                   & \reqFactor{Avoid Swapping}                                    \\*
-%                                   & \reqFactor{Isolate Individual Runs}                           \\*
-%             \midrule
-
-%             \multirow{5}{*}{\reqLabel{Reproducibility}}
-%                                   & \reqFactor{Stored system information}                         \\*
-%                                   & \reqFactor{Sharable results}                                  \\*
-%                                   & \reqFactor{Sharable configuration}                            \\*
-%                                   & \reqFactor{Encourage sharable data\tnote{1}}           \\*
-%                                   & \reqFactor{Encourage sharable implementation\tnote{1}} \\*
-
-%             \bottomrule
-%         \end{tabular}
-
-%         \begin{tablenotes}
-%             \footnotesize
-%             \item[1] Subjective evaluation
-%         \end{tablenotes}
-
-%         \caption{Metrics for evaluating existing benchmarking tools}
-%         \label{tab:reqfactors}
-%     \end{threeparttable}
-% \end{table}
-
 Each of the evaluated tools are scored according to the degree of fulfillment for each requirements.
 That is, if $M_i$ is the scored degree of fulfillment of the $i$-th requirement, and $\mu_{i}$ is a vector of size $n$ such that
 \[
@@ -356,8 +320,8 @@ Furthermore, as an overall measure, \first~also denote $M_\sigma$ as the overall
                 \textsc{BenchExec}            & .40                       & .60                       & .60                       & .50                       & 1.00                      & .80                       & .66                            \\
                 \textsc{Benchkit}             & .40                       & .40                       & .60                       & .25                       & .50                       & .40                       & .43                            \\
                 \textsc{JuBE}                 & .80                       & 1.00                      & 1.00                      & 1.00                      &                           & .40                       & .83                            \\
-                \textsc{StarExec}             & .60                       & .60                       & .80                       & 1.00                      & 1.00                      & 1.00                      & .83                            \\
                 \textsc{compbench} \\ % TODO
+                \textsc{StarExec}             & .60                       & .60                       & .80                       & 1.00                      & 1.00                      & 1.00                      & .83                            \\
                 % \textbf{\OurBenchmarkingTool} & 1.00                      & 1.00                      & .80                       & 1.00                      &                           & 1.00                      & .95                            \\
                 \bottomrule
             \end{tabular}
@@ -383,8 +347,10 @@ There are also many other factors that are not taken into account.
 This means advantages and disadvantages between the benchmarking tools is not fully captured from the evaluation.
 
 Since the existing tools does not meet the criteria for the ideal benchmarking tool, \first~decided to develop a new benchmarking tool.
-\First~also take some ideas from the existing tools.
-For example, \first~take the approach of \textsc{JuBE} that presents wide range of extensibility and is agnostic to the resource monitoring tool used for the benchmark.
-Modular approach that is used in \textsc{compbench} is also interesting to take as it provides easy implementation of extensibility.
-We integrate these ideas to our own approach such as the \textsc{client-server} architecture.
-The new benchmarking tool is described in \Cref{ch:implementation}.
+We introduce this new benchmarking tool in \Cref{ch:implementation}.
+
+
+% \First~also take some ideas from the existing tools.
+% For example, \first~take the approach of \textsc{JuBE} that presents wide range of extensibility and is agnostic to the resource monitoring tool used for the benchmark.
+% Modular approach that is used in \textsc{compbench} is also interesting to take as it provides easy implementation of extensibility.
+% We integrate these ideas to our own approach such as the \textsc{client-server} architecture.

@@ -2,12 +2,12 @@
 \label{ch:experimentation}
 
 \newcontent{
-First and foremost, \first~introduce the concepts and definitions that is used throughout the rest of this thesis.
+First and foremost, \first~introduce the concepts and definitions that are used throughout the rest of this thesis.
 This is to ensure alignment of the concepts of experiments, benchmarking, and reproducibility and how they relate with each other.
-\First~discusses the practice of experimentation in science, specifically computational science, the concern of reproducibility, and how benchmarking as a systematic technique for experimenting may address this issue.
+\First~discuss the practice of experimentation in science, specifically computational science, the concern of reproducibility, and how benchmarking as a systematic technique for experimenting may address this issue.
 \Cref{sec:experimentation} considers how scientific method is used for experimentation in science and a few examples to motivate the needs of experimentation.
 \Cref{sec:reproducibleBenchmarks} the reproducibility issue and benchmarking.
-Finally, \hyperref[sec:idealBenchmarkingTool]{Section 2.3} outlines the requirements \first~identified for an ideal benchmarking tool supporting reproducible research.
+Finally, \Cref{sec:idealBenchmarkingTool} outlines the requirements \first~identified for an ideal benchmarking tool supporting reproducible research.
 }
 
 \section{Experimentation}
@@ -15,7 +15,7 @@ Finally, \hyperref[sec:idealBenchmarkingTool]{Section 2.3} outlines the requirem
 
 \newstyle{Science aims to further our understanding of why things happen \st{as they do} in the natural world \citep{careyBeginnerGuideScientific2012}.}
 Investigating these \st{why} questions can be achieved by following what is known as the scientific method.
-\newstyle{This method is identical to hypothetico-deductive method which is a combination of inductive and deductive reasoning \citep{wallimanResearchMethodsBasics2010a}.}
+\newstyle{This method is identical to the hypothetico-deductive method which is a combination of inductive and deductive reasoning \citep{wallimanResearchMethodsBasics2010a}.}
 He further defines the scientific method as follows:
 \begin{enumerate}[noitemsep]
 	\item identification or clarification of a problem;
@@ -34,7 +34,7 @@ The explaining-testing steps are repeated until the result is acceptable.
 When a theory is falsified, another one is proposed and tested, until the most fitting theory is accepted \citep{wallimanResearchMethodsBasics2010a}.
 
 Experimentation is one way to test these proposed theories or hypotheses.
-Some would argue that as experiments \newstyle{do not} proof anything.
+Some would argue that as experiments \newstyle{do not} prove anything.
 But on the other hand, experiments can falsify a theory and corroborate it, but not actually proving that the theory is true \citep{tichyShouldComputerScientists1998}.
 \newcontent{This is similar to proof by contradiction commonly used in logic and mathematics.}
 
@@ -42,7 +42,7 @@ Experimentation can also be used for induction to derive generalized conclusion 
 A rather well-known example in computer science is the case of artificial neural networks.
 Experiments demonstrated that its performance is better than \newstyle{what was predicted in theory} \citep{tichyShouldComputerScientists1998}.
 \newcontent{Today, artificial neural networks are used in a number of surprising real-world applications.
-Its applications includes image recognition, speech recognition, natural language understanding and even self-driving cars \citep{lecunDeepLearning2015}.}
+Its applications include image recognition, speech recognition, natural language understanding, and even self-driving cars \citep{lecunDeepLearning2015}.}
 
 \newcontent{
 The Boolean Satisfiability (SAT) problem has been proven to be $\textbf{NP}$-complete by \citet{cook1971complexity} and \citet{levin1973universal} independently.
@@ -202,7 +202,7 @@ Good benchmarking setup with documented hardware, software, configuration, and r
 	\First~define the following four requirements for the ideal benchmarking tool:
 	\begin{enumerate}[noitemsep]
 		\item Extensible/configurable
-		\item Minimal effort to use
+		\item Minimal effort to setup
 		\item Accurate and Reliable
 		\item Reproducibility
 	\end{enumerate}

@@ -4,7 +4,7 @@
 This chapter discusses the task of monitoring and limiting resource usage.
 This task is necessary for the benchmarking process as resource is one of the measurement often selected for comparison.
 Section \ref{sec:resource.overview} gives an overview of the task of resource monitoring and its importance.
-Three different mechanisms for monitoring resource and its examples are described in Section \ref{sec:resource.mechanism}.
+Three different mechanisms for monitoring resource and its examples are described in Section \ref{sec:resource.mechanisms}.
 \First~also give a brief description of virtualization as one way to produce more reliable resource measurement in Section \ref{sec:resource.virtualization}.
 Finally, we discusses various implementation of resource monitoring tool and each of its mechanism in Section \ref{sec:resource.impl}.
 
@@ -40,14 +40,14 @@ Because of this wide area of usage, there are many attempts to implement these m
 }
 There are trade-offs between these mechanisms and so it is often preferred to use a combination of more than one mechanism to achieve better results.
 
-\subsection{Query}
+\subsection{Query (Sampling)}
 
 The query approach works by querying resource usage information directly from the operating system.
 To monitor the resource usage over time, this means the query is executed at some interval, effectively doing a polling mechanism.
 More frequent polling will result in a more timely information but the overhead also increases.
 Querying is often the easiest resource monitoring mechanism in term of implementation \citep{juvePracticalResourceMonitoring2015}.
 
-\newcontent{This query mechanism described by \citeauthor{juvePracticalResourceMonitoring2015} can also be reworded as sampling as it can be seen as a more specialized form of statistical sampling.}
+\newcontent{This query mechanism described by \citeauthor{juvePracticalResourceMonitoring2015} can also be reworded as \emph{sampling} as it can be seen as a more specialized form of statistical sampling.}
 It is the least intrusive mechanism, albeit the information received from this mechanism also immediately expires.
 A resource usage surge could happen in between the queries, so this mechanism is not accurate.
 In short, the query mechanism provides an easy to implement but inaccurate measurement of the resource monitored.
