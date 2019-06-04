@@ -2,37 +2,112 @@
 \label{ch:introduction}
 
 
-\section{Overview}
+% \section{Motivation}
 
-% TODO: talk about the need for benchmarking: measurement, assessing result, comparison etc
+\newcontent{
+	\citet{gowerScientificMethodHistorical2012} describe the famous thought experiment by Galileo Galilei.
+	The claim was as follows.
+	Take two objects, one lighter and the other heavier in weight.
+	Then tie it together and drop it from top of a tower.
+	If, like many has believed at that time, heavier object fall faster then the lighter one will pull the heavier one and slow down the fall.
+	But instead this new tied object is heavier than both and should have fallen faster.
+	This is a contradiction.
+	Thus, Galileo postulated that this phenomenon was due to air resistance and friction, independent to the object mass.
+	This example shows that experiment can also take place in the mind and do not have to be physical.
+}
 
-% In computational science, it is often preferable to compare new algorithm to previous studies and get various measurements.
-% But unfortunately most of the time it is not easy to reproduce those studies. \cite{collbergRepeatabilityComputerSystems2016} has shown that out of 402 computer science and engineering paper backed by code that they have examined, only 32.3\% can be built in an under 30 minutes attempt to resolve dependencies and environments needed to run the code, and this number only raises to 48.3\% when the attempt time is not limited.
-% Not to mention that it is only 56,22\% out of those 402 paper whose source code is obtainable, even after requesting directly from the authors.
+Experiments has also demonstrated that artificial neural network performance is better than \newstyle{what was predicted in theory} \citep{tichyShouldComputerScientists1998}.
+\newcontent{Today, artificial neural networks are used in a number of surprising real-world applications.
+Its applications include image recognition, speech recognition, natural language understanding, and even self-driving cars \citep{lecunDeepLearning2015}.}
 
-% TODO: more talk about reproducibility here, vs replicability etc
+\newcontent{
+The Boolean Satisfiability (SAT) problem has been proven to be $\textbf{NP}$-complete by \citet{cook1971complexity} and \citet{levin1973universal} independently.
+This means SAT solving algorithms exponential worst case running time.
+\citet{nordstromPebbleGamesProof2013} remarks that most modern solvers are based on Davis-Putnam-Logemann-Loveland (DPLL) backtracking procedure from the 1960s with augmented clause learning, also known as conflict-driven clause learning (CDCL).
+He further remarks that it is not yet fully understood why these solvers can be so efficient in practice \citep{elffersTradeoffsTimeMemory2016}.
+This can be seen from the majority solvers submitted to the annual international SAT competition being CDCL-based, and successfully solving problems with millions of literals and clauses \citep{heule2018proceedings}.
+}
 
-% Few attempts has been made to this computational reproducibility problem.
-% Some notable examples are Sacred Infrastructure \citep{greffSacredInfrastructureComputational2017} on reproducible experiment, Reprozip \citep{chirigatiReproZipComputationalReproducibility2016} attempt on packing provenance, and BenchExec \citep{beyerReliableBenchmarkingRequirements2019} attempt on reliable benchmarks.
-% Out of those, only BenchExec tackle the problem of benchmarking, but even so it is too domain-specific on software verification and doesn't support running long-running benchmarks such as those with millions of algorithms/parameters/instance combinations in high performance computing (HPC) clusters.
+And last but not least, Isaac Eddington has done an expensive validation in 1919 to prove Einstein's theory that gravity bends light.
+This important experiment involves expedition to Principe Island, West Africa and pushed the limits of photographic emulsion technology \citep{tichyShouldComputerScientists1998}.
+\newstyle{Today, 100 years after the validation, this is further supported by another great advancement in astronomy.}
+In April 10th 2019, the Event Horizon Telescope (EHT) presented to the public the first ever successful image of a black hole, an object predicted by Einstein's general theory of relativity \citep{akiyama2019first}.
 
-% A new benchmarking tool that is capable of limiting and measuring resource usage, parallel runs, running on HPC clusters, (partially) re-run the benchmarks with new algorithm version, and producing reproducible result that can be shared with others will surely be a huge contribution to computational science in general.
-% Authors can benchmark their algorithms with various parameters and compare them to previous algorithms.
-% Reviewers can then check the benchmark results claimed, and other researchers can compare their algorithms by extending from this benchmark results in an objective manner.
+All these examples show that experimentation has contributed to several important breakthrough in various disciplines in science.
+Computational science specifically has seen a wide use of benchmarking as one way to conduct the experiment as shown in the above neural network and SAT example.
+Benchmarking allow automated execution of many repeated experiments.
+This automation is convenient to help tackle the recent concern of reproducibility.
+
+\citet{gundersenStateArtReproducibility2018} and \citet{collbergRepeatabilityComputerSystems2016} both report only a small number of research is reproducible.
+They linked this concern with the effort it takes to make a research work reproducible.
+That is why we deemed it necessary to survey if the existing benchmarking tool may help with this concern.
+We also tried to improve the state by contributing to the existing or even create a new benchmarking tool altogether.
+This is further motivated after we see the development of some of these benchmarking tool is often requirement-driven and thus made specific to a community need and not general need.
+
+In this chapter, we list the research questions for this thesis foremost in \Cref{sec:intro.questions}.
+Then we show how we answer these questions in \Cref{sec:intro.method}.
+Our contribution to this topic is then listed in \Cref{sec:intro.contributions}.
+We also mention some study related to this thesis in \Cref{sec:intro.related}.
+Finally, we outline the content for the rest of this thesis in \Cref{sec:intro.outline}.
+
+\section{Research Questions}
+\label{sec:intro.questions}
+
+The research questions for this thesis are:
+\begin{enumerate}
+	\item How does the existing benchmarking tools compare to each other?
+	\item Can they help reduce the barrier to embrace reproducibility?
+	\item Should we design a better tool to address this concern for reproducibility?
+	\item How does our proposed tool compare to the other tools?
+\end{enumerate}
+
+\section{Methodology}
+\label{sec:intro.method}
+
+To answer the mentioned research questions, we:
+\begin{enumerate}
+	\item Survey the existing tools and compare them.
+	\item Formulate requirements on how a benchmarking tool can help researchers embrace reproducibility.
+	\item Check if none of the existing tools fulfills our requirements.
+	\item Design and implement a better tool to address the reproducibility issue.
+	\item Evaluate and compare the proposed tool to the other tools.
+\end{enumerate}
 
 \section{Contributions}
+\label{sec:intro.contributions}
 
-\section{Research Scope}
+The main contributions of this thesis are as follows:
+\begin{enumerate}
+	\item We survey six existing benchmarking tools, discuss their implementation, and compare them with each other.
+	\item We give an implementation of a more cross-platform resource monitoring tool, namely \textsc{psmon}. The source code can be accessed at \url{https://github.com/rkkautsar/psmon}.
+	\item We design and implement a new benchmarking tool to address our requirements, namely \textsc{ReproBench}. The source code can be accessed at \url{https://github.com/rkkautsar/reprobench}.
+	\item We evaluate our proposed tool and compare it with the existing tools.
+\end{enumerate}
+
+
+\section{Related Works}
+\label{sec:intro.related}
+
+\citet{beyerReliableBenchmarkingRequirements2019} formulate requirements for reliable benchmarking and address it with their implementation, namely \textsc{BenchExec}.
+They also proof that none of the existing solution for benchmarking is accurate and reliable by their requirements.
+Their work focuses around their implementation of a reliable resource monitoring tool for \textsc{BenchExec}, namely \textsc{runexec}.
+
+We extend their requirements and compare their implementation with other existing solutions.
+In this work we instead focus on improving the concern of reproducibility in computational science.
+For example, by making benchmarking setup and result easier to share among researchers.
+We also focus on lessening the effort to produce a reproducible benchmarking setup.
 
 
 \section{Outline}
-This thesis is structured like so:
-\begin{itemize}
-	\item Chapter \ref{ch:introduction} \chIntroduction \\
-	\item Chapter \ref{ch:experimentation} \chExperimentation \\
-	\item Chapter \ref{ch:resource} \chResource \\
-	\item Chapter \ref{ch:existing} \chExisting \\
-	\item Chapter \ref{ch:implementation} \chImplementation \\
-	\item Chapter \ref{ch:evaluation} \chEvaluation \\
-	\item Chapter \ref{ch:conclusion} \chConclusion \\
-\end{itemize}
+\label{sec:intro.outline}
+
+The following chapters of this thesis is structured as follows:
+
+\begin{enumerate}
+	\item In \Cref{ch:experimentation}, we explain the concept of experimentation, the concern of reproducibility, and how benchmarking can tackle this concern. We also formally define definitions and requirements that are used throughout the thesis.
+	\item In \Cref{ch:resource}, we discusses the process of resource monitoring, the difficulties, how it relate to the benchmarking process and survey some existing implementations.
+	\item In \Cref{ch:existing}, we survey some existing benchmarking tools and compare it to the defined requirements.
+	\item In \Cref{ch:implementation}, we propose the design and implementation of our proposed benchmarking tool, \textsc{ReproBench}.
+	\item In \Cref{ch:evaluation}, we evaluate the proposed tool and compare it to other tools from \Cref{ch:existing}.
+	\item Finally in the final chapter we conclude the thesis and give several possibilities for future works.
+\end{enumerate}
