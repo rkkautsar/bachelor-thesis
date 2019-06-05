@@ -40,7 +40,8 @@ An overview describing these tools is given in \Cref{tab:existing.overview}.
 This is by no means an exhaustive collection, but it should represent the current state of existing benchmarking tools.
 \textsc{StarExec} particularly took the approach as an internet-based service where user submit the configuration and the run happened in the host system.
 The rest of them, \textsc{benchmark-tool}, \textsc{BenchExec}, \textsc{BenchKit}, and \textsc{JuBE}, approaches benchmarking as task to be run in the local machine or submitted to a cluster system.
-\textsc{Optil.io} \citep{wasikOptilIoCloud2016a} is another internet-based approach for doing experimentation.
+\textsc{Optil.io} \citep{wasikOptilIoCloud2016a} is another internet-based service for doing experimentation.
+It is mainly designed for creating competition.
 Alas, because the source code is not publicly available and the publication does not mention its details, \first~decided not to discuss it further.
 \First~describe each tools in its own section.
 
@@ -238,7 +239,7 @@ The breakdown is as following:
         \item Able to source benchmark instances from remote sources.
         \item Able to submit jobs to arbitrary job scheduler such as \textsc{Slurm} and \textsc{HTCondor} cluster system.
         \item Does not enforce tool to be implemented in specific language.
-        \item Support multiple repeated runs.
+        \item Support repeating runs.
         \item Support multiple tool configurations.
         \item Support defining tool configurations as parameter spaces.
         \item Support resource limiting.
@@ -247,13 +248,14 @@ The breakdown is as following:
 
     \item Minimal effort to use
     \begin{enumerate}[noitemsep]
-        \item Configuration is human editable.
+        \item Configuration is easy to edit.
         \item Documentation exists.
         \item Installation guide exists.
+        \item Documentation is up-to-date.
         \item Documentation is comprehensive.
         \item Requires no superuser privilege.
         \item Requirements are documented.
-        \item Installation can be done in only a few steps.
+        \item Simple installation steps.
         \item Provides basic implementation for common benchmarking usage.
         \item Ensure robust user experience through unit and integration testing.
     \end{enumerate}
@@ -278,66 +280,77 @@ The breakdown is as following:
     \end{enumerate}
 \end{enumerate}
 
-Each of the evaluated tools are scored according to the degree of fulfillment for each requirements.
-That is, if $M_i$ is the scored degree of fulfillment of the $i$-th requirement, and $\mu_{i}$ is a vector of size $n$ such that
-\[
-    \mu_{ij} =
-    \begin{cases}
-        1 & \text{if the $j$-th key factor of $i$-th requirement is fulfilled} \\
-        0 & \text{otherwise}
-    \end{cases}
-\]
-then the degree of fulfillment is the average of $\mu_i$:
-\(
-    M_i = \frac{\sum\mu_{i}}{|\mu_i|}
-\)
+% Each of the evaluated tools are scored according to the degree of fulfillment for each requirements.
+% That is, if $M_i$ is the scored degree of fulfillment of the $i$-th requirement, and $\mu_{i}$ is a vector of size $n$ such that
+% \[
+%     \mu_{ij} =
+%     \begin{cases}
+%         1 & \text{if the $j$-th key factor of $i$-th requirement is fulfilled} \\
+%         0 & \text{otherwise}
+%     \end{cases}
+% \]
+% then the degree of fulfillment is the average of $\mu_i$:
+% \(
+%     M_i = \frac{\sum\mu_{i}}{|\mu_i|}
+% \)
 
-Furthermore, as an overall measure, \first~also denote $M_\sigma$ as the overall overage of all $\mu_{i}$ regardless of its requirement category.
+% Furthermore, as an overall measure, \first~also denote $M_\sigma$ as the overall overage of all $\mu_{i}$ regardless of its requirement category.
 
 
 \begin{table}
-    \todo{update table}
     \begin{threeparttable}
         \begin{adjustbox}{max width=\textwidth}
-            \begin{tabular}{l | cccccccccc | ccccccccc | cccccc | ccccc}
+            \begin{tabular}{l | cccccccccc | cccccccccc | cccccc | ccccc}
                 \toprule
 
                                             %   & \multicolumn{1}{c}{$M_1$} & \multicolumn{1}{c}{$M_2$} & \multicolumn{1}{c}{$M_3$} & \multicolumn{1}{c}{$M_4$} & \multicolumn{1}{c}{$M_5$} & \multicolumn{1}{c}{$M_6$} & \multicolumn{1}{c}{$M_\sigma$} \\
                 \multirow{2}{*}{Tool} &
                     \multicolumn{10}{c|}{Extensible/configurable} &
-                    \multicolumn{9}{c|}{Minimal effort to use} &
+                    \multicolumn{10}{c|}{Minimal effort to use} &
                     \multicolumn{6}{c|}{Accurate and Reliable} &
                     \multicolumn{4}{c}{Reproducible}\\
                     & a & b & c & d & e & f & g & h & i & j &
-                    a & b & c & d & e & f & g & h & i &
+                    a & b & c & d & e & f & g & h & i & j &
                     a & b & c & d & e & f &
                     a & b & c & d & e\\
                 \midrule
                 \textsc{benchmark-tool} &
-                    \checkmark & \checkmark & & \checkmark & & \checkmark & \checkmark & & \checkmark & \checkmark &
-                    \checkmark & \checkmark & & & \checkmark & & & & &
+                    & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & & \checkmark & \checkmark &
+                    \checkmark & \checkmark & & & & \checkmark & & & & &
                     & & & \checkmark & &
                     & & \checkmark & & & \\
                 \textsc{BenchExec} &
-                    \\
+                    & & & \checkmark & \checkmark & & \checkmark & & \checkmark & &
+                    \checkmark & \checkmark & \checkmark & \checkmark & & & & & \checkmark & \checkmark &
+                    \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark &
+                    \checkmark & \checkmark & \checkmark & & \checkmark
+                     \\
                 \textsc{BenchKit} &
-                    \\
+                    & \checkmark & & & \checkmark & & \checkmark & & \checkmark & &
+                    & \checkmark & \checkmark & & & & & & \checkmark & &
+                    & \checkmark & & \checkmark & & \checkmark &
+                    & & & & \checkmark  \\
                 \textsc{JuBE} &
-                    \\
+                    \checkmark & \checkmark & & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark &
+                    \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & & &
+                    \textasteriskcentered & \textasteriskcentered & \textasteriskcentered & \textasteriskcentered & \textasteriskcentered & \textasteriskcentered &
+                    & \checkmark & \checkmark \\
                 \textsc{compbench} &
-                    \\
+                    \checkmark & \checkmark & & \checkmark & \checkmark & & \checkmark & \checkmark & \checkmark & &
+                    \checkmark & & & & & \checkmark & & \checkmark & \checkmark & &
+                    & & & & & &
+                    & \checkmark & \checkmark & & \checkmark \\
                 \textsc{StarExec} &
-                    \\
-                % \textsc{benchmark-tool}       & .60                       & .80                       & .20                       & .50                       & .17                       & .40                       & .43                            \\
-                % \textsc{BenchExec}            & .40                       & .60                       & .60                       & .50                       & 1.00                      & .80                       & .66                            \\
-                % \textsc{Benchkit}             & .40                       & .40                       & .60                       & .25                       & .50                       & .40                       & .43                            \\
-                % \textsc{JuBE}                 & .80                       & 1.00                      & 1.00                      & 1.00                      &                           & .40                       & .83                            \\
-                % \textsc{compbench} \\ % TODO
-                % \textsc{StarExec}             & .60                       & .60                       & .80                       & 1.00                      & 1.00                      & 1.00                      & .83                            \\
-                % \textbf{\OurBenchmarkingTool} & 1.00                      & 1.00                      & .80                       & 1.00                      &                           & 1.00                      & .95                            \\
+                    \checkmark & \checkmark & \checkmark & & \checkmark & & \checkmark & & \checkmark & \checkmark &
+                    \checkmark & \checkmark & \checkmark & \checkmark & & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark &
+                    \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark &
+                    \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
                 \bottomrule
             \end{tabular}
         \end{adjustbox}
+        \begin{tablenotes}
+            \note (\textasteriskcentered) means the accuracy and reliability depends on the resource monitoring\\ tool used as the benchmarking tool is agnostic to them.
+        \end{tablenotes}
         \caption{Requirements score for various existing benchmarking tools}
         \label{tab:reqscoresummary}
     \end{threeparttable}
@@ -362,6 +375,6 @@ Note that this comparison is not complete and should only serves as a high level
 There are also many other factors that are not taken into account.
 This means advantages and disadvantages between the benchmarking tools is not fully captured from the evaluation.
 
-Since the existing tools does not meet the criteria for the ideal benchmarking tool, \first~decided to develop a new benchmarking tool.
+Since none of the existing tools fully meet the criteria for the ideal benchmarking tool, \first~decided to develop a new benchmarking tool.
 We introduce this new benchmarking tool in \Cref{ch:implementation}.
 
