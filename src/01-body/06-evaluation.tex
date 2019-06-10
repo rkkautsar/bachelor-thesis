@@ -113,14 +113,14 @@ Using it as an analysis step allows flexible configuration to iterate the result
 \label{sec:eval.messaging}
 
 A typical benchmark run with executor, system information collection, and output validation sends these 10 events:
-1 x worker join;
-1 x run start;
-3 x run step;
-1 x system info;
-1 x run statistic;
-1 x validation;
-1 x run finish; and
-1 x worker leave.
+one worker join event;
+one run start event;
+three run step events;
+one system info event;
+one run statistic event;
+one validation event;
+one run finish event;
+and one worker leave event.
 Among them, the worker join event is the only one that waits for a reply.
 
 Most of the events are just notifications with little or no payload.

@@ -8,7 +8,7 @@
 - Improve cli ux
 - Improve installation and dx
   - Use conda, publish to anaconda-cloud and conda-forge
-- Analysis steps should not be stored in db. Better to use the config file instead
+- Analysis steps should not be stored in db. Better to use the config file directly instead
 - CLI arguments can be set in the config file
 - SSH-based manager for server & worker
 - Add pluggable message dispatcher to allow for custom database storage, git integration, logging, etc.
