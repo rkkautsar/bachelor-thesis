@@ -23,8 +23,8 @@
 \tikzstyle {miniblock} = [draw=gray, dashed, text width=3cm, inner sep=1ex]
 
 \begin{tikzpicture}
-    \node [block] (bootstrapper) {Bootstrapper};
-    \node [block, below=of bootstrapper] (manager) {Manager};
+    % \node [block] (bootstrapper) {Bootstrapper};
+    \node [block] (manager) {Manager};
     \node [block, below=1.5cm of manager, inner sep=0pt] (worker) {
         \begin{tikzpicture}
             \matrix [row sep=1em] {
@@ -38,7 +38,7 @@
     };
     \draw [-latex'] (manager) -- (worker) node [midway, fill=white] {manages};
 
-    \node [block, right=5cm of bootstrapper, inner sep=0pt] (server) {
+    \node [block, right=5cm of manager, inner sep=0pt] (server) {
         \begin{tikzpicture}
             \matrix [row sep=1em] {
                 \node {Server}; \\
@@ -60,16 +60,17 @@
             };
         \end{tikzpicture}
     };
-    \draw (server) -- (database);
-    \draw (database) -- (analyzer);
+    \draw[-latex'] (server) -- (database);
+    \draw[-latex'] (database) -- (analyzer);
 
-    \draw [-latex'] (bootstrapper) -- (server) node [midway, fill=white] {Configurations};
-    \draw [latex'-latex'] (manager.east) -- (server) node [sloped, midway, fill=white] {Request pending runs};
-    \path [-latex', transform canvas={yshift=0.2cm}] (server) edge node [sloped, above, pos=0.33, fill=white] {Run context} (worker);
-    \path [-latex', transform canvas={yshift=-0.2cm}] (worker) edge node [sloped, below, pos=0.33, fill=white] {Reports to} (server);
+    \path [-latex', transform canvas={yshift=0.2cm}] (manager) edge node [sloped, above, pos=0.33, fill=white] {Configuration} (server);
+    \path [-latex', transform canvas={yshift=-0.2cm}] (server) edge node [sloped, below, pos=0.33, fill=white] {Pending runs} (manager);
+
+    \path [-latex', transform canvas={yshift=0.2cm}] (server) edge node [sloped, above, pos=0.33, fill=white] {Assigned run} (worker);
+    \path [-latex', transform canvas={yshift=-0.2cm}] (worker) edge node [sloped, below, pos=0.33, fill=white] {Step results} (server);
 
     \begin{scope}[on background layer]
-        \node[draw=red!50, dashed, inner sep=1ex, label=above:\sffamily\textsc{client-side},  rounded corners, fit=(bootstrapper)(manager)(worker)] (clientenv) {};
+        \node[draw=red!50, dashed, inner sep=1ex, label=above:\sffamily\textsc{client-side},  rounded corners, fit=(manager)(worker)] (clientenv) {};
         \node[draw=blue!50, dashed, inner sep=1ex, label=above:\sffamily\textsc{server-side},  rounded corners, fit=(server)(database)(analyzer)] (serverenv) {};
         \path [draw=black!30, dashed] ([xshift=-2.5cm] serverenv.north west) edge node [sloped, near end, text=black!60, fill=white] {TCP} ([xshift=-2.5cm] serverenv.south west);
     \end{scope}
