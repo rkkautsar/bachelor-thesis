@@ -8,6 +8,8 @@
 Having done the research, we can conclude the following:
 
 \begin{enumerate}
+    \item Resource monitors are used for benchmarking. Their implementation vary with their own advantages and disadvantages.
+    \item We develop \textsc{psmon} to introduce a cross-platform resource monitoring tool to the community.
     \item Most of the existing benchmarking tool is developed to fulfill requirements specific to each community needs. There is no general solution yet.
     \item While they help reducing the barrier of reproducibility, none of the existing benchmarking tool fulfills our specified general requirements for an ideal benchmarking tool.
     \item We design and implement \textsc{ReproBench} by taking ideas from the existing solutions and integrate it with our own novel designs such as the client-server architecture.
@@ -17,18 +19,15 @@ Having done the research, we can conclude the following:
 
 \section{Future Work}
 
-\textsc{ReproBench} is still in early development stage and has a lot of potential for future works, including but not limited to:
+\textsc{ReproBench} is still in early development stage and has a lot of potential for future works that are not implemented yet due to time and resource limitations.
+The future works include but not limited to:
+
 \begin{enumerate}
-    \item Distributing the server to several process will help reduce the workload for the broker and thus increase the overall throughput.
-    \item If possible, using a proper messaging queue (instead of \O MQ) might be better; or even separate the messaging system altogether to allow many other use cases such as using AWS SQS\footlink{https://aws.amazon.com/sqs/} or Cloud Pub-Sub\footlink{https://cloud.google.com/pubsub/}
+    \item Distributing the server to several processes may help to reduce the workload for the broker and thus increase the overall throughput.
+    \item If possible, using a proper messaging queue (instead of \O MQ) might be better; or even separate the messaging system altogether to allow many other use cases such as using AWS SQS\footlink{https://aws.amazon.com/sqs/} or Cloud Pub-Sub\footlink{https://cloud.google.com/pubsub/}.
     \item Development of more managers. Possibilities include more HPC cluster system managers, cloud-service-based managers for integrating with services such as AWS Batch\footlink{https://aws.amazon.com/batch/} or Cloud Dataflow\footlink{https://cloud.google.com/dataflow/}.
     \item Separate the data storage to allow saving the benchmark result to other storages such as cloud databases or even Git repository.
     \item Development of internet service like \textsc{StarExec} and \textsc{Optil.io} based on \textsc{ReproBench}.
     \item Integrating more resource monitoring tool, especially \textsc{runexec} since it has a lot of advantages over the other tools. Additionally, support for virtualization can also be added.
     \item More tests and error handlings can be written to improve the overall user experience.
 \end{enumerate}
-
-% security, authentication
-
-% server implementation can be distributed too, to reduce the worklaad of the broker
-% or, a proper messaging queue can be used instead if possible

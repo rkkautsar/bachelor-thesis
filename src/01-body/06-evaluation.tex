@@ -231,9 +231,74 @@ However, a quick experiment with a single executor step with \code{sleep 10} as 
 \section{Comparison to Existing Tools}
 \label{sec:eval.comparison}
 
-% Insert evaluation
+\begin{table}
+    \begin{threeparttable}
+        \begin{adjustbox}{max width=\textwidth}
+            \begin{tabular}{l | cccccccccc | cccccccccc | cccccc | ccccc}
+                \toprule
 
-\OurBenchmarkingTool~fulfills most of the requirements, with exception of $M_3$ and $M_5$, respectively documentation and accuracy and reliability.
+                                            %   & \multicolumn{1}{c}{$M_1$} & \multicolumn{1}{c}{$M_2$} & \multicolumn{1}{c}{$M_3$} & \multicolumn{1}{c}{$M_4$} & \multicolumn{1}{c}{$M_5$} & \multicolumn{1}{c}{$M_6$} & \multicolumn{1}{c}{$M_\sigma$} \\
+                \multirow{2}{*}{Tool} &
+                    \multicolumn{10}{c|}{Extensible/configurable} &
+                    \multicolumn{10}{c|}{Minimal effort to use} &
+                    \multicolumn{6}{c|}{Accurate and Reliable} &
+                    \multicolumn{4}{c}{Reproducible}\\
+                    & a & b & c & d & e & f & g & h & i & j &
+                    a & b & c & d & e & f & g & h & i & j &
+                    a & b & c & d & e & f &
+                    a & b & c & d & e\\
+                \midrule
+                \textsc{benchmark-tool} &
+                    & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & & \checkmark & \checkmark &
+                    \checkmark & \checkmark & & & & \checkmark & & & & &
+                    & & & \checkmark & &
+                    & & \checkmark & & & \\
+                \textsc{BenchExec} &
+                    & & & \checkmark & \checkmark & & \checkmark & & \checkmark & &
+                    \checkmark & \checkmark & \checkmark & \checkmark & & & & & \checkmark & \checkmark &
+                    \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark &
+                    \checkmark & \checkmark & \checkmark & & \checkmark
+                     \\
+                \textsc{BenchKit} &
+                    & \checkmark & & & \checkmark & & \checkmark & & \checkmark & &
+                    & \checkmark & \checkmark & & & & & & \checkmark & &
+                    & \checkmark & & \checkmark & & \checkmark &
+                    & & & & \checkmark  \\
+                \textsc{JuBE} &
+                    \checkmark & \checkmark & & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark &
+                    \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & & &
+                    \textasteriskcentered & \textasteriskcentered & \textasteriskcentered & \textasteriskcentered & \textasteriskcentered & \textasteriskcentered &
+                    & \checkmark & \checkmark \\
+                \textsc{compbench} &
+                    \checkmark & \checkmark & & \checkmark & \checkmark & & \checkmark & \checkmark & \checkmark & &
+                    \checkmark & & & & & \checkmark & & \checkmark & \checkmark & &
+                    & & & & & &
+                    & \checkmark & \checkmark & & \checkmark \\
+                \textsc{StarExec} &
+                    \checkmark & \checkmark & \checkmark & & \checkmark & & \checkmark & & \checkmark & \checkmark &
+                    \checkmark & \checkmark & \checkmark & \checkmark & & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark &
+                    \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark &
+					\checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
+				\textbf{\OurBenchmarkingTool} &
+					\pmb{\checkmark} & \pmb{\checkmark} & \pmb{\checkmark} & \pmb{\checkmark} & \pmb{\checkmark} & \pmb{\checkmark} & \pmb{\checkmark} &\pmb{\checkmark} & \pmb{\checkmark} & \pmb{\checkmark} &
+					\pmb{\checkmark} & \pmb{\checkmark} & \pmb{\checkmark} & \pmb{\checkmark} & & \pmb{\checkmark} & \pmb{\checkmark} & \pmb{\checkmark} & \pmb{\checkmark} & &
+					\textbf{\textasteriskcentered} & \textbf{\textasteriskcentered} & \textbf{\textasteriskcentered} & \textbf{\textasteriskcentered} & \textbf{\textasteriskcentered} & \textbf{\textasteriskcentered} &
+					\pmb{\checkmark} & \pmb{\checkmark} & \pmb{\checkmark} & \pmb{\checkmark} & \pmb{\checkmark} \\
+                \bottomrule
+            \end{tabular}
+        \end{adjustbox}
+        \begin{tablenotes}
+            \note (\textasteriskcentered) means the accuracy and reliability depends on the resource monitoring\\ tool used as the benchmarking tool is agnostic to them.
+        \end{tablenotes}
+        \caption{Comparison of \OurBenchmarkingTool to other benchmarking tool}
+        \label{tab:eval.compare.req}
+    \end{threeparttable}
+\end{table}
+
+\Cref{tab:eval.compare.req} shows the same evaluation done in \Cref{ch:existing} with the addition of \OurBenchmarkingTool.
+Our tool fulfills most of the requirements, with the exception of Requirements 2e and 2j, respectively comprehensive documentation and testing.
 Currently, the documentation is not yet comprehensive but is adequate for most use cases.
-More comprehensive documentation is already on the back log for future works.
-Accuracy and reliability on the other hand is delegated to the resource monitor, or the executor step in this case.
+More comprehensive documentation is prioritized for future development.
+Unit and integration testing is also on already in the back log for future works.
+Additionally, as with \textsc{JuBE}, \first~delegate accuracy and reliability to the resource monitoring tool used.
+For example, if \textsc{runexec} is used, this requirements will be completely fulfilled.
