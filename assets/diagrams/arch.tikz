@@ -72,7 +72,7 @@
     \begin{scope}[on background layer]
         \node[draw=red!50, dashed, inner sep=1ex, label=above:\sffamily\textsc{client-side},  rounded corners, fit=(manager)(worker)] (clientenv) {};
         \node[draw=blue!50, dashed, inner sep=1ex, label=above:\sffamily\textsc{server-side},  rounded corners, fit=(server)(database)(analyzer)] (serverenv) {};
-        \path [draw=black!30, dashed] ([xshift=-2.5cm] serverenv.north west) edge node [sloped, near end, text=black!60, fill=white] {TCP} ([xshift=-2.5cm] serverenv.south west);
+        \path [draw=black!30, dashed] ([xshift=-2.5cm] serverenv.north west) edge node [sloped, near end, text=black!60, fill=white] {TCP (Tunnel)} ([xshift=-2.5cm] serverenv.south west);
     \end{scope}
 
 \end{tikzpicture}

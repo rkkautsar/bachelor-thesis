@@ -33,6 +33,7 @@
 \usepackage{microtype}
 \usepackage{soul}
 \usepackage{lipsum}
+\usepackage[official]{eurosym}
 
 \renewcommand{\arraystretch}{1.2}
 
@@ -115,7 +116,7 @@
 \input{src/00-front_matter/06-abstract}
 %
 %
-% \input{src/00-front_matter/07-abstrak}
+\input{src/00-front_matter/07-abstrak}
 
 %
 % Daftar isi, gambar, dan tabel
@@ -161,10 +162,10 @@
 %
 % Lampiran
 %
-% \begin{appendix}
-% 	\input{_internals/markLampiran}
-% 	\setcounter{page}{2}\textbf{}
-% 	\input{src/99-back_matter/lampiran}
-% \end{appendix}
+\begin{appendix}
+	\input{_internals/markLampiran}
+	\setcounter{page}{2}\textbf{}
+	\input{src/99-back_matter/lampiran}
+\end{appendix}
 
 \end{document}

@@ -11,18 +11,65 @@
 }
 
 This chapter discusses the design and implementation of \OurBenchmarkingTool, a new benchmarking tool developed to address the requirements defined in Section \ref{sec:idealBenchmarkingTool}.
-Section \ref{sec:impl.design} will describe the system design and the reason behind the design decisions.
-The chapter will then conclude with a description about the implementation in Section \ref{sec:impl.impl}.
+We first give an explanation to some major decisions taken before designing and implementing \OurBenchmarkingTool~in \Cref{sec:impl.decisions}.
+We describe the system design in detail in \Cref{sec:impl.design}.
+We then conclude the chapter with the detail of our implementation of \OurBenchmarkingTool~in \Cref{sec:impl.impl}.
 
 
-\section{Preliminary}
-\label{sec:impl.prelim}
+\section{Technological Decisions}
+\label{sec:impl.decisions}
 
-% \First~also take some ideas from the existing tools.
-% For example, \first~take the approach of \textsc{JuBE} that presents wide range of extensibility and is agnostic to the resource monitoring tool used for the benchmark.
-% Modular approach used in \textsc{compbench} is also interesting to take as it provides easy implementation of extensibility.
-% We integrate these ideas to our own approach such as the \textsc{client-server} architecture.
+We explain some major decisions we take for designing and implementing \OurBenchmarkingTool.
 
+\subsection{Implementation Language}
+
+We can see from \Cref{ch:existing} that Python is chosen by four out of the six evaluated benchmarking tool as their implementation language.
+\First~also choose Python as the main implementation language.
+Specifically, we choose Python 3.
+Its predecessor, Python 2, will meet its end of the line and not be supported anymore in 2020 \citep{petersonPEP373Python2008}.
+Python is highly popular, reaching the first place as the most learned language by Google search \citep{carbonnellePYPLPopularitYProgramming2019}.
+Python also has good interopability with C and C++, it is relatively easy to write wrappers of C libraries to Python.
+That said, there is a huge collection of publicly available python packages in the Python Package Index (pypi, \url{https://pypi.org/}).
+These packages can be installed through \code{pip} tool, which is often distributed alongside Python.
+This allows for rapid software development by reducing common implementation.
+
+Being an interpreter and not a compiled language, Python is relatively slow.
+For this project, we argue that speed can be sacrificed in place of developer experience.
+The benchmarking tool is bound by the speed of input/output (I/O) and not by computation speed.
+Most of the computing resource will instead be used by the benchmarked program.
+
+
+\subsection{Database}
+
+We use \textsc{SQLite} for storing the benchmarking results.
+\textsc{SQLite} is an embedded relational database.
+\emph{Embedded} means that the database does not run as a separate process, it rather coexists with the process it serves \citep{allenDefinitiveGuideSQLite2010}.
+\emph{Relational} database model stores structured data in well-organized predefined tables.
+This contrasts with nonrelational database (also known as NoSQL) which does not necessarily have a predefined structure \citep{leavittWillNoSQLDatabases2010}.
+
+As a relational database, \textsc{SQLite} maintains the ACID (atomicity, consistency, isolation, durability) property \citep{leavittWillNoSQLDatabases2010}.
+This means the database state is kept reliably consistent even when the system fails.
+\textsc{SQLite} is also portable with no external dependencies.
+It ships as a single C source code or as pre-compiled binaries for many popular platforms including Windows, Linux, macOS, to Android (\url{https://www.sqlite.org/download.html}).
+The effort to use \textsc{SQLite} is thus relatively tiny compared to other client-server databases.
+
+While we argue that this is good fit for the structured nature benchmarking setup, we realize that NoSQL may be a better choice for the analytical part of the benchmark runs.
+For example, column-oriented databases is better for analytic purposes since only a limited subset of columns of a table is used for analysis, and \textsc{SQLite} does not fit well with bulk retrieval of data \citep{raasveldtMonetDBLiteEmbeddedAnalytical2018}.
+
+\subsection{Messaging Queue}
+
+We use \O MQ (\url{http://zeromq.org}) to provide the messaging framework and queueing.
+\O MQ provides many messaging patterns for many use cases \citep{hintjens2013zeromq}.
+It is also lightweight and easily available in many platforms with a lot of supported language bindings.
+It ships as a C++ library and pre-compiled binaries for many popular platforms including Linux, macOS, Windows Server, and even Android (\url{https://github.com/zeromq/libzmq}).
+
+We decide to use \O MQ because it differs from other messaging queue solutions in the way that it is a library instead of separate tools.
+Other messaging queue like the popular RabbitMQ (\url{https://www.rabbitmq.com/}) is implemented in a client-server manner.
+This decision is thus similar to why we choose to use \textsc{SQLite}: to minimize the effort of installing dependencies for the benchmarking tool.
+
+Additionally we also encrypt the traffic between systems through the tunneling feature of SSH \citep{ylonen2005secure}.
+SSH tunneling works by forwarding ports through SSH connection.
+Any possibly clear text communication going between the system will be cryptographically encrypted by going through this SSH tunnel \citep{dusiPreliminaryLookPrivacy2008}.
 
 
 \section{System Design}
@@ -63,21 +110,10 @@ To achieve extensibility, the server maintains a specified set of \emph{observer
 The events are distributed through a publisher-subscriber design pattern.
 The observer will then executes its jobs, such as inserting data to the database.
 
-\emph{Bootstrapper} is a component that will read the configuration file from the user, prepare the computing environment, and then tell the server $R \in C \times I$, the set of benchmark runs that will be executed.
-Among the things prepared are the tools, benchmark instances, and database schema.
-Preparing the specified tools and instances may additionally include downloading and running related setting up steps.
-In short, the bootstrapping is also separated to the computation-related and data-related between the client-side and server-side.
-
-\emph{Manager} manages the benchmark workers.
-This component acts as an interface to the underlying job submitting system, or even implements its own job queue as in the case of the \emph{local} manager.
-Manager will first ask for a list of pending runs from the server before assigning the runs to workers.
-The manager is responsible for deploying, assigning tasks, and stopping the benchmark workers, making sure they finishes the assigned job.
-This allows the benchmarking tool to be agnostic about the execution environment and can be extended in many ways.
-
 \emph{Workers} do the heavy computing steps, typically in parallel.
-Because the benchmark run is embarrassingly parallel\footnote{there is no effort needed to parallelize the problem since there is no dependencies between tasks}, each worker can be run as its own process without interacting with other workers.
+Since the benchmark run is can be executed in parallel independent to each other, each worker can be run as its own process without interacting with other workers.
 Submitted to a HPC cluster, this allows the computation to be executed as fast as possible.
-A worker is assigned a run identifier and executes the needed steps for the benchmark run after asking the context (i.e. $r = (c, i) \in R$) from the server.
+Workers ask the server to assign a run to them, and executes the specified steps.
 
 A worker consists of smaller building blocks called \emph{run steps}.
 The run step is executed in sequence.
@@ -85,9 +121,15 @@ In most cases, one of these steps, called the \emph{executor}, acts as a resourc
 The executor then measures and limits the execution of the tool.
 Finally, each step can report its result to the server.
 
-The worker only executes one specific benchmark run as opposed to requesting many jobs as its available.
+The worker only executes one specific benchmark run as opposed to requesting many jobs while it lives.
 This is also to prevent worker to be a long-running job.
-A worker maps nicely to a job in the HPC cluster system.
+
+\emph{Manager} sends the configuration to the server and manages the workers.
+After reading the configuration file, sending it to the server, and receiving the number of pending runs, manager spawns the appropriate number of workers.
+This component acts as an interface to the underlying job submitting system, or even implements its own job queue as in the case of the \emph{local} manager.
+Manager will first ask for a list of pending runs from the server before assigning the runs to workers.
+The manager is responsible for deploying, assigning tasks, and stopping the benchmark workers, making sure they finishes the assigned job.
+This allows the benchmarking tool to be agnostic about the execution environment and can be extended in many ways.
 
 \emph{Analyzer} aggregates the data from the database and analyze it, outputting a presentable result.
 This component is usually used after the benchmarking is finished, but it can also be used to serve a live analysis of a benchmarking in process.
@@ -112,11 +154,7 @@ Figure \ref{fig:zmq} gives an overview of the messaging architecture and the ove
 Each process is independent to each other and can be separated across virtual nodes.
 This means it can be implemented in a single node, in a cluster system, or even across clusters.
 Data is transported through TCP for inter-process communication, and through local in-process (inter-thread) transportation for intra-process communication.
-Communication follows some basic messaging patterns used by the \O MQ (ZeroMQ)\footlink{http://zeromq.org/} messaging framework, namely \textsc{router-dealer} and \textsc{pub-sub}.
-
-\First~decided to use \O MQ to avoid reinventing the wheel and just focus on the core functionalities.
-\O MQ provides many messaging patterns for many use cases.
-It is also lightweight and easily available in most platform with a lot of supported languages.
+Communication follows some basic messaging patterns used by the \O MQ (ZeroMQ) messaging framework, namely \textsc{router-dealer} and \textsc{pub-sub}.
 
 The \textsc{router-dealer} patterns allows two-way communication between the party \citep{hintjens2013zeromq}.
 This is used in the communication between the worker and the server gateway.
@@ -125,12 +163,12 @@ The message sent to a \textsc{router} socket is enveloped by a unique identifier
 This powerful pattern allows reliable many to one communication between the workers and the server gateway.
 
 On the other hand, \textsc{pub-sub} patterns follows the publisher-subscriber pattern as its name suggests \citep{hintjens2013zeromq}.
-This is a fan-out pattern, on which the publisher just publish the message without caring if the message is received.
+The publisher publishes the message without concerning whether the message is received or not.
 Both the publisher and subscriber does not know each other.
-The \textsc{pub} socket just publish the message to the socket, and the \textsc{sub} sockets listen to one or more `topics'.
+The \textsc{pub} socket just publish the message to the socket, and the \textsc{sub} sockets listen to one or more specified topics.
 This allows fast distribution of event message received by the server gateway to the possibly many observers.
-The downside is the distribution is not reliable since the message is just thrown without confirmation if the other party is ready.
-This can be corrected with proper synchronization using other messaging pattern if needed.
+The downside is that the distribution is not reliable since there is no acknowledgement mechanism.
+This downside can be corrected with proper synchronization using other messaging pattern if needed.
 
 
 \subsection{Benchmarking Workflow}
@@ -145,24 +183,26 @@ This can be corrected with proper synchronization using other messaging pattern 
     \label{fig:swimlane}
 \end{figure}
 
-Figure \ref{fig:swimlane} presents the steps and interactions taken by each actors, namely the Client, Workers, and Server.
-Aside from the already defined Workers and Server in Section \ref{sec:impl.architecture} above, Client represents the actual user interfacing with \OurBenchmarkingTool.
-Note that the figure assumes the server is already started.
+Figure \ref{fig:swimlane} is a flowchart illustrating the steps and interactions taken by each actors, namely the \emph{Client}, \emph{Workers}, and \emph{Server}.
+Client represents the user interfacing with \OurBenchmarkingTool.
+The figure can be read from top to bottom with each actor having their own lane, and arrows denoting interactions between actors.
+Assuming the server is already started, the figure illustrates the steps done after the user executes the \code{manage [manager] run} command.
 
-First, the client uses the bootstrapper to read the configuration and then send a bootstrap event to the server.
-This event includes the needed information for the server to also set up the database schema.
-Then the server replies its readiness to the client.
-After that, the client uses the manager to spawn workers.
-This is the end of the interaction needed by the user.
+First, the client read the configuration and execute the necessary preparation steps such as downloading benchmark instances.
+The client then send the configuration to the server.
+After receiving the configuration, the server updates the database with the new configuration, setting up the schema as needed automatically.
+The server then reply with the number of pending benchmark runs.
 
-Then, after being scheduled by the job scheduling system used by the manager, each worker request the context for its assigned run identifier to the server.
-The server replies with the context.
-This includes things such as the tool and its configuration, the input instance, resource limits, etc.
+The client then spawns workers with the same number as pending benchmark runs.
+After being scheduled by the job scheduling system used by the manager, each worker requests the server to be assigned a run.
+The server replies with information regarding the assigned run.
+This information includes things such as the tool and its configuration, the input instance, and resource limits.
 
 Then come the main computation represented as run steps.
 Each steps is executed sequentially.
 After execution of the step, typically the worker will report the result to the server which in turn publish that event to observers.
-Any observers listening to the event will execute its work, often time this means inserting data to the database. After there is no more run step to execute, the worker sends a finish event to the server and terminates.
+Any observers listening to the event will execute its work, often time this means inserting data to the database.
+After there is no more run step to execute, the worker sends a finish event to the server and terminates.
 
 As soon as soon as the bootstrapping is done, analysis can be executed from the available data in database.
 This allows the flexibility of doing either on-demand analysis or live analysis.
@@ -170,9 +210,7 @@ This allows the flexibility of doing either on-demand analysis or live analysis.
 
 \subsection{Benchmarking Model}
 
-\First~decided to define the data as relational model of SQL, as opposed to nonrelational model of NoSQL.
-The reason is because SQL provides an easy and fast interface for querying and aggregating data, tasks that occur often when analyzing benchmark results.
-The benchmarking process itself can be defined nicely into structured relations, centering on benchmark runs.
+The benchmarking process can be defined into structured relations, centering on benchmark runs.
 
 \begin{figure}
     \centering
@@ -185,7 +223,7 @@ The benchmarking process itself can be defined nicely into structured relations,
     \label{fig:erd}
 \end{figure}
 
-The benchmarking process is modeled as in the entity-relationship diagram (ERD) shown in Figure \ref{fig:erd}.
+The benchmarking process is modeled as in the entity-relationship diagram \citep{chen1976entity} shown in Figure \ref{fig:erd}.
 The database stores every configuration defined to support reproducibility.
 Among the core entities are \textsc{run}, \textsc{tool}, \textsc{parameter}, \textsc{limit}, \textsc{step}, \textsc{observer}, and \textsc{task}.
 Some entities like \textsc{parameter} and \textsc{task} are grouped to another intermediate many-to-many entity, that is \textsc{parameterGroup} and \textsc{taskGroup}.
@@ -195,104 +233,78 @@ Other modules, like the ones used as steps, can then register its own model to s
 This supports separation of concern and encapsulation of the module.
 User can use community-created module without having to consider its data model.
 
-In fact, it is also possible to move all the data that is normally stored in the filesystem into the SQL table.
-Many SQL database engine provides a BLOB data type to store binary data.
-For example, \textsc{SQLite} even has an archiving tool called \code{sqlar}\footlink{https://www.sqlite.org/sqlar} that use the database as storage just like a ZIP archive.
-This allow the database to store everything needed to reproduce the benchmark.
-But \first~decided not to do it to make debugging runs easier, a task which also occur surprisingly often alongside benchmarking.
-
 \section{Implementation}
 \label{sec:impl.impl}
 
 \newstyle{
 This section presents details regarding the implementation of \OurBenchmarkingTool.
-It will be organized by the components of the benchmarking tool.
-The complete implementation source code is attached in the appendix.
-It is also available as Git repository: \href{https://github.com/rkkautsar/reprobench}{\code{https://github.com/rkkautsar/reprobench}} and pypi package: \href{https://pypi.org/project/reprobench/}{\code{https://pypi.org/project/reprobench/}}.
+We organize the section loosely by the implementation of each step in the benchmarking process.
+The implementation source code is attached in the appendix.
+It is also available as a Git repository: \url{https://github.com/rkkautsar/reprobench}, pypi package: \url{https://pypi.org/project/reprobench/}, and conda package: \url{https://anaconda.org/rkkautsar/reprobench}.
 }
-
-\subsection{Development Environment}
-
-\First~choose Python as the main programming language.
-Specifically, Python 3 is used as its predecessor Python 2 will meet its end of the line and not be supported anymore in 2020.
-It is a widely available language with huge community.
-Python also has good interopability with C and C++, it's relatively easy to write wrappers of C libraries to Python.
-That said, there is a huge collection of publicly available python packages in the Python Package Index (pypi)\footlink{https://pypi.org/} readily installable through \code{pip} tool, which often distributed alongside Python.
-This allows for rapid software development by reducing common implementation.
-
-Being an interpreter and not a compiled language, Python is relatively slow.
-For this project, speed can be sacrificed in place of developer experience.
-Most of the CPU usage will be used by the benchmarked program anyway, so the development speed is arguably more important.
-
-\First~use a combination of \textsc{pyenv}\footlink{https://github.com/pyenv/pyenv} and \textsc{poetry}\footlink{https://github.com/sdispater/poetry} to manage dependencies and package publishing.
-With \textsc{pyenv}, it is easy to switch between specific versions of Python and also pin a project to use specific version of Python.
-This allow reproducible development environment across machines without influence from other projects using different Python version.
-Additionally, testing if the software works under specific version of Python is a trivial task.
-\textsc{poetry} on the other hand, manages the dependencies in a virtual environment with version locking.
-This allows separate, reproducible dependencies across projects.
-\textsc{poetry} also provide simple API to package and publish the project to pypi.
-Under a UNIX system, setting up both tools is easy and works without superuser privilege, as seen in \lst~\ref{lst:impl.setup.pyenv.poetry}.
-
-\begin{listing}
-    \begin{minted}{bash}
-$ curl https://pyenv.run | bash
-$ pyenv install "3.7.2"
-$ pyenv global "3.7.2"
-$ pip install poetry
-    \end{minted}
-    \caption{Setting up \textsc{pyenv} and \textsc{poetry}}
-    \label{lst:impl.setup.pyenv.poetry}
-\end{listing}
-
-The source code is organized by the Git version control and made publicly available in GitHub.
-This allows others to freely contribute to the project and also encourage them to also make their modules open-source.
-Additionally, the source code is licensed under the MIT License to allow permissive usage.
 
 \subsection{Project Structure}
 \label{sec:impl.structure}
 
 The source code organization and their brief descriptions is listed below:
-\begin{itemize}
+\begin{enumerate}
+    \item \emph{docs/}\\
+        This directory consists of the documentation for \OurBenchmarkingTool. The documentation is also served in the web and can be accessed at \url{https://reprobench.readthedocs.io/}.
+
+    \item \emph{conda/}\\
+        This directory consists of the configuration regarding conda package publishing.
+
     \item \emph{examples/}\\
-          This directory provides a collection of working usage benchmark examples demonstrating various features of the benchmarking tool.
+        This directory provides a collection of working usage benchmark examples demonstrating various features of the benchmarking tool.
 
     \item \emph{pyproject.toml}\\
-          Configuration file describing the various dependencies used and the packaging options used for publishing purposes.
+        Configuration file describing the various dependencies used and the packaging options used for publishing purposes.
+
+    \item \emph{environment.yml}\\
+        This file describes the exported Conda environment for easy development setup.
 
     \item \emph{reprobench/console/}\\
-          This directory consists of the implementations of the command line interface (CLI), including the \code{reprobench} root command and related setup for the sub-commands.
+        This directory consists of the implementations of the command line interface (CLI), including the \code{reprobench} root command and related setup for the sub-commands.
 
     \item \emph{reprobench/core/}\\
-          The core implementation of \OurBenchmarkingTool~is organized in this directory.
-          This includes generic classes, database models, and implementation for the worker, server, bootstrapper, and analyzer components.
+        The core implementation of \OurBenchmarkingTool~is organized in this directory.
+        This includes generic classes, database models, and implementation for the worker, server, bootstrapper, and analyzer components.
 
     \item \emph{reprobench/executors/}\\
-          Implementations of the special run step doing the actual execution and monitoring of the tools and its input.
-          This includes the accompanying observer, its database model and related events.
+        Implementations of the special run step doing the actual execution and monitoring of the tools and its input.
+        This includes the accompanying observer, its database model and related events.
 
     \item \emph{reprobench/managers/}\\
-          Implementations of the manager component and its CLI sub-commands under the \code{reprobench manage} sub-command, e.g. \code{reprobench manage local} or \code{reprobench manage slurm}.
-          In the future, it is preferable for each manager to be separated into its own package.
+        Implementations of the manager component and its CLI sub-commands under the \code{reprobench manage} sub-command, e.g. \code{reprobench manage local} or \code{reprobench manage slurm}.
+        In the future, it is preferable for each manager to be separated into its own package.
 
     \item \emph{reprobench/statistics/}\\
-          This directory consists of reference implementations of the analysis step modules.
-          It is encouraged to implement analysis steps as separate packages and only put the most general ones in the main project.
+        This directory consists of reference implementations of the analysis step modules.
+        It is encouraged to implement analysis steps as separate packages and only put the most general ones in the main project.
 
     \item \emph{reprobench/task\_sources/}\\
-          This directory consists of various implementation for extracting tasks from the configuration.
-          Currently, this includes local filesystem sourced tasks, URL-based remote sourced tasks, and Digital Object Identifier (DOI) sourced tasks.
+        This directory consists of various implementation for extracting tasks from the configuration.
+        Currently, this includes local filesystem sourced tasks, URL-based remote sourced tasks, and Digital Object Identifier (DOI) sourced tasks.
 
     \item \emph{reprobench/tools/}\\
-          This directory implements some base classes to be extended for writing tool interfaces.
-          It is also possible in the future to allow tools to be defined only from the configuration, further lowering the barrier for using this benchmarking tool.
-          Writing tool interface is discussed in Section \ref{sec:impl.tools}.
+        This directory implements some base classes to be extended for writing tool interfaces.
+        It is also possible in the future to allow tools to be defined only from the configuration, further lowering the barrier for using this benchmarking tool.
 
     \item \emph{reprobench/utils.py}\\
-          This file consists of various small utilities commonly used by the implementation.
+        This file consists of various small utilities commonly used by the implementation.
+
+\end{enumerate}
 
 
-\end{itemize}
+\subsection{Installation}
 
+We publish \OurBenchmarkingTool~as a Python package in pypi and Anaconda Cloud (\url{https://anaconda.org}).
+Publishing to pypi enable wide usage since the tools for downloading through pypi, \code{pip} is shipped alongside Python.
+Publishing the project as a conda package through Anaconda Cloud allows easy installation of the dependencies as pre-compiled binaries.
+
+The source code is organized by the Git version control and made publicly available in GitHub.
+This allows others to freely contribute to the project and also encourage them to also make their modules open-source.
+Additionally, the source code is licensed under the MIT License to allow permissive usage as long as the license and copyright is included in the copy.
 
 \subsection{Configuration}
 
@@ -310,149 +322,14 @@ It is also widely adopted and implemented in various programming languages.
 
 ``YAML Ain’t Markup Language'', recursively abbreviated to YAML, is a data serialization language designed to be human-friendly, portable between programming languages, and easy to use for every tasks \citep{ben2005yaml}.
 While it's easy to understand at a glance, it has an arguably complex specification allowing for various use cases.
-Avoiding its complexity, \first~choose to use \textsc{StrictYAML}\footlink{https://github.com/crdoconnor/strictyaml}, a relatively simple implementation of a small subset of the YAML specification.
+Avoiding its complexity, \first~choose to use \textsc{StrictYAML} \citep{oconnorTypesafeYAMLParser2019}, a relatively simple implementation of a small subset of the YAML specification.
 \textsc{StrictYAML} also allows definition of a schema to provide type-safe parsing.
 The schema for \OurBenchmarkingTool~configuration file is defined in \emph{reprobench/core/schema.py}.
-
-
-\subsection{Module}
 
 To enable high extensibility, many components of \OurBenchmarkingTool~is defined in a modular, reusable Python \emph{modules}.
 What \first~define as a module is in fact just a Python class that can be imported by path strings.
 For example, the path string \mintinline{python}{"my_package.my_folder.my_file.MyClass"} references the class \code{MyClass} in \emph{my\_folder/my\_file.py} (or \emph{my\_folder/my\_file/\_\_init\_\_.py}) file in the Python package \code{my\_package}.
 This allows \OurBenchmarkingTool~to flexibly import user defined code, either it's in the working directory or installed through \code{pip}.
-
-
-\subsection{Server}
-
-\begin{listing}
-    \inputminted{python}{assets/listings/pseudocodes/server.py}
-    \caption{Pseudo-code of the server component}
-    \label{lst:impl.server}
-    % \captionof{listing}{Pseudo-code of the server component \label{lst:impl.server}}
-\end{listing}
-
-Pseudo-code for the server implementation is given in \lst~\ref{lst:impl.server}.
-In short, the server is implemented in three main phases.
-The first phase is setting up the database and sockets.
-Then the server waits for a \textsc{bootstrap} event from the client, as mentioned in Section \ref{sec:impl.design} earlier.
-As soon as the database is bootstrapped, the server query the needed observers and register the respective modules.
-Finally, the server spawn `greenlets' of the observers and its own loop method and waited for them to terminate.
-
-\textsc{greenlet}\footlink{https://github.com/python-greenlet/greenlet} is a Python package that provides the use of `greenlets'.
-A greenlet is a lightweight pseudo-thread useful for concurrent programming.
-In contrast with implicit context switching of native OS-level threads, greenlet explicitly context switches.
-In short, it's a way of programmatically jump from one code frame to another, allowing thread-like behavior with minimal runtime overhead.
-This fits to \firstposs~need of concurrency for controlling the flow in the server.
-
-On the first phase, an \textsc{SQLite} database are initiated in the given output path.
-\First~choose to use SQLite because it is most of the time already available in various platforms.
-Even when it is not available, it can be installed easily with pre-compiled binaries or as a single-file C source code.
-It is also works on a single file database, allowing easy distribution for reproducibility.
-The \textsc{SQLite} database is opened in \emph{Write-ahead logging} mode to better handle concurrency.
-
-Two socket connections are also prepared in this phase.
-The official Python bindings for \O MQ, \textsc{pyzmq}\footlink{https://github.com/zeromq/pyzmq} is used to setup the related sockets.
-These two sockets are \textsc{router} and \textsc{pub} as discussed in Section \ref{sec:impl.messaging}.
-On one hand, the \textsc{router} socket acts as a `front-end' gateway and interacts with clients.
-On the other hand, the \textsc{pub} socket interacts with the observer greenlets and acts as the `back-end' gateway.
-
-Then the server waits for a bootstrap event from the client.
-Events are encoded with \textsc{MessagePack}\footlink{https://msgpack.org/} binary serialization format to minimize the amount of data transferred.
-It enters a loop waiting for the specific \textsc{bootstrap} event.
-After receiving this event, the server prepare the database schema with the payload from the event.
-Then the server loads the observer modules.
-The list of observer modules is extracted from the database, inserted from the earlier bootstrapping process.
-
-The server spawns greenlets of the observers and its own loop method.
-The loop method waits for every event received in the front-end socket and forward it to the back-end socket, allowing the observers to act accordingly.
-
-The run step (explained in Section \ref{sec:impl.workers}) is usually accompanied by an observer.
-An observer is a class extending \mintinline{python}{class Observer} imported from \code{reprobench.core.base}.
-Since observers live in the server process, naturally they mostly deal with the database.
-This does not only include inserting data to the database, implementing notifications to e-mail or even to messaging services like Slack or Telegram is also possible.
-
-\begin{listing}
-    \inputminted[firstline=7,lastline=13]{python}{assets/listings/reprobench/reprobench/executors/base.py}
-    \caption{An example observer used by the executor step}
-    \label{lst:impl.observer}
-\end{listing}
-
-One example can be seen in \lst~\ref{lst:impl.observer}, showing the observer accompanying the executor step.
-The most basic implementation of an observer includes defining the events it subscribes to in the \mintinline{python}{SUBSCRIBED_EVENTS} attribute and defining the \mintinline{python}{def handle_event(cls, ...)} class method.
-This observer is stated in the configuration file as a module.
-Additionally, there is also a single core observer that is always included regardless of the configuration.
-It is defined as \mintinline{python}{class CoreObserver(Observer)} in \emph{reprobench/core/observers.py}.
-
-\subsection{Bootstrapper}
-
-The bootstrapper component receives the configuration file and prepare the execution environment accordingly.
-There is two bootstrapping process that take place.
-Both are defined in \emph{reprobench/core/bootstrap/} as \mintinline{python}{def bootstrap_client(...)} in \code{client.py} and \mintinline{python}{def bootstrap_server(...)} in \code{server.py}.
-The client-side will prepare the execution environment, after that it passes the required information to the server-side.
-The server-side will then prepare for the data-related things such as the database schema.
-
-Additionally, it is also possible to update the configuration---mostly data-related---of an in-progress benchmark.
-This is also done by the bootstrapper, but the related code is contained in \emph{reprobench/core/update.py}.
-In essence, update is executed when the server detected that the database is in fact already bootstrapped.
-This allow addition of tools, parameters, or tasks to an already bootstrapped benchmark, ensuring the workflow is as flexible and as natural as possible.
-
-\subsection{Manager}
-
-Manager manages the formation and termination of workers.
-It acts on top of the existing job scheduling system or manage its own queue system.
-A manager implementation extends \mintinline{python}{class BaseManager} defined in \emph{reprobench/managers/base.py}.
-\lst~\ref{lst:impl.manager} shows this base class and the base implementation.
-
-\begin{listing}
-    \inputminted[firstline=7,lastline=34]{python}{assets/listings/reprobench/reprobench/managers/base.py}
-    \caption{The BaseManager class}
-    \label{lst:impl.manager}
-\end{listing}
-
-The main method can be seen in \mintinline{python}{def run(self)}.
-First it calls the optional \mintinline{python}{def prepare(self)} method.
-Then it requests and stores the list of pending runs from the server.
-Finally it spawn the workers and wait for them to be terminated.
-Currently, two managers are implemented, namely the local manager and the \textsc{slurm} manager.
-
-The local manager as the most basic manager which implements its own scheduling system.
-This is typically used when the benchmarking tool is used---for quick benchmarking or testing, for example---outside the HPC cluster system.
-This manager maintains a process pool whose number of processes can be defined or defaults to the number of available cores.
-This pool of process then gets the job from the pending runs and spawn a worker exclusively for that job.
-This repeats until there is no more pending runs.
-
-The \textsc{slurm} manager works in the \textsc{slurm} cluster system\footlink{https://www.schedmd.com/} and also acts as a reference implementation for other potential managers.
-The implementation of this manager is straightforward.
-It submits the pending runs as a job array of the worker process with the \code{sbatch} command and cancel them when requested with the \code{scancel} command.
-
-\subsection{Workers}
-\label{sec:impl.workers}
-
-\begin{listing}
-    \inputminted{python}{assets/listings/pseudocodes/worker.py}
-    \caption{Pseudo-code of the worker component}
-    \label{lst:impl.worker}
-\end{listing}
-
-The worker is an implementation-agnostic process whose only purpose is to execute the run steps on top of the benchmark run.
-The pseudo-code of the implementation can be seen in \lst~\ref{lst:impl.worker}.
-First, it reports its existence to the server and requests for information (or context) regarding its assigned run.
-Then it creates a context object to be passed to steps, and executes them one by one sequentially.
-When it finishes executing all the steps, it reports its completion and terminates.
-
-A step is implemented as a subclass of \mintinline{python}{class Step} in \emph{reprobench/core/base.py}.
-This base class defines only two class methods, \mintinline{python}{def register(cls, config)} and \mintinline{python}{def execute(cls, context, config)}.
-The register method is called on bootstrap phase and the execute method is called by the workers.
-Typically, the register method contains a database schema creation routine executed in the server-side.
-
-Steps are used in two benchmarking phase, that is the running phase and the analysis phase.
-These are differentiated in the configuration file under the \code{steps} key.
-One such example of a run step---a step executed in the running phase---is the executor.
-While an example of an analysis step---a step executed in the analysis phase---is spreadsheet generation summarizing statistics from the database.
-
-\subsection{Tools}
-\label{sec:impl.tools}
 
 To allow the benchmarking of any tools, there needs to be a common interface for interaction between \OurBenchmarkingTool~and the tool.
 Thus, benchmarking a tool in \OurBenchmarkingTool~also involves writing the respective interface module.
@@ -473,27 +350,149 @@ It is encouraged to create various abstractions from the base \mintinline{python
 
 Tools can be configured to use various parameters specified in the configuration file, as seen in \lst~\ref{lst:impl.config.example}.
 \OurBenchmarkingTool~supports defining parameter as ranges, that is by using an integer range syntax such as \code{1..10} or using YAML list syntax.
-Additionally, it also supports defining parameter range through a parameter configuration space (.pcs) file, allowing easy integration for tools already using this file for configuration.
-These parameters are processed by the tool interface and turn into arguments, for example.
+Additionally, it also supports defining parameter range through a parameter configuration space (.pcs) file \citep{hutterPcsParameterConfiguration2013}, allowing easy integration for tools already using this file for configuration.
+These parameters are processed by the tool interface and turn into arguments.
+This is useful to easily define the parameter in the defined reasonable space and validate them.
+For example, \citet{falknerSpySMACAutomatedConfiguration2015} use this configuration for automated search for the best configuration of SAT solvers.
 
-
-\subsection{Task Sources}
 
 To support achieving \(\bm{R_2}\) reproducibility, benchmark instances is encouraged to be sourced from remote location instead of local file system.
 For example, as seen in the example configuration in \lst~\ref{lst:impl.config.example} it can be sourced from specified URL.
 Of course it is still possible to use files in the local system but the use is discouraged as it will make the benchmarking process less portable and less reproducible.
 
 Task source implementation extends \mintinline{python}{class BaseTaskSource} defined in \emph{reprobench/task\_sources/base.py}.
-This base class contains a single \mintinline{python}{def setup(self)} method which returns a list of `tasks' and an init function.
+This base class contains a single \mintinline{python}{def setup(self)} method which returns a list of tasks and an init function.
 A task source class will be initialized by its defined configuration and then the setup method is then executed to get the list of tasks.
 
-As mentioned briefly in Section \ref{sec:impl.structure}, currently there are three implementation of this task source, namely local-based, URL-based, and DOI-based.
-The DOI-based task source extends the URL-based task source which in turn also an extension of the local-based task source.
-Note that the DOI-based task source only works with DOIs from Zenodo\footlink{http://zenodo.org}, but it is trivial to add support for more sources.
+As mentioned briefly in Section \ref{sec:impl.structure}, currently there are three implementation of this task source, namely local-based, HTTP-based, and DOI-based.
+The DOI-based task source extends the HTTP-based task source which in turn also an extension of the local-based task source.
+Note that the DOI-based task source only works with DOIs from Zenodo \citep{nielsen_lars_holm_2017_802100} for now, but it is trivial to add support for more sources.
+Supporting DOI-based task source like this is important to promote reproducibility.
 
-The URL-based task source allows one to specify a URL for downloading the benchmark instances.
+The HTTP-based task source allows one to specify a URL in the HTTP/HTTPS protocol for downloading the benchmark instances.
 Combined with the automated download and setup of tools, one can just share the configuration file without having to worry about the tools or the benchmark instances.
-Thus it is two less thing to worry about for achieving \(\bm{R_1}\) reproducibility.
+Thus it is two less thing to worry about for achieving \(\bm{R_1}\).
+
+
+\subsection{Executing the Benchmark}
+
+\begin{listing}
+    \inputminted{python}{assets/listings/pseudocodes/server.py}
+    \caption{Pseudo-code of the server component}
+    \label{lst:impl.server}
+\end{listing}
+
+Before executing the actual computation for the benchmark the server need to be started to start collecting results.
+Pseudo-code for the server implementation is given in \lst~\ref{lst:impl.server}.
+In short, the server is implemented in three main phases.
+The first phase is setting up the database and sockets.
+Then the server waits for a \textsc{bootstrap} event from the client, as mentioned in Section \ref{sec:impl.design} earlier.
+As soon as the database is bootstrapped, the server query the needed observers and register the respective modules.
+Finally, the server spawn \emph{greenlets} of the observers and its own loop method and waited for them to terminate.
+
+\textsc{greenlet} (\url{https://github.com/python-greenlet/greenlet}) is a Python package that provides the use of greenlets.
+A greenlet is a lightweight pseudo-thread useful for concurrent programming.
+In contrast with implicit context switching of native OS-level threads, greenlet explicitly context switches.
+In short, it's a way of programmatically jump from one code frame to another, allowing thread-like behavior with minimal runtime overhead.
+This fits to \firstposs~need of concurrency for controlling the flow in the server.
+
+On the first phase, an \textsc{SQLite} database are initiated in the given output path.
+\First~choose to use SQLite because it is most of the time already available in various platforms.
+Even when it is not available, it can be installed easily with pre-compiled binaries or as a single-file C source code.
+It is also works on a single file database, allowing easy distribution for reproducibility.
+The \textsc{SQLite} database is opened in \emph{Write-ahead logging} mode to better handle concurrency.
+
+Two socket connections are also prepared in this phase.
+The official Python bindings for \O MQ, \textsc{pyzmq} (\url{https://github.com/zeromq/pyzmq}) is used to setup the related sockets.
+These two sockets are \textsc{router} and \textsc{pub} as discussed in Section \ref{sec:impl.messaging}.
+On one hand, the \textsc{router} socket acts as a \emph{front-end} gateway and interacts with clients.
+On the other hand, the \textsc{pub} socket interacts with the observer greenlets and acts as the \emph{back-end} gateway.
+
+Then the server waits for a bootstrap event from the client.
+Events are encoded with \textsc{MessagePack} (\url{https://msgpack.org/}) binary serialization format to minimize the amount of data transferred.
+It enters a loop waiting for the specific \textsc{bootstrap} event.
+After receiving this event, the server prepare the database schema with the payload from the event.
+Then the server loads the observer modules.
+The list of observer modules is extracted from the database, inserted from the earlier bootstrapping process.
+
+The server spawns greenlets of the observers and its own loop method.
+The loop method waits for every event received in the front-end socket and forward it to the back-end socket, allowing the observers to act accordingly.
+
+Observer watches for specific events from the server and execute related steps, like inserting data to the database.
+An observer is a class extending \mintinline{python}{class Observer} imported from \code{reprobench.core.base}.
+Since observers live in the server process, naturally they mostly deal with the database.
+This does not only include inserting data to the database, implementing notifications to e-mail or even to messaging services like Slack or Telegram is also possible.
+
+\begin{listing}
+    \inputminted[firstline=7,lastline=13]{python}{assets/listings/reprobench/reprobench/executors/base.py}
+    \caption{An example observer used by the executor step}
+    \label{lst:impl.observer}
+\end{listing}
+
+One example can be seen in \lst~\ref{lst:impl.observer}, showing the observer accompanying the executor step.
+The most basic implementation of an observer includes defining the events it subscribes to in the \mintinline{python}{SUBSCRIBED_EVENTS} attribute and defining the \mintinline{python}{def handle_event(cls, ...)} class method.
+This observer is stated in the configuration file as a module.
+Additionally, there is also a single core observer that is always included regardless of the configuration.
+It is defined as \mintinline{python}{class CoreObserver(Observer)} in \emph{reprobench/core/observers.py}.
+
+Manager mainly manages the formation and termination of workers after requesting the number of pending runs to the server.
+It acts on top of the existing job scheduling system or manage its own queue system.
+A manager implementation extends \mintinline{python}{class BaseManager} defined in \emph{reprobench/managers/base.py}.
+\lst~\ref{lst:impl.manager} shows this base class and the base implementation.
+
+\begin{listing}
+    \inputminted{python}{assets/listings/pseudocodes/manager.py}
+    \caption{The BaseManager class}
+    \label{lst:impl.manager}
+\end{listing}
+
+The main method can be seen in \mintinline{python}{def run(self)}.
+First it calls the \mintinline{python}{def prepare(self)} method which setups SSH tunneling if it is used.
+Then it runs the \mintinline{python}{def bootstrap(self)}, reading the configuration file, preparing tools and task sources, and then send a \code{BOOTSTRAP} event to the server.
+Finally it spawn the workers after receiving the number of pending runs from the server and wait for them to be terminated.
+Currently, two managers are implemented, namely the local manager and the \textsc{slurm} manager.
+
+The local manager as the most basic manager which implements its own scheduling system.
+This is typically used when the benchmarking tool is used---for quick benchmarking or testing, for example---outside the HPC cluster system.
+This manager maintains a process pool whose number of processes can be defined or defaults to the number of available cores.
+This pool of process then gets the job from the pending runs and spawn a worker exclusively for that job.
+This repeats until there is no more pending runs.
+
+The \textsc{slurm} manager works in the \textsc{slurm} cluster system \citep{yoo2003slurm} and also acts as a reference implementation for other potential managers.
+The implementation of this manager is straightforward.
+It submits the pending runs as a job array of the worker process with the \code{sbatch} command and cancel them when requested with the \code{scancel} command.
+
+\begin{listing}
+    \inputminted{python}{assets/listings/pseudocodes/worker.py}
+    \caption{Pseudo-code of the worker component}
+    \label{lst:impl.worker}
+\end{listing}
+
+The worker is an implementation-agnostic process whose only purpose is to execute the run steps on top of the benchmark run.
+The pseudo-code of the implementation can be seen in \lst~\ref{lst:impl.worker}.
+First, it reports its existence to the server and requests for information (or context) regarding its assigned run.
+Then it creates a context object to be passed to steps, and executes them one by one sequentially.
+When it finishes executing all the steps, it reports its completion and terminates.
+
+A step is implemented as a subclass of \mintinline{python}{class Step} in \emph{reprobench/core/base.py}.
+This base class defines only two class methods, \mintinline{python}{def register(cls, config)} and \mintinline{python}{def execute(cls, context, config)}.
+The register method is called on bootstrap phase and the execute method is called by the workers.
+Typically, the register method contains a database schema creation routine executed in the server-side.
+
+Steps are used in two benchmarking phase, that is the running phase and the analysis phase.
+These are differentiated in the configuration file under the \code{steps} key.
+One such example of a run step (a step executed in the running phase) is the executor.
+While an example of an analysis step (a step executed in the analysis phase) is spreadsheet generation summarizing statistics from the database.
+
+\subsection{Monitoring and Analyzing the Result}
+
+We provide a simple utility to monitor the progress of the benchmark, \code{reprobench status}.
+This utility samples the number of completed runs at some specified frequency and shows a progress bar, complete with total time elapsed and the estimated time of completion based on the historical speed of completion.
+
+Typically after the benchmark completes and all the runs executed, the resulting database can be queried for analysis.
+This can also be done live in the middle of benchmarking, but we do not provide any implementation for it yet.
+The \code{reprobench analyze} command will execute the specified analysis steps with the database.
+We provide a table generation (full and summary), and Jupyter notebook-based plot generation avaialble as modules under the \emph{reprobench/analysis} directory.
 
 
 \subsection{Command Line Interface}
@@ -502,12 +501,14 @@ User interacts with \OurBenchmarkingTool~through a command line interface (CLI).
 It is also possible to create a graphical user interface or a web-based one, but \first~leave it for future works.
 \OurBenchmarkingTool~CLI is structured with sub-commands, each having their own arguments and options.
 \tab~\ref{tab:cli} shows description of each commands with its options and arguments.
-These description can also be accessed behind the \code{--help} option.
+These descriptions can also be accessed behind the \code{--help} option.
 
 \begin{table}
+    \caption{\OurBenchmarkingTool~CLI commands}
+    \label{tab:cli}
     \begin{threeparttable}
         \begin{adjustbox}{max width=\textwidth}
-            \begin{tabular}{llp{5cm}l}
+            \begin{tabular}{llp{5.5cm}l}
                 \textbf{Command} & \textbf{Option/Argument}\tnote{$\alpha$}                                     & \textbf{Description}                              & \textbf{Default value}       \\
                 \toprule
 
@@ -522,22 +523,19 @@ These description can also be accessed behind the \code{--help} option.
                                  & \code{-a, --address}                                                         & Address to listen to                              & tcp://127.0.0.1:31313        \\*
                 \midrule
 
-                \multirow{5}{*}{\code{\dots~bootstrap}}
-                                 & \multicolumn{3}{l}{\textit{Execute the bootstrapping process}}                                                                                                  \\*
-                                 & \code{[config]}                                                              & Configuration file to use                         & ./benchmark.yml              \\*                                                                                               \\*
-                                 & \code{-r, --repeat}                                                          & Set run repetition                                & 1                            \\*
-                                 & \code{-d, --output-dir}                                                      & Set output directory, e.g.for organizing the runs & ./output                     \\*
-                                 & \code{-a, --address}                                                         & Server address                                    & tcp://127.0.0.1:31313        \\*
-                \midrule
-
-                \multirow{7}{*}{\code{\dots~manage}}
+                \multirow{11}{*}{\code{\dots~manage}}
                                  & \multicolumn{3}{l}{\textit{Use the selected manager to manage the workers.}}                                                                                    \\*
                                  & \code{[manager]}                                                             & local or slurm                                    &                              \\*                                                                                               \\*
                                  & \code{[command]}                                                             & run or stop\tnote{$\beta$}                        &                              \\*                                                                                               \\*
-                                 & \code{[config]}\tnote{$\beta$}                                               & Configuration file to use                         &                              \\*                                                                                               \\*
+                                 & \code{[config]}                                               & Configuration file to use                         &                              \\*                                                                                               \\*
+                                 & \code{-r, --repeat}                                                          & Set run repetition                                & 1                            \\* 
                                  & \code{-w, --num-workers}\tnote{$\gamma$}                                     & Set the number of worker process pool             & \em{depends}\tnote{$\delta$} \\*
                                  & \code{-d, --output-dir}                                                      & Set output directory, e.g.for organizing the runs & ./output                     \\*
                                  & \code{-a, --address}                                                         & Server address                                    & tcp://127.0.0.1:31313        \\*
+                                 & \code{-h, --host}                                                         & [Tunneling] SSH Host                                    &        \\*
+                                 & \code{-p, --port}                                                         & [Tunneling] Remote server port                                    & 31313        \\*
+                                 & \code{-k, --key-file}                                                         & [Tunneling] SSH private key file                                   &         \\*
+                                 & \code{-c, --ssh-config-file}                                                         & [Tunneling] SSH config file                                   & \emph{~/.ssh/config}        \\*
                 \midrule
 
                 \multirow{3}{*}{\code{\dots~worker}}
@@ -566,8 +564,5 @@ These description can also be accessed behind the \code{--help} option.
             \item[$\gamma$] Local manager only.
             \item[$\delta$] Number of available (virtual) cores.
         \end{tablenotes}
-
-        \caption{\OurBenchmarkingTool~CLI commands}
-        \label{tab:cli}
     \end{threeparttable}
 \end{table}

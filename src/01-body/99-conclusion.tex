@@ -9,12 +9,12 @@ Having done the research, we can conclude the following:
 
 \begin{enumerate}
     \item Resource monitors are used for benchmarking. Their implementation vary with their own advantages and disadvantages.
-    \item We develop \textsc{psmon} to introduce a cross-platform resource monitoring tool to the community.
+    \item We develop \textsc{psmon} to introduce a cross-platform resource monitoring tool to the community. This tool has been tested to run on Linux and macOS, while the other listed tools can only be run in Linux.
     \item Most of the existing benchmarking tools are developed to fulfill requirements specific to each community needs. There is no general solution yet.
     \item While they help reducing the barrier of reproducibility, none of the existing benchmarking tool fulfills our specified general requirements for an ideal benchmarking tool.
-    \item We design and implement \textsc{ReproBench} by taking ideas from the existing solutions and integrate it with our own novel designs such as the client-server architecture.
-    \item Our evaluations show that the current implementation is capable of doing common benchmarking tasks, albeit with negligible messaging overhead due to the client-server connection. It is also flexible and easy to be extended to do more complex benchmarking tasks.
-    \item Our proposed tool fulfills most but not all of the requirements we specified, more than every other tool we surveyed.
+    \item We design and implement \OurBenchmarkingTool~by taking ideas from the existing solutions and integrate it with our own novel designs such as the client-server architecture.
+    \item Our evaluations show that the current implementation is capable of doing common benchmarking tasks from configuration, execution, to evaluation, albeit with negligible messaging overhead due to the client-server connection. It is also flexible and easy to be extended to do more complex benchmarking tasks.
+    \item Our proposed tool fulfills most but not all of the requirements we specified, more than every other tool we surveyed. The two unfulfilled requirements are the availability of comprehensive documentation and robust testing.
 \end{enumerate}
 
 \section{Future Work}
@@ -23,11 +23,13 @@ Having done the research, we can conclude the following:
 The future works include but not limited to:
 
 \begin{enumerate}
+    \item Improve documentations, tests and error handlings to enhance the overall user experience.
+    \item Implementing proper end-to-end encryption for cross-system communication to replace SSH tunneling. This will remove the tunneling overhead and the need to open many ports for establishing SSH connection.
     \item Distributing the server to several processes may help to reduce the workload for the broker and thus increase the overall throughput.
     \item If possible, using a proper messaging queue (instead of \O MQ) might be better; or even separate the messaging system altogether to allow many other use cases such as using AWS SQS (\url{https://aws.amazon.com/sqs/}) or Cloud Pub-Sub (\url{https://cloud.google.com/pubsub/}).
     \item Development of more managers. Possibilities include more HPC cluster system managers, cloud-service-based managers for integrating with services such as AWS Batch (\url{https://aws.amazon.com/batch/}) or Cloud Dataflow (\url{https://cloud.google.com/dataflow/}).
-    \item Separate the data storage to allow saving the benchmark result to other storages such as cloud databases or even Git repository.
+    \item Separate the data storage to allow saving the benchmark result to other storages such as cloud databases or even Git repository. It may be of interest to save run results to key-value store to better increase the throughput. \textsc{MonetDBLite} \citep{raasveldtMonetDBLiteEmbeddedAnalytical2018} is also interesting to replace \textsc{SQLite} as an embedded analytical database.
     \item Development of internet service like \textsc{StarExec} and \textsc{Optil.io} based on \textsc{ReproBench}.
-    \item Integrating more resource monitoring tool, especially \textsc{runexec} since it has a lot of advantages over the other tools. Additionally, support for virtualization can also be added.
-    \item More tests and error handlings can be written to improve the overall user experience.
+    \item Integration of more resource monitoring tools, especially \textsc{runexec} since it has a lot of advantages over the other tools. Additionally, support for virtualization can also be added.
+    \item Support for sharing benchmark results, configuration, implementation, or benchmark instances to services such as Zenodo, Mendeley Data (\url{https://data.mendeley.com/}), or any other storage services.
 \end{enumerate}

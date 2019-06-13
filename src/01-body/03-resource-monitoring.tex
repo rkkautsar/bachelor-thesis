@@ -6,7 +6,8 @@ This task is necessary for the benchmarking process as resource is one of the me
 Section \ref{sec:resource.overview} gives an overview of the task of resource monitoring and its importance.
 Three different mechanisms for monitoring resource and its examples are described in Section \ref{sec:resource.mechanisms}.
 \First~also give a brief description of virtualization as one way to produce more reliable resource measurement in Section \ref{sec:resource.virtualization}.
-Finally, we discusses various implementation of resource monitoring tool and each of its mechanism in Section \ref{sec:resource.impl}.
+We summarize the difficulties commonly encountered when monitoring resource usages in \Cref{sec:resource.difficulties}.
+Finally, we discuss various implementation of resource monitoring tool and each of its mechanism in Section \ref{sec:resource.impl}.
 
 \section{Resource Monitoring}
 \label{sec:resource.overview}
@@ -157,7 +158,7 @@ Additionally, virtualization tools that are widely used also contribute to the r
 
 Virtual machines (VMs) use a technique called hypervisor-based virtualization.
 Hypervisor is a software that creates and runs virtual machines \citep{scheepersVirtualizationContainerizationApplication2014}.
-There are many of such hypervisor programs that are widely used, examples include VirtualBox \citep{OracleVMVirtualBox}, Xen \citep{XenProject}, and Hyper-V \citep{scooleyIntroductionHyperVWindows}.
+There are many of such hypervisor programs that are widely used, examples include VirtualBox (\url{https://www.virtualbox.org/}), Xen (\url{https://xenproject.org/}), and Hyper-V \citep{scooleyIntroductionHyperVWindows}.
 
 Hypervisor manages the resource that will be used by the VMs.
 When deployed, each VM run its own operating system with its own kernel.
@@ -172,11 +173,11 @@ The overhead of bootstrapping a VM is not negligible.
 \subsection{Containers}
 
 A relatively new technique trying to reduce the overhead of virtualization is container-based virtualization.
-Linux Containers (LXC) \citep{LinuxContainers} uses this technique to create an isolated environment without hosting multiple kernels like in hypervisor-based virtualization.
+Linux Containers (LXC, \url{https://linuxcontainers.org/}) uses this technique to create an isolated environment without hosting multiple kernels like in hypervisor-based virtualization.
 The implementation share the Linux kernel with the host machine.
 This makes it more lightweight and particularly good for deploying many small isolated instances, as often the case in benchmarking.
 
-Docker\footnote{\href{https://www.docker.com/}{https://www.docker.com/}} is an especially popular tool that utilizes LXC and offer an easy to use interface.
+Docker (\url{https://www.docker.com/}) is an especially popular tool that utilizes LXC and offer an easy to use interface.
 An application built with Docker extends upon existing Docker images with a reproducible \code{Dockerfile} configuration, stating each step needed to create the exact image.
 With the key feature of sharing the Linux kernel, an OS image in Docker can achieve minimum size, with a notable example like Alpine Linux even reaching only 2-3 megabytes in size (its virtual machine images is ten times larger in size).
 
@@ -238,6 +239,8 @@ This feature allow a few levels of isolation by mix-and-matching various namespa
 \label{sec:resource.impl}
 
 \begin{table}
+    \caption{Overview of selected resource monitors}
+    \label{tab:monitors.overview}
     \begin{threeparttable}
         \begin{adjustbox}{max width=\textwidth}
             \begin{tabular}{r l p{3cm} l c c c l}
@@ -264,8 +267,6 @@ This feature allow a few levels of isolation by mix-and-matching various namespa
             \textbf{S, N} and \textbf{I} stand for sampling, notification, and interposition respectively.\\
             \textbf{W, C, M, F} and \textbf{E} stand for wall-clock time, CPU time, memory, I/O, and energy respectively.
         \end{tablenotes}
-        \caption{Overview of selected resource monitors}
-        \label{tab:monitors.overview}
     \end{threeparttable}
 \end{table}
 
@@ -283,7 +284,7 @@ This feature allow a few levels of isolation by mix-and-matching various namespa
 \label{sec:resource.impl.runsolver}
 
 \textsc{runsolver} \citep{rousselControllingSolverExecution2011} is a resource monitoring and limiting tool for computational task solvers.
-The development is driven by competitions such as pseudo-boolean competitions\label{sec:resource.difficulties} and CSP/MaxCSP competitions.
+The development is driven by competitions such as pseudo-boolean competitions and CSP/MaxCSP competitions \citep{rousselControllingSolverExecution2011}.
 It is quite popular in the computational science field as it is fairly easy to use and requires no superuser privileges.
 
 The accompanying paper describes the implementation over time.
@@ -389,7 +390,7 @@ The resource usage is queried from the cgroups pseudo-filesystem if possible, th
 \subsection{\textsc{runlim}}
 
 \newcontent{
-    \textsc{runlim} \citep{RunLim} uses recursive sampling to monitor the resource usage.
+    \textsc{runlim} (\url{http://fmv.jku.at/runlim/}) uses recursive sampling to monitor the resource usage.
     The tool samples every one tenth of a second.
     For every sampling executed, it queries the list of all processes, then recursively samples resource usage of the child process and its children.
     It uses procfs for all resource queries including querying the process list.

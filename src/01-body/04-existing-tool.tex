@@ -5,11 +5,16 @@
     Resource monitoring tools are useful to produce a comparable measurement, but as per our definition of benchmarking in \Cref{def:benchmarking}, benchmarking involves a set of runs.
     Benchmarking tools exist to orchestrate these runs and use the resource monitoring tools to compare the benchmarking runs.
     This chapter discusses various existing benchmarking tools developed by the community.
+    We first describe each of the existing tools we surveyed in \Cref{sec:existing.tools}.
+    Then we evaluate those tools in \Cref{sec:existing.eval}.
 }
 
 \section{Existing Tools}
+\label{sec:existing.tools}
 
 \begin{table}[h]
+    \caption{Overview of existing benchmarking tools}
+    \label{tab:existing.overview}
     \begin{threeparttable}
         \begin{adjustbox}{max width=\textwidth}
             \begin{tabular}{r c l l m{2.7cm} l l}
@@ -29,8 +34,6 @@
             \footnotesize
             \item[1] Unmerged implementation
         \end{tablenotes}
-        \caption{Overview of existing benchmarking tools}
-        \label{tab:existing.overview}
     \end{threeparttable}
 \end{table}
 
@@ -226,6 +229,7 @@ Analysis is then done separately with the resulting result stored in the databas
 
 
 \section{Evaluation of Existing Tools}
+\label{sec:existing.eval}
 
 \First~breakdown the requirements defined in \Cref{sec:idealBenchmarkingTool} to a few key factors or indicators.
 These key factors are used to measure how much of the requirements are fulfilled.
@@ -298,61 +302,72 @@ The breakdown is as following:
 
 
 \begin{table}
+    \caption{Requirements score for various existing benchmarking tools}
+    \label{tab:reqscoresummary}
     \begin{threeparttable}
         \begin{adjustbox}{max width=\textwidth}
-            \begin{tabular}{l | cccccccccc | cccccccccc | cccccc | ccccc}
-                \toprule
-
-                                            %   & \multicolumn{1}{c}{$M_1$} & \multicolumn{1}{c}{$M_2$} & \multicolumn{1}{c}{$M_3$} & \multicolumn{1}{c}{$M_4$} & \multicolumn{1}{c}{$M_5$} & \multicolumn{1}{c}{$M_6$} & \multicolumn{1}{c}{$M_\sigma$} \\
-                \multirow{2}{*}{Tool} &
-                    \multicolumn{10}{c|}{Extensible/configurable} &
-                    \multicolumn{10}{c|}{Minimal effort to use} &
-                    \multicolumn{6}{c|}{Accurate and Reliable} &
-                    \multicolumn{4}{c}{Reproducible}\\
-                    & a & b & c & d & e & f & g & h & i & j &
-                    a & b & c & d & e & f & g & h & i & j &
-                    a & b & c & d & e & f &
-                    a & b & c & d & e\\
-                \midrule
-                \textsc{benchmark-tool} &
-                    & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & & \checkmark & \checkmark &
-                    \checkmark & \checkmark & & & & \checkmark & & & & &
-                    & & & \checkmark & &
-                    & & \checkmark & & & \\
-                \textsc{BenchExec} &
-                    & & & \checkmark & \checkmark & & \checkmark & & \checkmark & &
-                    \checkmark & \checkmark & \checkmark & \checkmark & & & & & \checkmark & \checkmark &
-                    \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark &
-                    \checkmark & \checkmark & \checkmark & & \checkmark
-                     \\
-                \textsc{BenchKit} &
-                    & \checkmark & & & \checkmark & & \checkmark & & \checkmark & &
-                    & \checkmark & \checkmark & & & & & & \checkmark & &
-                    & \checkmark & & \checkmark & & \checkmark &
-                    & & & & \checkmark  \\
-                \textsc{JuBE} &
-                    \checkmark & \checkmark & & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark &
-                    \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & & &
-                    \textasteriskcentered & \textasteriskcentered & \textasteriskcentered & \textasteriskcentered & \textasteriskcentered & \textasteriskcentered &
-                    & \checkmark & \checkmark \\
-                \textsc{compbench} &
-                    \checkmark & \checkmark & & \checkmark & \checkmark & & \checkmark & \checkmark & \checkmark & &
-                    \checkmark & & & & & \checkmark & & \checkmark & \checkmark & &
-                    & & & & & &
-                    & \checkmark & \checkmark & & \checkmark \\
-                \textsc{StarExec} &
-                    \checkmark & \checkmark & \checkmark & & \checkmark & & \checkmark & & \checkmark & \checkmark &
-                    \checkmark & \checkmark & \checkmark & \checkmark & & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark &
-                    \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark &
-                    \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
-                \bottomrule
+            \begin{tabular}{l}
+                \begin{tabular}{l | cccccccccc | cccccccccc}
+                    \toprule
+                    \multirow{2}{*}{Tool} &
+                        \multicolumn{10}{c|}{Extensible/configurable} &
+                        \multicolumn{10}{c}{Minimal effort to use}\\
+                        & a & b & c & d & e & f & g & h & i & j &
+                        a & b & c & d & e & f & g & h & i & j\\
+                    \midrule
+                    \textsc{benchmark-tool} &
+                        & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & & \checkmark & \checkmark &
+                        \checkmark & \checkmark & & & & \checkmark & & & &\\
+                    \textsc{BenchExec} &
+                        & & & \checkmark & \checkmark & & \checkmark & & \checkmark & &
+                        \checkmark & \checkmark & \checkmark & \checkmark & & & & & \checkmark & \checkmark\\
+                    \textsc{BenchKit} &
+                        & \checkmark & & & \checkmark & & \checkmark & & \checkmark & &
+                        & \checkmark & \checkmark & & & & & & \checkmark &\\
+                    \textsc{JuBE} &
+                        \checkmark & \checkmark & & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark &
+                        \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & &\\
+                    \textsc{compbench} &
+                        \checkmark & \checkmark & & \checkmark & \checkmark & & \checkmark & \checkmark & \checkmark & &
+                        \checkmark & & & & & \checkmark & & \checkmark & \checkmark &\\
+                    \textsc{StarExec} &
+                        \checkmark & \checkmark & \checkmark & & \checkmark & & \checkmark & & \checkmark & \checkmark &
+                        \checkmark & \checkmark & \checkmark & \checkmark & & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark\\
+                    \bottomrule
+                \end{tabular}\\
+                \begin{tabular}{l | cccccc | ccccc}
+                    \multirow{2}{*}{Tool} &
+                        \multicolumn{6}{c|}{Accurate and Reliable} &
+                        \multicolumn{4}{c}{Reproducible}\\
+                        & a & b & c & d & e & f &
+                        a & b & c & d & e\\
+                    \midrule
+                    \textsc{benchmark-tool} &
+                        & & & \checkmark & &
+                        & & \checkmark & & & \\
+                    \textsc{BenchExec} &
+                        \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark &
+                        \checkmark & \checkmark & \checkmark & & \checkmark
+                        \\
+                    \textsc{BenchKit} &
+                        & \checkmark & & \checkmark & & \checkmark &
+                        & & & & \checkmark  \\
+                    \textsc{JuBE} &
+                        \textasteriskcentered & \textasteriskcentered & \textasteriskcentered & \textasteriskcentered & \textasteriskcentered & \textasteriskcentered &
+                        & \checkmark & \checkmark \\
+                    \textsc{compbench} &
+                        & & & & & &
+                        & \checkmark & \checkmark & & \checkmark \\
+                    \textsc{StarExec} &
+                        \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark &
+                        \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
+                    \bottomrule
+                \end{tabular}
             \end{tabular}
         \end{adjustbox}
         \begin{tablenotes}
             \note (\textasteriskcentered) means the accuracy and reliability depends on the resource monitoring\\ tool used as the benchmarking tool is agnostic to them.
         \end{tablenotes}
-        \caption{Requirements score for various existing benchmarking tools}
-        \label{tab:reqscoresummary}
     \end{threeparttable}
 \end{table}
 

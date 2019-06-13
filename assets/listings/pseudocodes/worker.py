@@ -1,19 +1,18 @@
 class BenchmarkWorker:
-    def killed(self, run_id):
-        send_event(self.socket, RUN_INTERRUPT, run_id)
-        send_event(self.socket, WORKER_LEAVE)
+    def __init__(self, ...):
+        if use_tunneling:
+            start_tunneling()
 
     def run(self):
-        atexit.register(self.killed, self.run_id)
+        setup_sockets()
 
-        context = zmq.Context()
-        self.socket = context.socket(zmq.DEALER)
-        self.socket.connect(self.server_address)
-
-        send_event(self.socket, WORKER_JOIN, self.run_id)
+        send_event(self.socket, WORKER_JOIN)
         run = decode_message(self.socket.recv())
 
         tool = import_class(run["tool"])
+        if not tool.is_ready():
+            tool.setup()
+
         context = setup_context(...)
         create_run_directory(...)
 
@@ -29,3 +28,4 @@ class BenchmarkWorker:
 
         send_event(self.socket, RUN_FINISH, self.run_id)
         send_event(self.socket, WORKER_LEAVE, self.run_id)
+        stop_tunneling()

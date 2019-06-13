@@ -23,7 +23,7 @@ Its applications include image recognition, speech recognition, natural language
 The Boolean Satisfiability (SAT) problem has been proven to be $\textbf{NP}$-complete by \citet{cook1971complexity} and \citet{levin1973universal} independently.
 This means that SAT solving algorithms have exponential worst case running time.
 \citet{nordstromPebbleGamesProof2013} remarks that most modern solvers are based on Davis-Putnam-Logemann-Loveland (DPLL) backtracking procedure from the 1960s with augmented clause learning, also known as conflict-driven clause learning (CDCL).
-He further remarks that it is not yet fully understood why these solvers can be so efficient in practice \citep{elffersTradeoffsTimeMemory2016}.
+They further remark that it is not yet fully understood why these solvers can be so efficient in practice \citep{elffersTradeoffsTimeMemory2016}.
 This can be seen from the majority solvers submitted to the annual international SAT competition being CDCL-based, and successfully solving problems with millions of literals and clauses \citep{heule2018proceedings}.
 }
 
@@ -88,7 +88,7 @@ The main contributions of this thesis are as follows:
 \label{sec:intro.related}
 
 \citet{beyerReliableBenchmarkingRequirements2019} formulate requirements for reliable benchmarking and address it with their implementation, namely \textsc{BenchExec}.
-They also proof that none of the existing solution for benchmarking is accurate and reliable by their requirements.
+They also prove that none of the existing solution for benchmarking is accurate and reliable by their requirements.
 Their work focuses around their implementation of a reliable resource monitoring tool for \textsc{BenchExec}, namely \textsc{runexec}.
 
 We extend their requirements and compare their implementation with other existing solutions.
@@ -104,9 +104,9 @@ The following chapters of this thesis is structured as follows:
 
 \begin{enumerate}
 	\item In \Cref{ch:experimentation}, we explain the concept of experimentation, the concern of reproducibility, and how benchmarking can tackle this concern. We also formally define definitions and requirements that are used throughout the thesis.
-	\item In \Cref{ch:resource}, we discuss the process of resource monitoring, the difficulties, how it relate to the benchmarking process and survey some existing implementations.
+	\item In \Cref{ch:resource}, we discuss the process of resource monitoring, the difficulties, how it relates to the benchmarking process and survey some existing implementations.
 	\item In \Cref{ch:existing}, we survey some existing benchmarking tools and compare it to the defined requirements.
 	\item In \Cref{ch:implementation}, we propose the design and implementation of our proposed benchmarking tool, \textsc{ReproBench}.
 	\item In \Cref{ch:evaluation}, we evaluate the proposed tool and compare it to other tools from \Cref{ch:existing}.
-	\item Finally in the final chapter we conclude the thesis and give several possibilities for future works.
+	\item In the final chapter we conclude the thesis and give several possibilities for future works.
 \end{enumerate}
