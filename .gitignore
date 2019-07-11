@@ -264,5 +264,6 @@ TSWLatexianTemp*
 .DS_Store
 ._*
 out/
+.ipynb_*/
 
 __*_temp.tex

@@ -13,7 +13,7 @@
 %
 % Tipe dokumen adalah report dengan satu kolom.
 %
-\documentclass[12pt, a4paper, onecolumn, oneside, final]{report}
+\documentclass[12pt, a4paper, onecolumn, twoside, openright, final]{report}
 % \documentclass[12pt, a4paper, onecolumn, oneside, draft]{report}
 
 % Load konfigurasi LaTeX untuk tipe laporan thesis
@@ -34,6 +34,7 @@
 \usepackage{soul}
 \usepackage{lipsum}
 \usepackage[official]{eurosym}
+\usepackage{emptypage}
 
 \renewcommand{\arraystretch}{1.2}
 
@@ -79,6 +80,7 @@
 %
 % Gunakan penomeran romawi
 \pagenumbering{roman}
+\setboolean{@twoside}{false} % Temporarily move to one-sided mode
 
 %
 % load halaman judul dalam
@@ -139,6 +141,7 @@
 % Gunakan penomeran Arab (1, 2, 3, ...) setelah bagian ini.
 %
 \pagenumbering{arabic}
+\setboolean{@twoside}{true} % Move back to two-sided mode
 
 %
 %

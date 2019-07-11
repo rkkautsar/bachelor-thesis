@@ -1,3 +1,5 @@
+\fancyhead[LE,RO]{\thepage}
+
 \chapter{\chEvaluation}
 \label{ch:evaluation}
 
@@ -19,9 +21,9 @@ Each step needed from setting up to analyzing the result is explained.
 \begin{figure}
     \centering
     \ifdraft{
-        \dummyfig{assets/pics/experiment_setup.png}
+        \dummyfig{assets/pics/experiment-setup.png}
     }{
-        \includegraphics[width=\textwidth]{assets/pics/experiment_setup.png}
+        \includegraphics[width=\textwidth]{assets/pics/experiment-setup.png}
     }
     \caption{System setup for the example scenario}
     \label{fig:eval.setup}
@@ -33,8 +35,8 @@ This benchmark is \(\bm{R_1}\) reproducible in UNIX machines.
 The tools and tasks are downloaded from the internet and set up programmatically.
 
 \Cref{fig:eval.setup} illustrates the setup for this scenario, done in three environments.
-Computation is done in a \textsc{slurm} cluster system \citep{yoo2003slurm} of TU Dresden, Taurus.
-Taurus sports 2\,179 nodes with a total of 41\,468 cores.
+Computation is done in a \textsc{slurm} cluster system \citep{yoo2003slurm} used in TU Dresden.
+The HPC cluster system sports 2\,179 nodes with a total of 41\,468 cores.
 A typical node used for the computation has an Intel(R) Xeon(R) CPU E5-2690 @ 2.90GHz.
 Data collection is done in a VPS physically located in Paris, France.
 This is a small virtual instance sporting an Intel(R) Atom(TM) CPU C3955 @ 2.10GHz and 1 GB of RAM, with an hourly rate of \euro{}0,006.
@@ -82,7 +84,6 @@ server $ reprobench status
 
 \Cref{lst:eval.running} shows the series of commands executed for running the benchmark.
 First, the server process is started and bind a TCP socket locally at \code{127.0.0.1:31313}.
-
 Then the bootstrapping process is started from the client when the \code{manage} command is executed.
 Tools and tasks are downloaded first in the client-side before it compiles the information and send it to the server to do its own bootstrapping process.
 The information is sent to the server through an SSH tunnel, ensuring secure message transfer.
@@ -103,11 +104,16 @@ The analysis is then executed by running the \code{reprobench analyze} command w
 \begin{figure}
 	\centering
 	% \dummyfig{assets/plots/cactus.pgf}
-	\ifdraft{
-		\dummyfig{assets/plots/cactus.pgf}
-	}{
-		\resizebox{\textwidth}{!}{\input{assets/plots/cactus.pgf}}
-	}
+	% \ifdraft{
+	% 	\dummyfig{assets/plots/cactus.pgf}
+	% }{
+	% 	\resizebox{\textwidth}{!}{\input{assets/plots/cactus.pgf}}
+    % }
+    \ifdraft{
+        \dummyfig{assets/plots/cactus.png}
+    }{
+        \includegraphics[width=\textwidth]{assets/plots/cactus.png}
+    }
 	\caption{An example cactus plot on analysis step}
 	\label{fig:eval.cactus}
 \end{figure}
@@ -142,11 +148,11 @@ This means a typical run will only consume below 1 KB each.
 
 An experiment is conducted to check the throughput of the client-server communication across server.
 As in \Cref{sec:eval.scenario}, the client is located in TU Dresden HPC system while the server is located in a VPS in Paris.
-\First~measure \(L_1\), and \(L_2\), respectively the latency between receiving message, and sending then receiving message.
+\First~measure \(T_1\), and \(T_2\), respectively the throughput of sending messages and the throughput of sending and waiting for replies.
+This is measured by taking the inverse of the duration between each event.
 Each event consists of a small 32 byte payload.
-The result as an average of 1\,000 measurement is 325,29 ms, and 2\,878,54 ms respectively.
-The throughput \(T_1\), and \(T_2\) can then be computed by inverting the latency, resulting in 307,86, and 34,84 messages per second respectively.
-As a comparison, raw throughput between the machine as measured with \code{netcat} is 23 MB/s or equivalent to about 576 messages per second.
+The result (with tunneling) as an average of 1\,000 measurement is 9,72 MB/s (9,732 MB/s) and 0,747 MB/s (0,29 MB/s) respectively.
+As a comparison, raw throughput between the machine as measured with \code{netcat} is 74,92 MB/s (14,54 MB/s).
 As a side note, this is done before we implement the SSH tunneling so the number might be lower due to the tunneling overhead.
 
 Furthermore, \first~also stress tested the network.

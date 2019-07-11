@@ -1,0 +1,39 @@
+\tikzstyle {block} = [draw, text width=3.5cm, minimum height=1cm, align=center]
+\tikzstyle {miniblock} = [draw=gray, dashed, text width=2.5cm, inner sep=1ex]
+
+\resizebox{\textwidth}{!}{%
+    \begin{tikzpicture}
+        \node [block, inner sep=0pt] (planning) {
+            \begin{tikzpicture}
+                \matrix [row sep=1em] {
+                    \node {Planning}; \\
+                    \node [miniblock] {\footnotesize Implementation}; \\
+                    \node [miniblock] {\footnotesize Dataset}; \\
+                    \node [miniblock] {\footnotesize Limitation}; \\
+                    \node [miniblock] {\footnotesize Metrics}; \\
+                    \node {\dots}; \\
+                };
+            \end{tikzpicture}
+        };
+        \node[block, right=1cm of planning](benchmarking){Benchmarking};
+
+        \node [block, right=1cm of benchmarking, inner sep=0pt] (analysis) {
+            \begin{tikzpicture}
+                \matrix [row sep=1em] {
+                    \node {Analysis}; \\
+                    \node [miniblock, outer sep=2ex] {\footnotesize Summaries}; \\
+                    \node [miniblock, outer sep=2ex] {\footnotesize Ranks}; \\
+                    \node [miniblock, outer sep=2ex] {\footnotesize Plots}; \\
+                    \node {\dots}; \\
+                };
+            \end{tikzpicture}
+        };
+
+        \node[block, right=1cm of analysis](conclusion){Conclusion};
+
+        \draw[-latex'] (planning) -- (benchmarking);
+        \draw[-latex'] (benchmarking) -- (analysis);
+        \draw[-latex'] (analysis) -- (conclusion);
+
+    \end{tikzpicture}
+}

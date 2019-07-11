@@ -1,13 +1,14 @@
+\fancyhead[LE,RO]{\thepage}
+
 \chapter{\chExisting}
 \label{ch:existing}
 
-\newcontent{
-    Resource monitoring tools are useful to produce a comparable measurement, but as per our definition of benchmarking in \Cref{def:benchmarking}, benchmarking involves a set of runs.
-    Benchmarking tools exist to orchestrate these runs and use the resource monitoring tools to compare the benchmarking runs.
-    This chapter discusses various existing benchmarking tools developed by the community.
-    We first describe each of the existing tools we surveyed in \Cref{sec:existing.tools}.
-    Then we evaluate those tools in \Cref{sec:existing.eval}.
-}
+Resource monitoring tools are useful to produce a comparable measurement, but as per our definition of benchmarking in \Cref{def:benchmarking}, benchmarking involves a set of runs.
+Benchmarking tools exist to orchestrate these runs and use the resource monitoring tools to compare the benchmarking runs.
+This chapter discusses various existing benchmarking tools developed by the community.
+We first describe each of the existing tools we surveyed in \Cref{sec:existing.tools}.
+Then we evaluate those tools in \Cref{sec:existing.eval}.
+
 
 \section{Existing Tools}
 \label{sec:existing.tools}
@@ -50,7 +51,7 @@ Alas, because the source code is not publicly available and the publication does
 
 \subsection{\textsc{benchmark-tool}}
 
-\newstyle{\textsc{benchmark-tool} \citep{GitmirrorBenchmarktoolContribute2018} is originally developed from the need to carry out experiments in the Potassco (Potsdam Answer Set Solving Collection, \url{https://potassco.org/}) project at the University of Potsdam.}
+\textsc{benchmark-tool} \citep{GitmirrorBenchmarktoolContribute2018} is originally developed from the need to carry out experiments in the Potassco (Potsdam Answer Set Solving Collection, \url{https://potassco.org/}) project at the University of Potsdam.
 It has been forked and used by some researchers in the computational logic field, such as its use in Technische Universit\"at Dresden (TU Dresden) and Technische Universit\"at Wien (TU Wien).
 
 % The general workflow is like this:
@@ -67,7 +68,7 @@ For example, it can be extended to submit the benchmarking job to any cluster jo
 On the other hand, this also makes it hard to share the configuration without actually sharing the whole cloned source code.
 Some user even uses a centralized git repository and manages different benchmarks with git branches.
 
-This tool is also lacking in documentation and \newstyle{reliable measurement}.
+This tool is also lacking in documentation and reliable measurement.
 The only documentation available is minimal and has not been updated since 2010.
 It uses \textsc{runsolver} to measure and limit the resources which suffers from unreliable measurement as discussed before in \Cref{ch:resource}.
 
@@ -79,7 +80,7 @@ Furthermore, writing the \textit{result parser} often involves a lot of copying 
 \subsection{\textsc{BenchExec}}
 \label{sec:benchmarking.impl.benchexec}
 
-\newstyle{\textsc{BenchExec} \citep{philipp_wendler_2019_2561835} is developed by the SoSy-Lab (Software and Computational Systems Lab, \url{https://www.sosy-lab.org/}) of Ludwig-Maximilians-Universit\"at München (LMU Munich) with the main goal of reliable measurement and limitation of resource usage.}
+\textsc{BenchExec} \citep{philipp_wendler_2019_2561835} is developed by the SoSy-Lab (Software and Computational Systems Lab, \url{https://www.sosy-lab.org/}) of Ludwig-Maximilians-Universit\"at München (LMU Munich) with the main goal of reliable measurement and limitation of resource usage.
 It has been used successfully and proven its reliability and usefulness in the International Competition on Software Verification (SV-COMP) \citep{beyerReliableBenchmarkingRequirements2019}.
 It is actively developed with the last release (as of 24th April 2019) in 11th February 2019 and licensed under the Apache License 2.0.
 
@@ -96,10 +97,8 @@ Setting up CGroups in particular requires superuser access which often is not di
 % (d) running the \code{benchexec} program with the xml configuration;
 % (e) generating interactive table and plots with the \code{table-generator} program.
 
-\newcontent{
-    The documentation for this benchmarking framework is sufficient but not comprehensive.
-    It only covers basic use case and points out several details to the source code.
-}
+The documentation for this benchmarking framework is sufficient but not comprehensive.
+It only covers basic use case and points out several details to the source code.
 There is no tutorial or guides for getting started on benchmarking, instead the documentation revolves around the usage of each tools.
 This makes following the documentation a bit difficult because the information is scattered across files.
 
@@ -130,34 +129,29 @@ The competition participants submit a virtual machine consisting of the (minimal
 
 The documentation for this tool\footlink{http://cosyverif.org/wp-content/benchmarks/BenchKit.pdf} has not been updated since version $\beta1$, released in February, 2013.
 The documentation guides the user through the general workflow with comprehensive explanation.
-\newcontent{
-    Unfortunately, some of the details of setting up the virtual machine image and interfacing it with \textsc{BenchKit} is left unexplained.
-    An example image implementation can greatly improve the documentation.
-}
+Unfortunately, some of the details of setting up the virtual machine image and interfacing it with \textsc{BenchKit} is left unexplained.
+An example image implementation can greatly improve the documentation.
+
 
 This tool allows the user to run the benchmark across remote nodes, which in turn execute the run inside multiple virtual machines (this is not yet the case in the $\beta1$ version of the software described in the documentation).
 The result is then compiled manually or sent automatically through e-mails from the remote nodes and then manually analyzed from the generated CSV files.
 It also forces certain requirements before running the benchmarks, such as the need for a specific folder structure, and the deployment of virtual machine images to the remote nodes in advance.
 
 It uses \textsc{SysStat} \citep{sebastienPerformanceMonitoringTools2019}, a general purpose system monitoring tool which measures the whole virtual machine resource usage.
-\newcontent{
-    This means that the resource usage measured also includes the one used by the virtualized OS, which may not be reliably comparable with each other since the OS can differ.
-    \First~ do not put \textsc{SysStat} as the discussed resource monitoring tool in \Cref{ch:resource} because normally \first~want to monitor resource usage of a process, not the whole OS.
-}
+This means that the resource usage measured also includes the one used by the virtualized OS, which may not be reliably comparable with each other since the OS can differ.
+\First~ do not put \textsc{SysStat} as the discussed resource monitoring tool in \Cref{ch:resource} because normally \first~want to monitor resource usage of a process, not the whole OS.
+
 
 Although the necessity of providing virtual machine makes sure the program is \textbf{R1} reproducible, \citet{kordonBenchKitToolMassive2014} reported an overhead of 40 seconds per run in their experiment due to the boot-up time of virtual machines.
 \cite{beyerReliableBenchmarkingRequirements2019} remark that this 40 seconds overhead would have taken an additional 190 CPU days if used in their competition.
-\newcontent{
-    The total computation time for their competition is 490 days \citep{beyer2017software}.
-    This means the booting overhead for using virtual machine alone will result in 39\% more computation time.
-}
+The total computation time for their competition is 490 days \citep{beyer2017software}.
+This means the booting overhead for using virtual machine alone will result in 39\% more computation time.
 
 
 \subsection{\textsc{JuBE}}
 
 \textsc{JuBE} \citep{frings2010flexible} is a benchmarking environment developed by Jülich Supercomputing Centre (JSC) of Forschungszentrum Jülich, Germany.
-It is actively developed \newstyle{internally} with the last release (as of 24th April 2019) in 4th February 2019.
-\newcontent{Its source code is publicly available and} is licensed under the GNU General Public License version 3.
+It is actively developed internally with the last release (as of 24th April 2019) in 4th February 2019.Its source code is publicly available and is licensed under the GNU General Public License version 3.
 
 Compared to other benchmarking tool, it approaches the benchmarking task in a different, completely generic way.
 There is no explicit measurement and limiter tool, no explicit task instances, and no specific evaluation or analysis step.
@@ -256,11 +250,11 @@ The breakdown is as following:
         \item Documentation exists.
         \item Installation guide exists.
         \item Documentation is up-to-date.
-        \item Documentation is comprehensive.
+        \item \newcontent{Documentation is comprehensive. An example of comprehensive documentation as a baseline is the documentation \textsc{JuBE}. It includes guides for many possible use cases, developer documentation, and also documented functions and its parameters in its source code.}
         \item Requires no superuser privilege.
         \item Requirements are documented.
-        \item Simple installation steps.
-        \item Provides basic implementation for common benchmarking usage.
+        \item \newcontent{Simple installation steps. We decide if an installation is not simple if it requires more than two steps to install, no installation guide, or requires the user to have a pre-knowledge of specific OS features such as mounting a pseudo-filesystem.}
+        \item \newcontent{Provides basic implementation for common benchmarking usage which include monitoring common resource usages and executing implementations to benchmark instances.}
         \item Ensure robust user experience through unit and integration testing.
     \end{enumerate}
 
@@ -277,10 +271,10 @@ The breakdown is as following:
     \item Reproducible
     \begin{enumerate}[noitemsep]
         \item System information is recorded.
-        \item Results can be shared easily.
-        \item Benchmark setup can be shared easily.
-        \item Encourage the use of reproducible benchmark (\textbf{R2}).
-        \item Encourage the use of reproducible tool implementation (\textbf{R1}).
+        \item Results can be shared to other researchers \newcontent{in just one or two steps}.
+        \item Benchmark setup can be shared to and reproduced by other researchers \newcontent{in just one or two steps}.
+        \item Encourage the use of reproducible benchmark (\textbf{R2}) \newcontent{by allowing or recommending the use of reproducible data}.
+        \item Encourage the use of reproducible tool implementation (\textbf{R1}) \newcontent{by allowing or recommending the use of reproducible implementation}.
     \end{enumerate}
 \end{enumerate}
 
@@ -374,12 +368,11 @@ The breakdown is as following:
 
 \Cref{tab:reqscoresummary} shows that none of the considered benchmarking tools fully fulfill the given requirements.
 The closest is \textsc{StarExec} and \textsc{JuBE}.
-\newstyle{Note that most} of the features available in \textsc{StarExec}, such as managing post-processors and plots, are restricted to the community leaders.
+Note that most of the features available in \textsc{StarExec}, such as managing post-processors and plots, are restricted to the community leaders.
 The normal user is forced to use what was already available in the community space.
-\newstyle{This contrasts with} \textsc{JuBE} that approaches benchmarking in \newstyle{a very generic way}.
-\newcontent{
-    While this approach allows the tool to be used in many possible use cases, it may also discourage new users to start using it since there is no sensible defaults and the effort to customize it might be a bit much.
-}
+This contrasts with \textsc{JuBE} that approaches benchmarking in a very generic way.
+While this approach allows the tool to be used in many possible use cases, it may also discourage new users to start using it since there is no sensible defaults and the effort to customize it might be a bit much.
+
 
 Additionally, it can be seen from \Cref{tab:existing.overview} that most tools are implemented in Python.
 This decision might be because Python offers an easy to understand language while also allowing low-level interfacing with C libraries.

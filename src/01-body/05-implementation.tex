@@ -1,14 +1,15 @@
+\fancyhead[LE,RO]{\thepage}
+
 \chapter{\chImplementation}
 \label{ch:implementation}
 
-\newcontent{
-    After reviewing the existing benchmarking tools, we consider improving the situation to fulfill our requirements.
-    At first, \first~tried refactoring a fork of \textsc{benchmark-tool}\footlink{https://github.com/daajoe/benchmark-tool/tree/refactor}.
-    We improved the tool architecture to be more decentralized, allowing the benchmark to be shared easily.
-    We has also written documentation and getting started guide for this tool.
-    But after those efforts, we decided to create a new tool instead.
-    This is because to create the ideal tool, we need significant architecture overhaul and decided it is better to start anew.
-}
+After reviewing the existing benchmarking tools, we consider improving the situation to fulfill our requirements.
+At first, \first~tried refactoring a fork of \textsc{benchmark-tool}\footlink{https://github.com/daajoe/benchmark-tool/tree/refactor}.
+We improved the tool architecture to be more decentralized, allowing the benchmark to be shared easily.
+We has also written documentation and getting started guide for this tool.
+But after those efforts, we decided to create a new tool instead.
+This is because to create the ideal tool, we need significant architecture overhaul and decided it is better to start anew.
+
 
 This chapter discusses the design and implementation of \OurBenchmarkingTool, a new benchmarking tool developed to address the requirements defined in Section \ref{sec:idealBenchmarkingTool}.
 We first give an explanation to some major decisions taken before designing and implementing \OurBenchmarkingTool~in \Cref{sec:impl.decisions}.
@@ -94,8 +95,12 @@ This includes the system architecture, messaging mechanism, and also the workflo
 
 Figure \ref{fig:architecture} shows the architecture of \OurBenchmarkingTool, our attempt on a new benchmarking tool fulfilling most of the defined requirements.
 The architecture follows the client-server design pattern, communicating through Transmission Control Protocol (TCP).
+\newcontent{
+    Unlike typical client-server architecture where the server do most of the computation, the client-server pattern in our design is used as a separation between computation and data collection.
+    The workload is distributed to the \emph{workers} in the client-side which report the results to the server to collect.
+}
 The client manages the heavy computation while the server manages the data.
-Typically, the client will be in a high performance computing (HPC) cluster system while the server in a separate system, e.g. a virtual private server (VPS).
+\newcontent{A recommended setup is for the client to be in a high performance computing (HPC) cluster system while the server in a separate system, for example a virtual private server (VPS).}
 
 This decision to use client-server architecture is made to handle concurrent writes to the database, which is difficult to achieve in some database engines.
 With a single server process to manage the database, the writes can be queued in the application level.
@@ -236,12 +241,10 @@ User can use community-created module without having to consider its data model.
 \section{Implementation}
 \label{sec:impl.impl}
 
-\newstyle{
 This section presents details regarding the implementation of \OurBenchmarkingTool.
 We organize the section loosely by the implementation of each step in the benchmarking process.
 The implementation source code is attached in the appendix.
 It is also available as a Git repository: \url{https://github.com/rkkautsar/reprobench}, pypi package: \url{https://pypi.org/project/reprobench/}, and conda package: \url{https://anaconda.org/rkkautsar/reprobench}.
-}
 
 \subsection{Project Structure}
 \label{sec:impl.structure}

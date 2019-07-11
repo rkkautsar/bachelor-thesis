@@ -1,3 +1,5 @@
+\fancyhead[LE,RO]{\thepage}
+
 \chapter{\chResource}
 \label{ch:resource}
 
@@ -27,18 +29,17 @@ Because of this wide area of usage, there are many attempts to implement these m
 \label{sec:resource.mechanisms}
 
 \citet{juvePracticalResourceMonitoring2015} categorize resource monitoring into three different mechanisms.
-\newcontent{
-    The three mechanisms are as follows:
-    \begin{enumerate}[noitemsep]
-        \item Query
-        \item Notification
-        \item Interposition
-    \end{enumerate}
+The three mechanisms are as follows:
+\begin{enumerate}[noitemsep]
+    \item Query
+    \item Notification
+    \item Interposition
+\end{enumerate}
 
-    \emph{Query} mechanisms queries a resource property directly from the operating system (OS).
-    \emph{Notification} mechanism asks the OS to send a notification when certain event occurs, with or without resource properties.
-    Finally, \emph{interposition} mechanism intercepts actions from the process to track the events directly.
-}
+\emph{Query} mechanisms queries a resource property directly from the operating system (OS).
+\emph{Notification} mechanism asks the OS to send a notification when certain event occurs, with or without resource properties.
+Finally, \emph{interposition} mechanism intercepts actions from the process to track the events directly.
+
 There are trade-offs between these mechanisms and so it is often preferred to use a combination of more than one mechanism to achieve better results.
 
 \subsection{Query (Sampling)}
@@ -47,8 +48,7 @@ The query approach works by querying resource usage information directly from th
 To monitor the resource usage over time, this means the query is executed at some interval, effectively doing a polling mechanism.
 More frequent polling will result in a more timely information but the overhead also increases.
 Querying is often the easiest resource monitoring mechanism in term of implementation \citep{juvePracticalResourceMonitoring2015}.
-
-\newcontent{This query mechanism described by \citeauthor{juvePracticalResourceMonitoring2015} can also be reworded as \emph{sampling} as it can be seen as a more specialized form of statistical sampling.}
+This query mechanism described by \citeauthor{juvePracticalResourceMonitoring2015} can also be reworded as \emph{sampling} as it can be seen as a more specialized form of statistical sampling.
 It is the least intrusive mechanism, albeit the information received from this mechanism also immediately expires.
 A resource usage surge could happen in between the queries, so this mechanism is not accurate.
 In short, the query mechanism provides an easy to implement but inaccurate measurement of the resource monitored.
@@ -62,18 +62,16 @@ procfs provides resource information for a process such as elapsed user time, el
 On a side note, since the operating system always records these information for all running processes, the clock resolution used is not too accurate.
 The user time and system time in \code{/proc/[pid]/stat} is measured in system ticks, which turns out to be 10 milliseconds in a typical Linux system \citep{manpages}.
 
-\newcontent{
-    Since Linux kernel version 2.6.24 (released January 2008), Linux control groups (cgroups) can be used to record process resource usage \citep[cgroups(7)]{manpages}.
-    It organizes processes as hierarchical groups whose resource usage can be monitored and limited.
-    Resource tracking and limiting are managed by using resource-specific cgroups controllers such as CPU, CPU accounting, and memory.
-    Cgroups excels in managing groups of processes and their resources \citep{beyerBenchmarkingResourceMeasurement2015}.
-}
+Since Linux kernel version 2.6.24 (released January 2008), Linux control groups (cgroups) can be used to record process resource usage \citep[cgroups(7)]{manpages}.
+It organizes processes as hierarchical groups whose resource usage can be monitored and limited.
+Resource tracking and limiting are managed by using resource-specific cgroups controllers such as CPU, CPU accounting, and memory.
+Cgroups excels in managing groups of processes and their resources \citep{beyerBenchmarkingResourceMeasurement2015}.
+
 
 
 Performance counters is a more universal method for this query mechanism.
 Most system nowadays has a hardware clock that has an incredibly accurate clock resolution, some even achieving nanoseconds resolution.
-Querying this clock at the start and end of a program could measure what is called the wall-clock time.
-\newcontent{While not as representative as CPU time usage, wall-clock time is convenient to measure the performance of parallel tools.}
+Querying this clock at the start and end of a program could measure what is called the wall-clock time.While not as representative as CPU time usage, wall-clock time is convenient to measure the performance of parallel tools.
 
 The library \textsc{psutil} \citep{rodolaCrossplatformLibProcess2019} provides an abstraction for various resource queries that works in many operating systems.
 This allows a cross-platform resource monitoring tool based on query mechanism to be developed.
@@ -115,16 +113,15 @@ This effectively allows the procfs query method to work more reliably compared t
 \citet{juvePracticalResourceMonitoring2015} defines this group of mechanism as the ones in which the monitor intercepts actions performed by the process.
 This mechanism is highly intrusive because it actively changes the way the program runs.
 \code{ptrace()} mentioned earlier also belongs to this group since the kernel stops the system call and forward an event to the monitor (in this case the tracer).
-\newstyle{In general this method introduces relatively huge overhead compared to the other mechanism.}
+In general this method introduces relatively huge overhead compared to the other mechanism.
 In \code{ptrace()} for example, there need to be at least two context switches for every system call intercepted.
 
-\newcontent{
-    The overhead depends on the number of system calls made by the program being traced.
-    \citet{kimPracticalEffectiveSandboxing2013} reports 36.5\% overhead when extracting a Linux kernel archive compared to 0.1\% overhead when running matrix calculations.
-    This result supports the theory that the overhead is a function of the number is system calls since extracting an archive includes many system calls compared to the matrix calculations.
-    Extracting an archive involves invoking many system calls related to input/output (I/O) such as \code{fstat}, \code{write}, \code{read}, \code{open}, and \code{close} while matrix calculations is mostly done in the CPU and system calls is mainly only used to write the output in the very end.
-    This means the overhead should be negligible for most computation heavy programs involving little I/O.
-}
+The overhead depends on the number of system calls made by the program being traced.
+\citet{kimPracticalEffectiveSandboxing2013} reports 36.5\% overhead when extracting a Linux kernel archive compared to 0.1\% overhead when running matrix calculations.
+This result supports the theory that the overhead is a function of the number is system calls since extracting an archive includes many system calls compared to the matrix calculations.
+Extracting an archive involves invoking many system calls related to input/output (I/O) such as \code{fstat}, \code{write}, \code{read}, \code{open}, and \code{close} while matrix calculations is mostly done in the CPU and system calls is mainly only used to write the output in the very end.
+This means the overhead should be negligible for most computation heavy programs involving little I/O.
+
 
 A less intrusive method compared to the one \code{ptrace()} used is function interposition.
 In this mechanism, the monitor replace some original function by a wrapper that also record parameters and results of the original function \citep{juvePracticalResourceMonitoring2015}.
@@ -148,9 +145,7 @@ While this is the most accurate method compared to the others, this is also high
 \section{Virtualization: More Reliable Measurements}
 \label{sec:resource.virtualization}
 
-\newstyle{
-    Isolation of runs is one of the requirements for an accurate and reliable benchmarking and resource measurement \citep{beyerReliableBenchmarkingRequirements2019}.
-}
+Isolation of runs is one of the requirements for an accurate and reliable benchmarking and resource measurement \citep{beyerReliableBenchmarkingRequirements2019}.
 Specifically, they used Linux containers to provide a lightweight isolation.
 Additionally, virtualization tools that are widely used also contribute to the reproducibility issue by providing a programmatic way to pack program dependencies \citep{boettigerIntroductionDockerReproducible2015,kordonBenchKitToolMassive2014}.
 
@@ -191,48 +186,47 @@ This relatively new feature in the Linux kernel allows isolation of process with
 Both \citet{beyerReliableBenchmarkingRequirements2019} and \citet{marevs2012new} report no overhead from their experiments compared to bare process execution.
 This feature allow a few levels of isolation by mix-and-matching various namespaces, namely Cgroup, IPC, Network, Mount, PID, User, and UTS \citep[namespaces(7)]{manpages}.
 
-\newcontent{
-    \section{Difficulties}
-    \label{sec:resource.difficulties}
+\section{Difficulties}
+\label{sec:resource.difficulties}
 
-    Before reviewing the implementation of various resource monitoring tools, \first~list several difficulties that may result in unreliable or inaccurate measurement of resource usage.
-    \citet{beyerBenchmarkingResourceMeasurement2015} describe three limitations of commonly used methods compared to their cgroups-based implementation.
-    \First~decided these three limitations is general enough to give an overview of the difficulties encountered when monitoring resource usage.
-    These three difficulties are as follows:
+Before reviewing the implementation of various resource monitoring tools, \first~list several difficulties that may result in unreliable or inaccurate measurement of resource usage.
+\citet{beyerBenchmarkingResourceMeasurement2015} describe three limitations of commonly used methods compared to their cgroups-based implementation.
+\First~decided these three limitations is general enough to give an overview of the difficulties encountered when monitoring resource usage.
+These three difficulties are as follows:
 
-    \begin{enumerate}
-        \item \textbf{Measuring resources}
+\begin{enumerate}
+    \item \textbf{Measuring resources}
 
-        As already mentioned before, querying information from the OS will result in immediately expired information.
-        Information about surge in resource usage and short-living processes may be missed.
-        But this is not only the problem, since that information is not only inaccurate but can also be unreliable.
-        For example, \code{getrusage} only report the resource usage of processes \code{wait}-ed by their parents \citep{manpages}.
-        If the process being monitored does not bother to \code{wait} for its children, those children resource usage is lost and not accumulated to the total usage reported.
+    As already mentioned before, querying information from the OS will result in immediately expired information.
+    Information about surge in resource usage and short-living processes may be missed.
+    But this is not only the problem, since that information is not only inaccurate but can also be unreliable.
+    For example, \code{getrusage} only report the resource usage of processes \code{wait}-ed by their parents \citep{manpages}.
+    If the process being monitored does not bother to \code{wait} for its children, those children resource usage is lost and not accumulated to the total usage reported.
 
-        \item \textbf{Enforcing limits}
+    \item \textbf{Enforcing limits}
 
-        Limiting resource through \code{setrlimit} only limits the resource on per process basis \citep{manpages}.
-        This means a process can use as many resource as they want by spawning processes.
-        A process with one child process has double the CPU time limit and double the maximum allowed memory.
-        Additionally, \code{setrlimit} does not do anything when the maximum RSS limit is exceeded \citep{manpages}.
-        Manually limiting resource usages may also fail because the sampling method may miss sudden resource usage surges.
+    Limiting resource through \code{setrlimit} only limits the resource on per process basis \citep{manpages}.
+    This means a process can use as many resource as they want by spawning processes.
+    A process with one child process has double the CPU time limit and double the maximum allowed memory.
+    Additionally, \code{setrlimit} does not do anything when the maximum RSS limit is exceeded \citep{manpages}.
+    Manually limiting resource usages may also fail because the sampling method may miss sudden resource usage surges.
 
-        \item \textbf{Managing processes}
+    \item \textbf{Managing processes}
 
-        Killing a group of processes is not easy.
-        Especially when dealing with zombie process.
-        The Linux User's Manual (\citeyear{manpages}) for \code{waitpid} explains zombie process as a process that terminates but has not been waited by its parent.
-        This is troublesome because the record will take space in the process table, which normally has a fairly low limit (defaults to 32768 in Linux, as stated in the manual for procfs).
-        Furthermore, the manual states that if the parent terminates, these zombie processes will not terminate and instead adopted by the \code{init} process to be \code{wait}-ed.
-        This means the child processes will continue to consume resources after the monitoring tool kills parent.
-        Note that this behavior may also be intended to create long-living process (daemon).
-        The parent spawn a child process which in turn spawn a grandchild process which do the actual work.
-        The child process will then terminate and the grandchild process adopted by \code{init}, allowing it to run in the background as a long-living process.
-        Finally, limiting the number of processes itself is also important.
-        A malicious or misconfigured tool may spawn a huge number of processes faster than the monitoring tool can kill them.
+    Killing a group of processes is not easy.
+    Especially when dealing with zombie process.
+    The Linux User's Manual (\citeyear{manpages}) for \code{waitpid} explains zombie process as a process that terminates but has not been waited by its parent.
+    This is troublesome because the record will take space in the process table, which normally has a fairly low limit (defaults to 32768 in Linux, as stated in the manual for procfs).
+    Furthermore, the manual states that if the parent terminates, these zombie processes will not terminate and instead adopted by the \code{init} process to be \code{wait}-ed.
+    This means the child processes will continue to consume resources after the monitoring tool kills parent.
+    Note that this behavior may also be intended to create long-living process (daemon).
+    The parent spawn a child process which in turn spawn a grandchild process which do the actual work.
+    The child process will then terminate and the grandchild process adopted by \code{init}, allowing it to run in the background as a long-living process.
+    Finally, limiting the number of processes itself is also important.
+    A malicious or misconfigured tool may spawn a huge number of processes faster than the monitoring tool can kill them.
 
-    \end{enumerate}
-}
+\end{enumerate}
+
 
 
 \section{Implementations}
@@ -270,14 +264,12 @@ This feature allow a few levels of isolation by mix-and-matching various namespa
     \end{threeparttable}
 \end{table}
 
-\newcontent {
-    \First~consider seven existing implementation and additionally our implementation, \textsc{psmon} (see \Cref{sec:res.psmon}).
-    \First~discuss their method of measuring and limiting resource.
-    \Cref{tab:monitors.overview} outlines and compares these eight resource monitoring tool.
-    Note that all of the existing implementation \first~found and selected is developed for Linux and may not work for other UNIX-like OSes.
-    For example, none of these existing implementations run in MacOS.
-    That is also why we developed \textsc{psmon} initially.
-}
+\First~consider seven existing implementation and additionally our implementation, \textsc{psmon} (see \Cref{sec:res.psmon}).
+\First~discuss their method of measuring and limiting resource.
+\Cref{tab:monitors.overview} outlines and compares these eight resource monitoring tool.
+Note that all of the existing implementation \first~found and selected is developed for Linux and may not work for other UNIX-like OSes.
+For example, none of these existing implementations run in MacOS.
+That is also why we developed \textsc{psmon} initially.
 
 
 \subsection{\textsc{runsolver}}
@@ -295,10 +287,8 @@ They report an increase of 60\% to 160\% in CPU time for this second version.
 Finally, the third and current version of \textsc{runsolver} polls (at 1 Hz frequency) the list of processes in order to determine the solver's process tree.
 The resources is polled from the procfs and accumulated.
 
-\newcontent{
-    Since the latest version rely only on sampling, it suffers from the first two difficulties listed in \Cref{sec:resource.difficulties}.
-    For handling zombie processes, it uses Linux-specific \code{prctl} \citep[prctl(2)]{manpages} to set itself as the parent when any of its child process lost its parent.
-}
+Since the latest version rely only on sampling, it suffers from the first two difficulties listed in \Cref{sec:resource.difficulties}.
+For handling zombie processes, it uses Linux-specific \code{prctl} \citep[prctl(2)]{manpages} to set itself as the parent when any of its child process lost its parent.
 It is not clear whether this tool is still being maintained, since the latest release was on November 2017.
 
 
@@ -315,12 +305,11 @@ The \code{cpuacct} controller is used to measure the CPU time usage.
 This is to prevent the processes from spawning new processes.
 They also used \code{memory} and \code{memsw} controllers to account and limit memory and swap resources.
 
-\newcontent{
-    For limiting the resource, it use separate threads for each resource limit monitored.
-    To limit CPU time and wall-clock time, they predict the time the program will time-out based on remaining time and number of used CPU cores and set a timer, and repeat this routine until it times out or the thread is canceled.
-    To limit the memory, the rely on the kernel to send notification when the cgroups encounters out-of-memory.
-    Finally, to limit file counts, it relies on polling the information from the cgroups \code{blkio} controller.
-}
+For limiting the resource, it use separate threads for each resource limit monitored.
+To limit CPU time and wall-clock time, they predict the time the program will time-out based on remaining time and number of used CPU cores and set a timer, and repeat this routine until it times out or the thread is canceled.
+To limit the memory, the rely on the kernel to send notification when the cgroups encounters out-of-memory.
+Finally, to limit file counts, it relies on polling the information from the cgroups \code{blkio} controller.
+
 
 Additionally, they also provide a non-privileged, optional container-based execution environment, \textsc{containerexecutor}.
 It works by combining Linux user namespaces and overlay filesystem features available in Linux kernel 3.8 onwards.
@@ -351,8 +340,7 @@ It uses \code{ps} \citep[ps(1)]{manpages} to scan for related processes and quer
 
 It has not been updated since April 2016.
 \citeauthor{shvedScriptMeasureLimit2019} also recommends to use cgroups feature instead of using this tool.
-They suggests it is a much better method and not limited with some issues occurring with the method used in \textsc{timeout}.
-\newcontent{Some of its issues include unreliable termination of child process and not handling multiple child processes.}
+They suggests it is a much better method and not limited with some issues occurring with the method used in \textsc{timeout}.Some of its issues include unreliable termination of child process and not handling multiple child processes.
 
 \subsection{\textsc{NsJail}}
 \label{sec:resource.impl.nsjail}
@@ -389,19 +377,18 @@ The resource usage is queried from the cgroups pseudo-filesystem if possible, th
 
 \subsection{\textsc{runlim}}
 
-\newcontent{
-    \textsc{runlim} (\url{http://fmv.jku.at/runlim/}) uses recursive sampling to monitor the resource usage.
-    The tool samples every one tenth of a second.
-    For every sampling executed, it queries the list of all processes, then recursively samples resource usage of the child process and its children.
-    It uses procfs for all resource queries including querying the process list.
-    The source code is published and licensed under the 4-clause BSD License.
-    Note that it has not been updated since 2011 and the source code itself is not managed in a public version control system.
+\textsc{runlim} (\url{http://fmv.jku.at/runlim/}) uses recursive sampling to monitor the resource usage.
+The tool samples every one tenth of a second.
+For every sampling executed, it queries the list of all processes, then recursively samples resource usage of the child process and its children.
+It uses procfs for all resource queries including querying the process list.
+The source code is published and licensed under the 4-clause BSD License.
+Note that it has not been updated since 2011 and the source code itself is not managed in a public version control system.
 
-    Since it only samples the list of all processes, this tool also suffers from missing short-living processes.
-    Additionally, when the resource usage exceeds the specified limits, it only kills the direct child process.
-    The child process can not be relied to also kill and wait its children reliably.
-    This can result in orphaned process.
-}
+Since it only samples the list of all processes, this tool also suffers from missing short-living processes.
+Additionally, when the resource usage exceeds the specified limits, it only kills the direct child process.
+The child process can not be relied to also kill and wait its children reliably.
+This can result in orphaned process.
+
 
 \subsection{\textsc{psmon}}
 \label{sec:res.psmon}
