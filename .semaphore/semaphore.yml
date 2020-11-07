@@ -27,6 +27,7 @@ blocks:
             - git submodule deinit --force .
         on_pass:
           commands:
+            - checkout
             - artifact push workflow --expire-in 1w out/thesis.pdf
       jobs:
         - name: Make
