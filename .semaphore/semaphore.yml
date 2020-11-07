@@ -23,8 +23,10 @@ blocks:
       jobs:
         - name: Make
           commands:
-            - make
-            - artifact push workflow --expire-in 2w out/thesis.pdf
+            - sudo apt-get update
+            - sudo apt-get install -y python
+            - latexmk -pdf -shell-escape -file-line-error -halt-on-error -outdir=out thesis.tex
+            - artifact push workflow --expire-in 1w out/thesis.pdf
 promotions:
   - name: Upload if passed
     pipeline_file: pipeline_2.yml
