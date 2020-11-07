@@ -4,15 +4,10 @@ agent:
   machine:
     type: e1-standard-2
     os_image: ubuntu1804
+  containers:
+    - name: main
+      image: 'raabf/latex-versions:texlive2019'
 blocks:
-  - name: Install
-    task:
-      jobs:
-        - name: texlive
-          commands:
-            - sudo apt-get update -q
-            - sudo apt-get install -qy texlive-full python-pygments gnuplot
-            - sudo rm -rf /var/lib/apt/lists/*
   - name: Compile
     task:
       prologue:
