@@ -1,0 +1,43 @@
+version: v1.0
+name: Initial Pipeline
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804
+  containers:
+    - name: main
+      image: 'raabf/latex-versions:texlive2019'
+blocks:
+  - name: Compile
+    task:
+      prologue:
+        commands:
+          - apt-get update
+          - apt-get install -y python curl procps
+          - bash ~/.toolbox/install-toolbox
+          - source ~/.toolbox/toolbox
+          - echo 'source ~/.toolbox/toolbox' >> ~/.bash_profile
+          - cd
+          - checkout
+          - git submodule init
+          - git submodule update
+      epilogue:
+        always:
+          commands:
+            - cd
+            - cd $SEMAPHORE_GIT_DIR
+            - git submodule deinit --force .
+        on_pass:
+          commands:
+            - cd
+            - cd $SEMAPHORE_GIT_DIR
+            - artifact push workflow --expire-in 2w out/thesis.pdf
+      jobs:
+        - name: Make
+          commands:
+            - latexmk -pdf -shell-escape -file-line-error -halt-on-error -outdir=out thesis.tex
+promotions:
+  - name: Upload
+    pipeline_file: pipeline_2.yml
+    auto_promote:
+      when: (branch = 'master' OR tag =~ '.*') AND result = 'passed'
