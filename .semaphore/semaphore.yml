@@ -12,6 +12,11 @@ blocks:
     task:
       prologue:
         commands:
+          - apt-get update
+          - apt-get install -y python curl procps
+          - bash ~/.toolbox/install-toolbox
+          - source ~/.toolbox/toolbox
+          - echo 'source ~/.toolbox/toolbox' >> ~/.bash_profile
           - checkout
           - git submodule init
           - git submodule update
@@ -22,19 +27,10 @@ blocks:
             - git submodule deinit --force .
         on_pass:
           commands:
-            - 'git clone https://github.com/semaphoreci/toolbox.git ~/.toolbox'
-            - '# Install binaries'
-            - bash ~/.toolbox/install-toolbox
-            - '# Source functions into current session'
-            - source ~/.toolbox/toolbox
-            - '# Add toolbox to your bash_profile to activate it in every SSH session'
-            - echo 'source ~/.toolbox/toolbox' >> ~/.bash_profile
             - artifact push workflow --expire-in 1w out/thesis.pdf
       jobs:
         - name: Make
           commands:
-            - apt-get update
-            - apt-get install -y python
             - latexmk -pdf -shell-escape -file-line-error -halt-on-error -outdir=out thesis.tex
 promotions:
   - name: Upload if passed
