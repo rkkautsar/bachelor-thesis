@@ -6,14 +6,14 @@ agent:
     os_image: ubuntu1804
   containers:
     - name: main
-      image: 'blang/latex:ctanfull'
+      image: 'blang/latex:ubuntu'
 blocks:
   - name: Compile
     task:
       jobs:
         - name: Compile
           commands:
-            - latexmk -pdf -shell-escape -outdir=out thesis.tex
+            - make
             - artifact push workflow --expire-in 2w out/thesis.pdf
       prologue:
         commands:
