@@ -23,18 +23,13 @@ blocks:
       epilogue:
         always:
           commands:
-            - checkout
+            - cd $SEMAPHORE_GIT_DIR
             - git submodule deinit --force .
         on_pass:
           commands:
-            - checkout
-            - artifact push workflow --expire-in 1w out/thesis.pdf
+            - cd $SEMAPHORE_GIT_DIR
+            - artifact push project 1w out/thesis.pdf
       jobs:
         - name: Make
           commands:
             - latexmk -pdf -shell-escape -file-line-error -halt-on-error -outdir=out thesis.tex
-promotions:
-  - name: Upload if passed
-    pipeline_file: pipeline_2.yml
-    auto_promote:
-      when: (branch = 'master' OR tag =~ '.*') AND result = 'passed'
