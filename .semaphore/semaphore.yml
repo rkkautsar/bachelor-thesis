@@ -6,7 +6,7 @@ agent:
     os_image: ubuntu1804
   containers:
     - name: main
-      image: 'blang/latex:ubuntu'
+      image: 'blang/latex:ctanfull'
 blocks:
   - name: Compile
     task:
