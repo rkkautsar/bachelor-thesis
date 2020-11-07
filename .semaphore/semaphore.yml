@@ -4,17 +4,19 @@ agent:
   machine:
     type: e1-standard-2
     os_image: ubuntu1804
-  containers:
-    - name: main
-      image: 'blang/latex:ubuntu'
 blocks:
-  - name: Compile
+  - name: Install
     task:
       jobs:
-        - name: Compile
+        - name: texlive
           commands:
-            - make
-            - artifact push workflow --expire-in 2w out/thesis.pdf
+            - sudo apt-get update -q
+            - sudo apt-get install -qy \
+            - '    texlive-full \'
+            - '    python-pygments gnuplot'
+            - sudo rm -rf /var/lib/apt/lists/*
+  - name: Compile
+    task:
       prologue:
         commands:
           - checkout
@@ -25,6 +27,11 @@ blocks:
           commands:
             - checkout
             - git submodule deinit --force .
+      jobs:
+        - name: Make
+          commands:
+            - make
+            - artifact push workflow --expire-in 2w out/thesis.pdf
 promotions:
   - name: Upload if passed
     pipeline_file: pipeline_2.yml
