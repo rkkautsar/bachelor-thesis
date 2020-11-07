@@ -16,3 +16,6 @@ blocks:
             - ./dropbox_uploader.sh upload out/thesis.pdf Public/thesis/thesis-latest.pdf
       secrets:
         - name: Dropbox Uploader
+      prologue:
+        commands:
+          - checkout
