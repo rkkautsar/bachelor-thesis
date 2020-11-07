@@ -11,9 +11,7 @@ blocks:
         - name: texlive
           commands:
             - sudo apt-get update -q
-            - sudo apt-get install -qy \
-            - '    texlive-full \'
-            - '    python-pygments gnuplot'
+            - sudo apt-get install -qy texlive-full python-pygments gnuplot
             - sudo rm -rf /var/lib/apt/lists/*
   - name: Compile
     task:
