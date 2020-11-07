@@ -18,5 +18,4 @@ blocks:
       prologue:
         commands:
           - cd
-          - cd $SEMAPHORE_GIT_DIR
           - artifact pull workflow out/thesis.pdf
