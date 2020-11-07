@@ -23,8 +23,8 @@ blocks:
       jobs:
         - name: Make
           commands:
-            - sudo apt-get update
-            - sudo apt-get install -y python
+            - apt-get update
+            - apt-get install -y python
             - latexmk -pdf -shell-escape -file-line-error -halt-on-error -outdir=out thesis.tex
             - artifact push workflow --expire-in 1w out/thesis.pdf
 promotions:
