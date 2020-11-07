@@ -17,18 +17,21 @@ blocks:
           - bash ~/.toolbox/install-toolbox
           - source ~/.toolbox/toolbox
           - echo 'source ~/.toolbox/toolbox' >> ~/.bash_profile
+          - cd
           - checkout
           - git submodule init
           - git submodule update
       epilogue:
         always:
           commands:
+            - cd
             - cd $SEMAPHORE_GIT_DIR
             - git submodule deinit --force .
         on_pass:
           commands:
+            - cd
             - cd $SEMAPHORE_GIT_DIR
-            - artifact push project 1w out/thesis.pdf
+            - artifact push project out/thesis.pdf
       jobs:
         - name: Make
           commands:
