@@ -4,24 +4,25 @@ agent:
   machine:
     type: e1-standard-2
     os_image: ubuntu1804
+  containers:
+    - name: main
+      image: 'blang/latex:ubuntu'
 blocks:
-  - name: Setup
-    task:
-      jobs:
-        - name: Git
-          commands:
-            - checkout
-            - git submodule init
-            - git submodule update
   - name: Compile
     task:
       jobs:
         - name: Compile
           commands:
-            - checkout
-            - 'wget https://raw.githubusercontent.com/blang/latex-docker/master/latexdockercmd.sh'
-            - chmod +x latexdockercmd.sh
-            - ./latexdockercmd.sh latexmk -pdf -shell-escape -outdir=out thesis.tex
+            - latexmk -pdf -shell-escape -outdir=out thesis.tex
+            - artifact push workflow --expire-in 2w out/thesis.pdf
+      prologue:
+        commands:
+          - git submodule init
+          - git submodule update
+      epilogue:
+        always:
+          commands:
+            - git submodule deinit --force .
 promotions:
   - name: Upload if passed
     pipeline_file: pipeline_2.yml
